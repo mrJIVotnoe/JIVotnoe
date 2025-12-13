@@ -69,7 +69,7 @@ export const AndroidGuide: React.FC = () => {
              </div>
 
              <a 
-               href="https://github.com/dovecoteescapee/ByeDPIAndroid/releases" 
+               href="https://github.com/romanvht/ByeByeDPI/releases/tag/v.1.6.8" 
                target="_blank" 
                rel="noopener noreferrer"
                className="inline-flex items-center gap-2 bg-cyber-500 hover:bg-cyber-400 text-white px-5 py-2.5 rounded-lg font-bold transition-colors w-full md:w-auto justify-center shadow-lg shadow-cyber-500/20 mb-8"
