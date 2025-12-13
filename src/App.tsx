@@ -24,14 +24,20 @@ const isExtensionEnv = () => {
 // Main Content Component separated to use Context
 const MainApp = () => {
   const { t, language, setLanguage } = useLanguage();
-  const { isTelegram, webApp } = useTelegram();
+  const { isTelegram, webApp, platform } = useTelegram();
   
   // Initialize state directly from environment check to avoid UI flash
   const [isExtension, setIsExtension] = useState(isExtensionEnv);
   
-  // Default tab logic: Extension -> Windows, Telegram -> Android, Web -> Android
+  // Smart Tab Logic: Auto-detect device
   const [activeTab, setActiveTab] = useState<'android' | 'windows' | 'ios' | 'whitelist' | 'vpn' | 'faq'>(() => {
-    return isExtensionEnv() ? 'windows' : 'android';
+    if (isExtensionEnv()) return 'windows';
+    
+    // Telegram Platform Detection
+    if (platform === 'ios') return 'ios';
+    if (['tdesktop', 'macos', 'windows', 'webk', 'weba'].includes(platform)) return 'windows';
+    
+    return 'android'; // Default for Android and unknown
   });
   
   const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
@@ -40,38 +46,36 @@ const MainApp = () => {
   useEffect(() => {
     const ext = isExtensionEnv();
     setIsExtension(ext);
-    if (ext && activeTab === 'android') {
-      setActiveTab('windows');
-    }
   }, []);
 
   // Telegram BackButton Logic
   useEffect(() => {
     if (!isTelegram || !webApp) return;
 
+    // Define the "Home" tab based on platform
+    const homeTab = platform === 'ios' ? 'ios' : (['tdesktop', 'macos', 'windows'].includes(platform) ? 'windows' : 'android');
+
     const handleBack = () => {
-      setActiveTab('android');
-      // Haptic feedback for better UX
+      setActiveTab(homeTab);
       webApp.HapticFeedback.impactOccurred('light');
     };
 
-    if (activeTab !== 'android') {
+    if (activeTab !== homeTab) {
       webApp.BackButton.show();
       webApp.BackButton.onClick(handleBack);
     } else {
       webApp.BackButton.hide();
     }
 
-    // Cleanup listener on effect re-run (when activeTab changes)
     return () => {
       webApp.BackButton.offClick(handleBack);
     };
-  }, [activeTab, isTelegram, webApp]);
+  }, [activeTab, isTelegram, webApp, platform]);
 
   // Handle Share Action
   const handleShare = () => {
     if (webApp && webApp.openTelegramLink) {
-      const appUrl = "https://t.me/byedpi_mate_bot/app"; // Replace with your actual bot link
+      const appUrl = "https://t.me/byedpi_mate_bot/app";
       const text = encodeURIComponent("ByeDPI Mate: Настройка обхода блокировок в 2 клика. 🛡");
       const url = `https://t.me/share/url?url=${appUrl}&text=${text}`;
       webApp.openTelegramLink(url);
@@ -169,7 +173,6 @@ const MainApp = () => {
 
       <main className={`mx-auto px-4 ${isExtension ? 'py-4' : 'py-6 max-w-4xl'}`}>
         
-        {/* Only show Proxy Toggle if we are NOT in Telegram and we ARE an Extension */}
         {!isTelegram && <ExtensionProxyToggle />}
 
         {/* Intro Card - Hide in Telegram to save space */}
@@ -184,13 +187,14 @@ const MainApp = () => {
           </section>
         )}
         
-        {/* Telegram Greeting */}
-        {isTelegram && activeTab === 'android' && (
+        {/* Telegram Greeting with Device Info */}
+        {isTelegram && activeTab !== 'faq' && activeTab !== 'whitelist' && (
            <div className="mb-6 bg-cyber-800/50 p-4 rounded-xl border border-cyber-700/50 flex items-start gap-3 animate-in fade-in slide-in-from-top-4">
               <Bot className="text-cyber-accent shrink-0 mt-1" />
               <div>
-                <p className="text-xs text-gray-400 font-bold mb-1">
-                   Mini App Mode
+                <p className="text-xs text-gray-400 font-bold mb-1 flex items-center gap-2">
+                   Mini App Mode 
+                   <span className="px-1.5 py-0.5 rounded bg-cyber-700 text-[10px] text-gray-300 uppercase">{platform}</span>
                 </p>
                 <p className="text-[10px] text-gray-500 leading-relaxed">
                    {t('intro_text')}

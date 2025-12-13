@@ -49,6 +49,31 @@
       /* Hide scrollbar for tab navigation but allow scroll */
       .no-scrollbar-in-extension::-webkit-scrollbar { display: none; }
       .no-scrollbar-in-extension { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Cyberpunk Loader */
+      #loader {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: #0f172a; z-index: 9999;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+      }
+      .scanner span {
+        color: transparent;
+        font-family: monospace; font-weight: bold; font-size: 1.5rem;
+        position: relative; overflow: hidden;
+      }
+      .scanner span::before {
+        content: "ByeDPI Mate";
+        position: absolute; top: 0; left: 0; width: 0; height: 100%;
+        border-right: 2px solid #10b981;
+        overflow: hidden; color: #10b981;
+        animation: load 2s linear infinite;
+      }
+      @keyframes load {
+        0%, 10%, 100% { width: 0; }
+        10%,20%,30%,40%,50%,60%,70%,80%,90%,100% { border-right-color: transparent; }
+        11%,21%,31%,41%,51%,61%,71%,81%,91% { border-right-color: #10b981; }
+        60%, 80% { width: 100%; }
+      }
     </style>
 <script type="importmap">
 {
@@ -64,7 +89,14 @@
 </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+       <div id="loader">
+          <div class="scanner">
+            <span>ByeDPI Mate</span>
+          </div>
+          <div style="margin-top: 10px; font-family: monospace; color: #475569; font-size: 10px;">INITIALIZING PROTOCOLS...</div>
+       </div>
+    </div>
     <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>

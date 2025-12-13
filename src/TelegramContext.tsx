@@ -13,6 +13,7 @@ export interface TelegramWebApp {
     };
   };
   version: string;
+  platform: string;
   isVersionAtLeast: (version: string) => boolean;
   colorScheme: 'light' | 'dark';
   themeParams: Record<string, any>;
@@ -62,49 +63,46 @@ declare global {
 interface TelegramContextType {
   webApp: TelegramWebApp | null;
   isTelegram: boolean;
+  platform: string;
   user: any;
 }
 
 const TelegramContext = createContext<TelegramContextType | undefined>(undefined);
 
 export const TelegramProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [webApp, setWebApp] = useState<TelegramWebApp | null>(null);
-  const [isTelegram, setIsTelegram] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  // Initialize synchronously to have data ready for initial render
+  const [webApp, setWebApp] = useState<TelegramWebApp | null>(() => 
+    typeof window !== 'undefined' ? window.Telegram?.WebApp || null : null
+  );
+  
+  const isTelegram = !!webApp?.initData;
+  const platform = webApp?.platform || 'unknown';
+  const user = webApp?.initDataUnsafe?.user || null;
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      setWebApp(tg);
-      // initData is populated if opened inside Telegram
-      setIsTelegram(!!tg.initData); 
-      
+    if (webApp) {
       // Initialize
-      tg.ready();
+      webApp.ready();
       try {
-        tg.expand(); // Request full screen
+        webApp.expand(); // Request full screen
       } catch (e) {
         console.warn('Expand not supported');
-      }
-
-      if (tg.initDataUnsafe?.user) {
-        setUser(tg.initDataUnsafe.user);
       }
       
       // Force Cyberpunk Theme Colors (Only for version > 6.1)
       try {
-        if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
-          tg.setHeaderColor('#0f172a'); // bg-cyber-900
-          tg.setBackgroundColor('#0f172a');
+        if (webApp.isVersionAtLeast && webApp.isVersionAtLeast('6.1')) {
+          webApp.setHeaderColor('#0f172a'); // bg-cyber-900
+          webApp.setBackgroundColor('#0f172a');
         }
       } catch (e) {
         console.error("Error setting TG colors", e);
       }
     }
-  }, []);
+  }, [webApp]);
 
   return (
-    <TelegramContext.Provider value={{ webApp, isTelegram, user }}>
+    <TelegramContext.Provider value={{ webApp, isTelegram, platform, user }}>
       {children}
     </TelegramContext.Provider>
   );
