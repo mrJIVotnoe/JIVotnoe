@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, ExternalLink, Terminal, Share2 } from 'lucide-react';
+import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, ExternalLink, Terminal, Share2, TerminalSquare } from 'lucide-react';
 import { StrategySelector } from './components/StrategySelector';
 import { DnsConfig } from './components/DnsConfig';
 import { TelegramFix } from './components/TelegramFix';
 import { IosGuide } from './components/IosGuide';
 import { WindowsGuide } from './components/WindowsGuide';
+import { LinuxGuide } from './components/LinuxGuide';
 import { Whitelist } from './components/Whitelist';
 import { VpnRegionGuide } from './components/VpnRegionGuide';
 import { ExtensionProxyToggle } from './components/ExtensionProxyToggle';
@@ -30,12 +31,17 @@ const MainApp = () => {
   const [isExtension, setIsExtension] = useState(isExtensionEnv);
   
   // Smart Tab Logic: Auto-detect device
-  const [activeTab, setActiveTab] = useState<'android' | 'windows' | 'ios' | 'whitelist' | 'vpn' | 'faq'>(() => {
+  const [activeTab, setActiveTab] = useState<'android' | 'windows' | 'linux' | 'ios' | 'whitelist' | 'vpn' | 'faq'>(() => {
     if (isExtensionEnv()) return 'windows';
     
     // Telegram Platform Detection
     if (platform === 'ios') return 'ios';
     if (['tdesktop', 'macos', 'windows', 'webk', 'weba'].includes(platform)) return 'windows';
+    
+    // Check Navigator for Linux
+    if (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('linux')) {
+       return 'linux';
+    }
     
     return 'android'; // Default for Android and unknown
   });
@@ -53,7 +59,10 @@ const MainApp = () => {
     if (!isTelegram || !webApp) return;
 
     // Define the "Home" tab based on platform
-    const homeTab = platform === 'ios' ? 'ios' : (['tdesktop', 'macos', 'windows'].includes(platform) ? 'windows' : 'android');
+    let homeTab: typeof activeTab = 'android';
+    if (platform === 'ios') homeTab = 'ios';
+    else if (['tdesktop', 'macos', 'windows'].includes(platform)) homeTab = 'windows';
+    else if (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('linux')) homeTab = 'linux';
 
     const handleBack = () => {
       setActiveTab(homeTab);
@@ -83,7 +92,7 @@ const MainApp = () => {
   };
 
   const renderTabButton = (id: typeof activeTab, label: string, icon: React.ReactNode, colorClass: string) => {
-    // Hide mobile tabs in Extension, hide Desktop tabs in Mobile if needed (optional, keeping all for now)
+    // Hide mobile tabs in Extension
     if (isExtension && (id === 'android' || id === 'ios')) return null;
 
     return (
@@ -207,6 +216,7 @@ const MainApp = () => {
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar no-scrollbar-in-extension">
           {renderTabButton('android', t('tab_android'), <Bot size={18} />, 'bg-cyber-500')}
           {renderTabButton('windows', isExtension ? t('tab_pc_settings') : t('tab_windows'), <Monitor size={18} />, 'bg-blue-600')}
+          {renderTabButton('linux', t('tab_linux'), <TerminalSquare size={18} />, 'bg-teal-600')}
           {renderTabButton('vpn', t('tab_vpn'), <Globe size={18} />, 'bg-indigo-600')}
           {renderTabButton('ios', t('tab_ios'), <Smartphone size={18} />, 'bg-purple-600')}
           {renderTabButton('whitelist', t('tab_whitelist'), <ListFilter size={18} />, 'bg-emerald-600')}
@@ -240,6 +250,8 @@ const MainApp = () => {
           )}
 
           {activeTab === 'windows' && <WindowsGuide />}
+          
+          {activeTab === 'linux' && <LinuxGuide />}
           
           {activeTab === 'vpn' && <VpnRegionGuide />}
 

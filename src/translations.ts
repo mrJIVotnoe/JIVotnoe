@@ -8,6 +8,7 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Открыть веб-версию",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "Настройка PC",
     tab_vpn: "VPN + Регион",
     tab_ios: "iOS",
@@ -37,6 +38,18 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Внимание:",
     dns_warning_text: "В 2025 году стандартный Google DNS (8.8.8.8) часто блокируется или подменяется. Использование рекомендованных ниже серверов критично для работы Telegram.",
     
+    // Linux Guide
+    linux_mint_title: "Настройка на Linux Mint / Ubuntu",
+    linux_download_desc: "Скачайте бинарный файл ByeDPI для Linux (архив x86_64).",
+    linux_step_1_title: "Подготовка файла",
+    linux_step_1_desc: "Распакуйте архив и сделайте файл исполняемым через терминал или свойства файла.",
+    linux_step_2_title: "Запуск прокси",
+    linux_step_2_desc: "Запустите ByeDPI из терминала. Программа создаст локальный SOCKS5 сервер.",
+    linux_step_3_title: "Настройка системы",
+    linux_step_3_desc: "В настройках сети Mint укажите SOCKS прокси: 127.0.0.1 порт 1080.",
+    linux_desktop_file: "Автоматизация (Меню приложений)",
+    linux_desktop_desc: "Создайте ярлык, чтобы запускать ByeDPI как обычную программу.",
+
     // Android Guide
     android_install_title: "Установка и настройка",
     android_download_btn: "Скачать APK (GitHub)",
@@ -60,6 +73,9 @@ export const translations: Record<Language, Record<string, string>> = {
     vpn_vs_byedpi_1_desc: "Потому что VPNLY — это посредник.\nСхема VPNLY: Браузер ➔ ИХ СЕРВЕР (в Нидерландах) ➔ YouTube.\nВ этой схеме расширение тупое. Оно просто говорит: \"Шли всё на сервер дяди Васи\". Вся магия обхода блокировок происходит на сервере дяди Васи.\nЦена: Дядя Вася платит за сервер. Либо ты платишь подписку, либо он продает твою статистику.",
     vpn_vs_byedpi_2_title: "2. Почему Мы (ByeDPI) такие сложные?",
     vpn_vs_byedpi_2_desc: "Потому что мы — независимые.\nСхема ByeDPI: Браузер ➔ ТВОЙ КОМПЬЮТЕР (Программа ByeDPI) ➔ YouTube.\nМы не зависим от серверов. Твой компьютер сам становится \"сервером обхода\".\nПроблема: Браузер (Chrome) из соображений безопасности живет в \"тюрьме\" (песочнице). Ему запрещено запускать программы на твоем компьютере и лезть глубоко в сетевые пакеты. Поэтому мы вынуждены просить пользователя: \"Пожалуйста, запусти программу сам\".",
+    
+    // Footer
+    research_footer: "ИССЛЕДОВАТЕЛЬСКИЙ ПРОЕКТ: Анализ возможностей ByeDPI.\nВыполнено на мощностях Google.\nCo-Pilot & Architecture: Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
     // Windows Guide specific
     win_how_it_works: "Как это работает на Windows",
@@ -103,6 +119,7 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Open Web Version",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "PC Settings",
     tab_vpn: "VPN + Region",
     tab_ios: "iOS",
@@ -132,6 +149,18 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Warning:",
     dns_warning_text: "In 2025, standard Google DNS (8.8.8.8) is often blocked or spoofed. Using the recommended servers below is critical for Telegram stability.",
     
+    // Linux Guide
+    linux_mint_title: "Setup on Linux Mint / Ubuntu",
+    linux_download_desc: "Download the ByeDPI binary for Linux (x86_64 archive).",
+    linux_step_1_title: "File Preparation",
+    linux_step_1_desc: "Extract the archive and make the file executable via terminal or file properties.",
+    linux_step_2_title: "Launch Proxy",
+    linux_step_2_desc: "Run ByeDPI from the terminal. The program will create a local SOCKS5 server.",
+    linux_step_3_title: "System Configuration",
+    linux_step_3_desc: "In Mint Network settings, set SOCKS proxy: 127.0.0.1 port 1080.",
+    linux_desktop_file: "Automation (.desktop)",
+    linux_desktop_desc: "Create a shortcut to launch ByeDPI like a regular app.",
+
     // Android Guide
     android_install_title: "Installation & Setup",
     android_download_btn: "Download APK (GitHub)",
@@ -155,6 +184,9 @@ export const translations: Record<Language, Record<string, string>> = {
     vpn_vs_byedpi_1_desc: "VPNLY is a middleman (Browser ➔ THEIR SERVER ➔ YouTube). The extension is simple, magic happens on their server. Price: Subscription or your data.",
     vpn_vs_byedpi_2_title: "2. Why is ByeDPI complex?",
     vpn_vs_byedpi_2_desc: "We are independent (Browser ➔ YOUR PC ➔ YouTube). Your PC becomes the server. But browsers live in a \"jail\" (sandbox) and can't run programs, so you must run it manually.",
+
+    // Footer
+    research_footer: "RESEARCH PROJECT: Analysis of ByeDPI capabilities.\nPowered by Google.\nCo-Pilot & Architecture: Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
     // Windows Guide specific
     win_how_it_works: "How it works on Windows",
@@ -198,6 +230,7 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Відкрити веб-версію",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "Налаштування PC",
     tab_vpn: "VPN + Регіон",
     tab_ios: "iOS",
@@ -227,6 +260,18 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Увага:",
     dns_warning_text: "У 2025 році стандартний Google DNS (8.8.8.8) часто блокується. Використання рекомендованих нижче серверів критичне для роботи Telegram.",
     
+    // Linux Guide
+    linux_mint_title: "Налаштування на Linux Mint / Ubuntu",
+    linux_download_desc: "Завантажте бінарний файл ByeDPI для Linux (архів x86_64).",
+    linux_step_1_title: "Підготовка файлу",
+    linux_step_1_desc: "Розпакуйте архів і зробіть файл виконуваним через термінал або властивості файлу.",
+    linux_step_2_title: "Запуск проксі",
+    linux_step_2_desc: "Завантажте ByeDPI з терміналу. Програма створить локальний SOCKS5 сервер.",
+    linux_step_3_title: "Налаштування системи",
+    linux_step_3_desc: "У налаштуваннях мережі Mint вкажіть SOCKS проксі: 127.0.0.1 порт 1080.",
+    linux_desktop_file: "Автоматизація (Меню додатків)",
+    linux_desktop_desc: "Створіть ярлик, щоб запускати ByeDPI як звичайну програму.",
+
     // Android Guide
     android_install_title: "Встановлення та налаштування",
     android_download_btn: "Завантажити APK (GitHub)",
@@ -237,7 +282,7 @@ export const translations: Record<Language, Record<string, string>> = {
     android_instr_1_desc: "Відкрийте додаток і натисніть на шестерню (⚙️).",
     android_instr_2: "Увімкніть CLI",
     android_instr_2_desc: "У пункті «Використовувати командний рядок» поставте галочку.",
-    android_instr_3: "Меню підбору",
+    android_instr_3: "Меню подбора",
     android_instr_3_desc: "У пункті «Підбір командного рядка (Beta)» натисніть на шестерню праворуч.",
     android_instr_4: "SNI Фейк",
     android_instr_4_desc: "У полі «SNI фейк пакетів» вставте адресу з Whitelist (наприклад, ozon.ru), щоб імітувати довірений сайт.",
@@ -246,16 +291,17 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Technical Gap Block
     vpn_vs_byedpi_title: "Технічна прірва: Ми vs VPNLY",
-    vpn_vs_byedpi_1_title: "1. Чому VPNLY працює \"в один клік\"?",
+    vpn_vs_byedpi_1_title: "1. Чому VPNLY работает \"в один клік\"?",
     vpn_vs_byedpi_1_desc: "VPNLY — це посередник (Браузер ➔ ЇХ СЕРВЕР ➔ YouTube). Вся магія на їх сервері. Ціна: Передплата або продаж вашої статистики.",
     vpn_vs_byedpi_2_title: "2. Чому ByeDPI складніше?",
     vpn_vs_byedpi_2_desc: "Ми — незалежні (Браузер ➔ ВАШ ПК ➔ YouTube). Ваш ПК стає сервером. Але браузер у \"пісочниці\" і не може запускати програми, тому ми просимо вас.",
 
-    // Footer / Disclaimer
+    // Footer
     research_footer: "ДОСЛІДНИЦЬКИЙ ПРОЕКТ: Аналіз можливостей ByeDPI.\nВиконано на потужностях Google.\nCo-Pilot & Architecture: Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
+    // Windows Guide specific
     win_how_it_works: "Як це працює на Windows",
-    win_how_it_works_desc: "Розширення — це пульт. ByeDPI — це двигун. Вам потрібно завантажити та запустити ByeDPI на комп'ютері, а розширення просто з'єднає браузер з ним.",
+    win_how_it_works_desc: "Розширення — это пульт. ByeDPI — це двигун. Вам потрібно завантажити та запустити ByeDPI на комп'ютері, а розширення просто з'єднає браузер з ним.",
     win_step_1: "Завантажте ByeDPI",
     win_step_1_desc: "Програма безкоштовна та з відкритим кодом. Завантажуйте тільки з офіційного GitHub.",
     win_which_file: "Який файл обрати в Assets?",
@@ -273,7 +319,7 @@ export const translations: Record<Language, Record<string, string>> = {
     tv_section_title: "Smart TV & TV Box (Google TV)",
     tv_problem: "Як передати файл на телевізор?",
     tv_solution: "Є два надійних способи: через 'хмару' (Google Drive) або напряму з телефону.",
-
+    
     tv_method_cloud: "Спосіб 1: Google Drive (Рекомендуємо)",
     tv_cloud_step_1: "Завантажте APK",
     tv_cloud_step_1_desc: "Завантажте ByeDPI на телефон та закиньте файл на свій Google Drive.",
@@ -295,6 +341,7 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Web-Version öffnen",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "PC-Einstellungen",
     tab_vpn: "VPN + Region",
     tab_ios: "iOS",
@@ -324,22 +371,34 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Warnung:",
     dns_warning_text: "Im Jahr 2025 wird Google DNS (8.8.8.8) oft blockiert. Die Nutzung der empfohlenen Server ist kritisch.",
     
+    // Linux Guide
+    linux_mint_title: "Setup unter Linux Mint / Ubuntu",
+    linux_download_desc: "Laden Sie die ByeDPI-Binärdatei für Linux (x86_64-Archiv) herunter.",
+    linux_step_1_title: "Dateivorbereitung",
+    linux_step_1_desc: "Extrahieren Sie das Archiv und machen Sie die Datei über das Terminal oder die Dateieigenschaften ausführbar.",
+    linux_step_2_title: "Proxy starten",
+    linux_step_2_desc: "Führen Sie ByeDPI über das Terminal aus. Das Programm erstellt einen lokalen SOCKS5-Server.",
+    linux_step_3_title: "Systemkonfiguration",
+    linux_step_3_desc: "Stellen Sie in den Mint-Netzwerkeinstellungen den SOCKS-Proxy ein: 127.0.0.1 Port 1080.",
+    linux_desktop_file: "Automatisierung (.desktop)",
+    linux_desktop_desc: "Erstellen Sie eine Verknüpfung, um ByeDPI wie eine normale App zu starten.",
+
     // Android Guide
-    android_install_title: "Installation & Setup",
+    android_install_title: "Installation & Einrichtung",
     android_download_btn: "APK herunterladen (GitHub)",
-    android_download_desc: "Laden Sie die neueste Version von ByeDPIAndroid herunter.",
+    android_download_desc: "Laden Sie die neueste Version der ByeDPIAndroid-App von GitHub herunter.",
     android_which_file: "Welche Datei herunterladen?",
-    android_file_desc_apk: "Suchen Sie unter 'Assets' nach der .apk Datei (meist app-release.apk).",
-    android_instr_1: "Einstellungen öffnen",
-    android_instr_1_desc: "Tippen Sie auf das Zahnradsymbol.",
+    android_file_desc_apk: "Erweitern Sie 'Assets' und laden Sie die Datei mit der Erweiterung .apk herunter (normalerweise app-release.apk).",
+    android_instr_1: "Einstellungen",
+    android_instr_1_desc: "Öffnen Sie die App und tippen Sie auf das Zahnradsymbol (⚙️).",
     android_instr_2: "CLI aktivieren",
-    android_instr_2_desc: "Aktivieren Sie «Use command line».",
-    android_instr_3: "Picker konfigurieren",
-    android_instr_3_desc: "Finden Sie «Command line selection (Beta)» und tippen Sie auf das Zahnrad.",
-    android_instr_4: "SNI Fake",
-    android_instr_4_desc: "Fügen Sie unter «SNI of fake packets» Domains aus unserer Whitelist hinzu.",
-    android_instr_5: "Test & Start",
-    android_instr_5_desc: "Zurück, «Start check». Wählen Sie das Beste, «Apply», dann «Connect».",
+    android_instr_2_desc: "Aktivieren Sie das Kontrollkästchen für «Befehlszeile verwenden».",
+    android_instr_3: "Picker-Menü",
+    android_instr_3_desc: "Tippen Sie neben «Befehlszeilenauswahl (Beta)» auf das Zahnradsymbol.",
+    android_instr_4: "SNI-Fake",
+    android_instr_4_desc: "Fügen Sie in «SNI von gefälschten Paketen» eine Domain aus unserer Whitelist (z. B. ozon.ru) hinzu.",
+    android_instr_5: "Prüfen & Starten",
+    android_instr_5_desc: "Gehen Sie zurück → «Prüfung starten». Wählen Sie das beste Ergebnis → «Anwenden». Auf dem Hauptbildschirm auf «Verbinden» tippen.",
 
     // Technical Gap Block
     vpn_vs_byedpi_title: "Technische Lücke: Wir vs VPNLY",
@@ -348,8 +407,10 @@ export const translations: Record<Language, Record<string, string>> = {
     vpn_vs_byedpi_2_title: "2. Warum ist ByeDPI komplex?",
     vpn_vs_byedpi_2_desc: "Wir sind unabhängig (Browser ➔ DEIN PC ➔ YouTube). Dein PC ist der Server. Browser leben in einer \"Sandbox\" und können keine Programme starten, deshalb musst du es tun.",
 
+    // Footer
     research_footer: "FORSCHUNGSPROJEKT: Analyse der ByeDPI-Fähigkeiten.\nPowered by Google.\nCo-Pilot & Architecture: Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
+    // Windows Guide specific
     win_how_it_works: "Wie es unter Windows funktioniert",
     win_how_it_works_desc: "Sie müssen ein kleines Proxy-Programm (ciadpi) ausführen. Unser Skript leitet Windows automatisch beim Start um.",
     win_step_1: "ByeDPI herunterladen",
@@ -363,7 +424,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win_auto_desc: "Dieser Code aktiviert den Proxy beim Start und deaktiviert ihn beim Schließen.",
     win_create_file_desc: "Erstellen Sie eine Datei namens run.cmd im selben Ordner wie ciadpi.exe:",
     win_emergency: "Notfall: Internet weg?",
-    win_emergency_desc: "Erstellen Sie reset.cmd mit diesem Code und führen Sie es einmal aus:",
+    win_emergency_desc: "Erstellen Sie reset.cmd with diesem Code and führen Sie es einmal aus:",
 
     // Android TV specific
     tv_section_title: "Smart TV & TV Box (Google TV)",
@@ -391,13 +452,14 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Ouvrir la version Web",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "Paramètres PC",
     tab_vpn: "VPN + Région",
     tab_ios: "iOS",
     tab_whitelist: "Whitelist",
     tab_faq: "FAQ",
     intro_title: "Analyse de la situation",
-    intro_text: "Basé sur l'analyse des journaux (05/12/2025), la censura actuelle nécessite de passer de la fragmentation simple au 'mimétisme de liste blanche'.",
+    intro_text: "Basé sur l'analyse des journaux (05/12/2025), la censure actuelle nécessite de passer de la fragmentation simple au 'mimétisme de liste blanche'.",
     step_1: "ÉTAPE 1",
     step_2: "ÉTAPE 2",
     step_3: "ÉTAPE 3",
@@ -420,22 +482,34 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Attention :",
     dns_warning_text: "En 2025, le DNS Google (8.8.8.8) est souvent bloqué. Utilisez les serveurs recommandés ci-dessous.",
     
+    // Linux Guide
+    linux_mint_title: "Configuration sur Linux Mint / Ubuntu",
+    linux_download_desc: "Téléchargez le binaire ByeDPI pour Linux (archive x86_64).",
+    linux_step_1_title: "Préparation du fichier",
+    linux_step_1_desc: "Extrayez l'archive et rendez le fichier exécutable via le terminal ou les propriétés du fichier.",
+    linux_step_2_title: "Lancer le proxy",
+    linux_step_2_desc: "Exécutez ByeDPI depuis le terminal. Le programme créera un serveur SOCKS5 local.",
+    linux_step_3_title: "Configuration du système",
+    linux_step_3_desc: "Dans les paramètres réseau de Mint, réglez le proxy SOCKS : 127.0.0.1 port 1080.",
+    linux_desktop_file: "Automatisation (.desktop)",
+    linux_desktop_desc: "Créez un raccourci pour lancer ByeDPI comme une application normale.",
+
     // Android Guide
-    android_install_title: "Installation & Config",
-    android_download_btn: "Télécharger APK (GitHub)",
-    android_download_desc: "Téléchargez la dernière version de ByeDPIAndroid.",
-    android_which_file: "Quel fichier ?",
-    android_file_desc_apk: "Dans 'Assets', prenez le fichier .apk (souvent app-release.apk).",
-    android_instr_1: "Ouvrir les paramètres",
-    android_instr_1_desc: "Appuyez sur l'icône d'engrenage.",
-    android_instr_2: "Activer CLI",
-    android_instr_2_desc: "Cochez « Use command line ».",
-    android_instr_3: "Configurer le sélecteur",
-    android_instr_3_desc: "Trouvez « Command line selection (Beta) » et appuyez sur l'engrenage.",
+    android_install_title: "Installation et configuration",
+    android_download_btn: "Télécharger l'APK (GitHub)",
+    android_download_desc: "Téléchargez la dernière version de l'application ByeDPIAndroid sur GitHub.",
+    android_which_file: "Quel fichier télécharger ?",
+    android_file_desc_apk: "Développez 'Assets' et téléchargez le fichier avec l'extension .apk (généralement app-release.apk).",
+    android_instr_1: "Paramètres",
+    android_instr_1_desc: "Ouvrez l'application et appuyez sur l'icône d'engrenage (⚙️).",
+    android_instr_2: "Activer le CLI",
+    android_instr_2_desc: "Cochez la case « Utiliser la ligne de commande ».",
+    android_instr_3: "Menu de sélection",
+    android_instr_3_desc: "À côté de « Sélection de ligne de commande (Beta) », appuyez sur l'icône d'engrenage.",
     android_instr_4: "SNI Fake",
-    android_instr_4_desc: "Dans « SNI of fake packets », ajoutez les domaines de notre Whitelist.",
-    android_instr_5: "Test & Lancement",
-    android_instr_5_desc: "Retour, « Start check ». Sélectionnez le meilleur, « Apply », puis « Connect ».",
+    android_instr_4_desc: "Dans « SNI des paquets factices », ajoutez un domaine de notre Whitelist (ex: ozon.ru).",
+    android_instr_5: "Vérifier et lancer",
+    android_instr_5_desc: "Retournez en arrière → « Démarrer la vérification ». Sélectionnez le meilleur résultat → « Appliquer ». Sur l'écran principal, appuyez sur « Connecter ».",
 
     // Technical Gap Block
     vpn_vs_byedpi_title: "Fossé technique : Nous vs VPNLY",
@@ -444,8 +518,10 @@ export const translations: Record<Language, Record<string, string>> = {
     vpn_vs_byedpi_2_title: "2. Pourquoi ByeDPI est complexe ?",
     vpn_vs_byedpi_2_desc: "Nous sommes indépendants (Navigateur ➔ VOTRE PC ➔ YouTube). Votre PC est le serveur. Les navigateurs (sandbox) ne peuvent pas lancer de programmes, d'où la demande.",
 
+    // Footer
     research_footer: "PROJET DE RECHERCHE : Analyse des capacités de ByeDPI.\nPropulsé par Google.\nCo-Pilote & Architecture : Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
+    // Windows Guide specific
     win_how_it_works: "Comment ça marche sur Windows",
     win_how_it_works_desc: "Vous devez exécuter un petit programme proxy (ciadpi). Notre script dirigera automatiquement Windows à travers lui.",
     win_step_1: "Télécharger ByeDPI",
@@ -459,7 +535,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win_auto_desc: "Ce code active le proxy au démarrage et le désactive à la fermeture.",
     win_create_file_desc: "Créez un fichier nommé run.cmd dans le même dossier que ciadpi.exe :",
     win_emergency: "Urgence : Plus d'Internet ?",
-    win_emergency_desc: "Créez reset.cmd avec ce code et exécutez-le une fois :",
+    win_emergency_desc: "Créez reset.cmd with ce code and exécutez-le une fois :",
 
     // Android TV specific
     tv_section_title: "Smart TV & TV Box (Google TV)",
@@ -470,7 +546,7 @@ export const translations: Record<Language, Record<string, string>> = {
     tv_cloud_step_1: "Uploader l'APK",
     tv_cloud_step_1_desc: "Téléchargez ByeDPI sur le téléphone et mettez-le sur Google Drive.",
     tv_cloud_step_2: "File Commander",
-    tv_cloud_step_2_desc: "Installez 'File Commander' sur la TV.",
+    tv_cloud_step_2_desc: "Installez 'File Commander' on the TV.",
     tv_cloud_step_3: "Installer",
     tv_cloud_step_3_desc: "Dans File Commander : 'Cloud' -> 'Google Drive', trouvez le fichier et cliquez.",
 
@@ -487,6 +563,7 @@ export const translations: Record<Language, Record<string, string>> = {
     open_web: "Abrir versión Web",
     tab_android: "Android / TV",
     tab_windows: "Windows",
+    tab_linux: "Linux",
     tab_pc_settings: "Configuración PC",
     tab_vpn: "VPN + Región",
     tab_ios: "iOS",
@@ -516,22 +593,34 @@ export const translations: Record<Language, Record<string, string>> = {
     dns_warning: "Advertencia:",
     dns_warning_text: "En 2025, el DNS de Google (8.8.8.8) a menudo está bloqueado. Use los servidores recomendados.",
     
+    // Linux Guide
+    linux_mint_title: "Configuración en Linux Mint / Ubuntu",
+    linux_download_desc: "Descargue el binario de ByeDPI para Linux (archivo x86_64).",
+    linux_step_1_title: "Preparación del archivo",
+    linux_step_1_desc: "Extraiga el archivo y conviértalo en ejecutable a través de la terminal o las propiedades del archivo.",
+    linux_step_2_title: "Iniciar el proxy",
+    linux_step_2_desc: "Ejecute ByeDPI desde la terminal. El programa creará un servidor SOCKS5 local.",
+    linux_step_3_title: "Configuración del sistema",
+    linux_step_3_desc: "En la configuración de red de Mint, establezca el proxy SOCKS: 127.0.0.1 puerto 1080.",
+    linux_desktop_file: "Automatización (.desktop)",
+    linux_desktop_desc: "Cree un acceso directo para iniciar ByeDPI como una aplicación normal.",
+
     // Android Guide
-    android_install_title: "Instalación y Configuración",
+    android_install_title: "Instalación y configuración",
     android_download_btn: "Descargar APK (GitHub)",
-    android_download_desc: "Descarga la última versión de ByeDPIAndroid.",
-    android_which_file: "¿Qué archivo?",
-    android_file_desc_apk: "Expande 'Assets' y descarga el archivo .apk (normalmente app-release.apk).",
-    android_instr_1: "Abrir Configuración",
-    android_instr_1_desc: "Abre la aplicación y toca el icono de engranaje.",
+    android_download_desc: "Descargue la última versión de la aplicación ByeDPIAndroid desde GitHub.",
+    android_which_file: "¿Qué archivo descargar?",
+    android_file_desc_apk: "Expanda 'Assets' y descargue el archivo con la extensión .apk (generalmente app-release.apk).",
+    android_instr_1: "Configuración",
+    android_instr_1_desc: "Abra la aplicación y toque el icono de engranaje (⚙️).",
     android_instr_2: "Activar CLI",
-    android_instr_2_desc: "Marca «Use command line».",
-    android_instr_3: "Configurar Selector",
-    android_instr_3_desc: "Busca «Command line selection (Beta)» y toca el engranaje.",
+    android_instr_2_desc: "Marque la casilla «Usar línea de comandos».",
+    android_instr_3: "Menú de selección",
+    android_instr_3_desc: "Al lado de «Selección de línea de comandos (Beta)», toque el icono de engranaje.",
     android_instr_4: "SNI Fake",
-    android_instr_4_desc: "En «SNI of fake packets», añade dominios de nuestra Whitelist para imitar direcciones seguras.",
-    android_instr_5: "Prueba y Lanzamiento",
-    android_instr_5_desc: "Atrás, «Start check». Elige el mejor, tócalo y elige «Apply». Vuelve y toca «Connect».",
+    android_instr_4_desc: "En «SNI de paquetes falsos», añada un dominio de nuestra Whitelist (ej. ozon.ru).",
+    android_instr_5: "Probar e iniciar",
+    android_instr_5_desc: "Vuelva atrás → «Iniciar verificación». Seleccione el mejor resultado → «Aplicar». En la pantalla principal, toque «Conectar».",
 
     // Technical Gap Block
     vpn_vs_byedpi_title: "Brecha Técnica: Nosotros vs VPNLY",
@@ -539,6 +628,9 @@ export const translations: Record<Language, Record<string, string>> = {
     vpn_vs_byedpi_1_desc: "VPNLY es un intermediario (Navegador ➔ SERVIDOR ➔ YouTube). La extensión es simple, la magia está en el servidor. Precio: Suscripción o datos.",
     vpn_vs_byedpi_2_title: "2. ¿Por qué ByeDPI es complejo?",
     vpn_vs_byedpi_2_desc: "Somos independientes (Navegador ➔ TU PC ➔ YouTube). Tu PC es el servidor. Los navegadores (sandbox) no pueden ejecutar programas, por eso te lo pedimos.",
+
+    // Footer
+    research_footer: "PROYECTO DE INVESTIGACIÓN: Análisis de capacidades de ByeDPI.\nDesarrollado con Google.\nCo-Piloto & Arquitectura: Gemini AI // SESSION_SIG: NEURAL-BRIDGE-ALPHA-01",
 
     // Windows Guide specific
     win_how_it_works: "Cómo funciona en Windows",
@@ -554,7 +646,7 @@ export const translations: Record<Language, Record<string, string>> = {
     win_auto_desc: "Este código habilita el proxy al inicio y lo deshabilita al cerrar.",
     win_create_file_desc: "Crea un archivo llamado run.cmd en la misma carpeta que ciadpi.exe:",
     win_emergency: "Emergencia: ¿Sin Internet?",
-    win_emergency_desc: "Crea reset.cmd con este código y ejecútalo una vez:",
+    win_emergency_desc: "Crea reset.cmd with este código and ejecútalo una vez:",
 
     // Android TV specific
     tv_section_title: "Smart TV & TV Box (Google TV)",
@@ -574,5 +666,5 @@ export const translations: Record<Language, Record<string, string>> = {
     tv_direct_step_1_desc: "App 'Send Files to TV' en móvil y TV.",
     tv_direct_step_2: "Enviar",
     tv_direct_step_2_desc: "Abre en ambos dispositivos (Receive en TV, Send en móvil).",
-  }
+  },
 };
