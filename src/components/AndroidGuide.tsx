@@ -27,8 +27,8 @@ export const AndroidGuide: React.FC = () => {
       title: t('android_instr_4'), 
       desc: t('android_instr_4_desc'),
       action: <div className="mt-2 flex items-center gap-2">
-        <code className="bg-black/40 px-2 py-1 rounded text-xs text-green-400 font-mono border border-cyber-700">www.ozon.ru</code>
-        <CopyButton text="www.ozon.ru" className="p-1 h-6 w-6" />
+        <code className="bg-black/40 px-2 py-1 rounded text-xs text-green-400 font-mono border border-cyber-700">{t('local_sni_example')}</code>
+        <CopyButton text={t('local_sni_example')} className="p-1 h-6 w-6" />
       </div>
     },
     { 
@@ -47,7 +47,6 @@ export const AndroidGuide: React.FC = () => {
         </div>
         
         <div className="ml-0 md:ml-14 space-y-8">
-          {/* Download Section - Updated to match Windows style */}
           <div>
              <p className="text-gray-400 text-sm mb-4">{t('android_download_desc')}</p>
 
@@ -59,7 +58,7 @@ export const AndroidGuide: React.FC = () => {
                 
                 <div className="space-y-3">
                   <div className="p-3 bg-gray-800/50 rounded border border-green-900/50 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-green-900 text-green-100 text-[10px] font-bold px-2 py-0.5 rounded-bl">APK</div>
+                    <div className="absolute top-0 right-0 bg-green-900 text-green-100 text-[10px] font-bold px-2 py-1 rounded-bl">APK</div>
                     <div className="font-mono text-green-400 text-sm font-bold mb-1">app-release.apk</div>
                     <p className="text-xs text-gray-300">
                       {t('android_file_desc_apk')}
@@ -79,21 +78,15 @@ export const AndroidGuide: React.FC = () => {
              </a>
           </div>
 
-          {/* Steps Timeline */}
           <div className="relative space-y-0">
              {steps.map((step, index) => (
                <div key={index} className="relative pl-8 pb-8 last:pb-0">
-                  {/* Vertical Line */}
                   {index !== steps.length - 1 && (
                     <div className="absolute left-[11px] top-8 bottom-0 w-0.5 bg-cyber-700"></div>
                   )}
-                  
-                  {/* Icon Bubble */}
                   <div className="absolute left-0 top-0 bg-cyber-800 border border-cyber-600 rounded-full w-6 h-6 flex items-center justify-center z-10 shadow-lg shadow-black/50">
                     <div className="w-2 h-2 rounded-full bg-cyber-400"></div>
                   </div>
-
-                  {/* Content */}
                   <div className="bg-black/20 rounded-lg p-3 border border-cyber-700/50 hover:border-cyber-600 transition-colors">
                      <div className="flex items-center gap-2 mb-1">
                         {step.icon}
@@ -114,7 +107,6 @@ export const AndroidGuide: React.FC = () => {
                 Ready to Connect
              </div>
           </div>
-
         </div>
       </section>
     </div>

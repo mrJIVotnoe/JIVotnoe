@@ -18,6 +18,17 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const currentStrategy = STRATEGIES.find(s => s.id === selectedId) || STRATEGIES[0];
+  
+  // Dynamic SNI based on language
+  const localizedSni = t('local_sni_example');
+  
+  // Replace the domain in the command string dynamically
+  // Search for the domain after -n flag and swap it
+  const getLocalizedCommand = (command: string) => {
+    return command.replace(/-n [^\s]+/, `-n ${localizedSni}`);
+  };
+
+  const currentCommand = getLocalizedCommand(currentStrategy.command);
 
   return (
     <div className="space-y-6">
@@ -43,9 +54,9 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
               ) : (
                 <Shield size={20} className={selectedId === strategy.id ? 'text-cyber-accent' : 'text-gray-400'} />
               )}
-              <span className="font-bold text-gray-100">{strategy.name[language]}</span>
+              <span className="font-bold text-gray-100">{strategy.name[language] || strategy.name['en']}</span>
             </div>
-            <p className="text-sm text-gray-400 mb-3">{strategy.description[language]}</p>
+            <p className="text-sm text-gray-400 mb-3">{strategy.description[language] || strategy.description['en']}</p>
             <div className="mt-auto flex gap-2 flex-wrap">
               {strategy.tags.map(tag => (
                 <span key={tag} className="px-2 py-0.5 rounded text-xs bg-cyber-700 text-gray-300">
@@ -64,9 +75,9 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
             {t('command_preview')}
           </h3>
           <div className="bg-black/50 p-4 rounded-lg font-mono text-sm text-green-400 break-all relative group">
-            {currentStrategy.command}
+            {currentCommand}
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <CopyButton text={currentStrategy.command} />
+              <CopyButton text={currentCommand} />
             </div>
           </div>
           
@@ -83,8 +94,8 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
                   {t('too_hard_desc')}
                 </p>
                 <div className="mt-2 flex items-center gap-2 bg-black/40 px-2 py-1 rounded border border-blue-800/30 w-fit">
-                   <code className="text-xs font-mono text-green-300">-o1 -r-5+se -n www.ozon.ru</code>
-                   <CopyButton text="-o1 -r-5+se -n www.ozon.ru" className="p-1 h-6 w-6" />
+                   <code className="text-xs font-mono text-green-300">-o1 -r-5+se -n {localizedSni}</code>
+                   <CopyButton text={`-o1 -r-5+se -n ${localizedSni}`} className="p-1 h-6 w-6" />
                 </div>
               </div>
             </div>

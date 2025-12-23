@@ -1,82 +1,118 @@
-import React from 'react';
-import { ShieldCheck, Network, AlertCircle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ShieldCheck, Network, AlertCircle, Globe, Landmark, ShoppingBag, Hash, Filter } from 'lucide-react';
 import { CopyButton } from './CopyButton';
-import { SNI_DOMAINS, DIRECT_DOMAINS } from '../data';
+import { REGIONAL_DATA, WhitelistEntry } from '../data';
+import { useLanguage } from '../LanguageContext';
 
 export const Whitelist: React.FC = () => {
-  const directListString = DIRECT_DOMAINS.join(',');
+  const { t, language } = useLanguage();
+  const [selectedRegionId, setSelectedRegionId] = useState<string>(() => {
+    const langToRegion: Record<string, string> = { 'ru': 'ru', 'kk': 'kz', 'uz': 'uz', 'zh': 'cn', 'fa': 'ir' };
+    return langToRegion[language] || 'global';
+  });
+
+  const currentRegion = useMemo(() => 
+    REGIONAL_DATA.find(r => r.id === selectedRegionId) || REGIONAL_DATA[0], 
+  [selectedRegionId]);
+
+  const CategoryIcon = ({ category }: { category: WhitelistEntry['category'] }) => {
+    switch (category) {
+      case 'finance': return <Landmark size={14} className="text-emerald-400" />;
+      case 'retail': return <ShoppingBag size={14} className="text-orange-400" />;
+      case 'gov': return <ShieldCheck size={14} className="text-blue-400" />;
+      case 'social': return <Hash size={14} className="text-purple-400" />;
+      default: return <Globe size={14} className="text-gray-400" />;
+    }
+  };
+
+  const renderList = (entries: WhitelistEntry[], type: 'mimicry' | 'bypass') => {
+    if (entries.length === 0) return <p className="text-gray-500 text-xs italic p-4 text-center">...</p>;
+    const allString = entries.map(e => e.domain).join(',');
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-2">
+           <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+             {entries.length} {type === 'mimicry' ? t('mimicry_title') : t('bypass_title')}
+           </span>
+           <div className="flex items-center gap-2">
+              <span className="text-[10px] text-gray-500">{t('copy_all')}:</span>
+              <CopyButton text={allString} className="p-1 h-6 w-6 bg-cyber-700" />
+           </div>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {entries.map((entry, idx) => (
+            <div key={idx} className="bg-black/30 p-3 rounded-xl border border-cyber-700/50 flex items-center justify-between group hover:border-cyber-600 transition-colors">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="bg-cyber-800 p-2 rounded-lg">
+                  <CategoryIcon category={entry.category} />
+                </div>
+                <div className="overflow-hidden">
+                  <div className="font-mono text-sm text-gray-200 truncate">{entry.domain}</div>
+                  {entry.note && <div className="text-[10px] text-gray-500 italic">{entry.note}</div>}
+                </div>
+              </div>
+              <CopyButton text={entry.domain} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Intro */}
-      <div className="bg-gradient-to-r from-blue-900/40 to-cyber-800 p-6 rounded-xl border border-blue-800/50">
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="bg-gradient-to-r from-emerald-900/40 to-cyber-800 p-6 rounded-2xl border border-emerald-800/50 shadow-xl">
         <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-          <ShieldCheck className="text-blue-400" />
-          Белый список (Whitelist)
+          <ShieldCheck className="text-emerald-400" />
+          {t('tab_whitelist')}
         </h3>
-        <p className="text-gray-300 text-sm">
-          Здесь собраны домены, которые либо <b>нужно</b> использовать для обхода (SNI), либо <b>нельзя</b> туннелировать (банки, госуслуги).
-        </p>
+        <p className="text-gray-300 text-sm leading-relaxed">{t('whitelist_header')}</p>
       </div>
 
-      {/* SNI List */}
-      <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
-        <h4 className="font-bold text-gray-200 mb-4 flex items-center gap-2">
-          <Network className="text-cyber-accent" size={20} />
-          Рабочие SNI (для аргумента -n)
-        </h4>
-        <p className="text-xs text-gray-400 mb-4">
-          Эти домены можно вставлять в аргумент <code>-n domain.com</code>. Они работают на большинстве операторов (MTS, Megafon, T2, Yota, RTK).
-          <br/>
-          <span className="text-red-400 font-bold mt-1 block">Внимание: Для Билайн рабочих SNI почти нет. Рекомендуем сменить оператора.</span>
-        </p>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-cyber-700 text-gray-500 text-xs uppercase">
-                <th className="p-3">Домен</th>
-                <th className="p-3">Операторы</th>
-                <th className="p-3">Действие</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {SNI_DOMAINS.map((item, idx) => (
-                <tr key={idx} className="border-b border-cyber-700/50 hover:bg-cyber-700/30 transition-colors">
-                  <td className="p-3 font-mono text-green-400">{item.domain}</td>
-                  <td className="p-3 text-gray-400 text-xs">{item.note}</td>
-                  <td className="p-3">
-                    <CopyButton text={item.domain} className="p-1.5 h-8 w-8" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar-in-extension">
+        {REGIONAL_DATA.map(region => (
+          <button
+            key={region.id}
+            onClick={() => setSelectedRegionId(region.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all text-xs whitespace-nowrap border shadow-sm ${
+              selectedRegionId === region.id ? 'bg-cyber-accent text-cyber-900 border-cyber-accent scale-105' : 'bg-cyber-800 text-gray-400 border-cyber-700 hover:border-cyber-600'
+            }`}
+          >
+            <span className="text-lg leading-none">{region.flag}</span>
+            {region.name}
+          </button>
+        ))}
       </div>
 
-      {/* Direct List */}
-      <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
-        <h4 className="font-bold text-gray-200 mb-4 flex items-center gap-2">
-          <AlertCircle className="text-yellow-500" size={20} />
-          Прямое подключение (Split Tunneling)
-        </h4>
-        <p className="text-sm text-gray-400 mb-4">
-          Эти приложения (банки, маркетплейсы, госуслуги) могут не работать через VPN/DPI. 
-          Скопируйте этот список и вставьте в настройки <b>"Раздельное туннелирование"</b> или <b>"Исключения"</b> в вашем клиенте (V2Ray, ByeDPI, Tun2Socks).
-        </p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section className="bg-cyber-800 p-6 rounded-2xl border border-cyber-700 shadow-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-blue-600/20 p-2 rounded-lg"><Network className="text-blue-400" size={20} /></div>
+            <div>
+              <h4 className="font-bold text-gray-100">{t('mimicry_title')}</h4>
+              <p className="text-[10px] text-gray-500 uppercase font-mono">-n domain</p>
+            </div>
+          </div>
+          <div className="bg-blue-900/10 p-3 rounded-lg border border-blue-900/20 mb-6">
+            <p className="text-xs text-blue-200/80 leading-relaxed italic">{t('mimicry_desc')}</p>
+          </div>
+          {renderList(currentRegion.mimicry, 'mimicry')}
+        </section>
 
-        <div className="bg-black/40 p-4 rounded-lg border border-cyber-700 relative group">
-           <div className="absolute top-2 right-2">
-             <CopyButton text={directListString} />
-           </div>
-           <code className="text-xs font-mono text-yellow-200/80 break-all leading-relaxed">
-             {directListString}
-           </code>
-        </div>
-        <p className="mt-2 text-xs text-gray-500">
-          * Список скопируется через запятую, что подходит для большинства приложений.
-        </p>
+        <section className="bg-cyber-800 p-6 rounded-2xl border border-cyber-700 shadow-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-yellow-600/20 p-2 rounded-lg"><AlertCircle className="text-yellow-400" size={20} /></div>
+            <div>
+              <h4 className="font-bold text-gray-100">{t('bypass_title')}</h4>
+              <p className="text-[10px] text-gray-500 uppercase font-mono">Bypass List</p>
+            </div>
+          </div>
+          <div className="bg-yellow-900/10 p-3 rounded-lg border border-yellow-900/20 mb-6">
+            <p className="text-xs text-yellow-200/80 leading-relaxed italic">{t('bypass_desc')}</p>
+          </div>
+          {renderList(currentRegion.bypass, 'bypass')}
+        </section>
       </div>
     </div>
   );

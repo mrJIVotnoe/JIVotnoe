@@ -14,16 +14,18 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [language, setLanguage] = useState<Language>('ru');
 
   useEffect(() => {
-    // 1. Try to restore from localStorage
     const saved = localStorage.getItem('byedpi_lang') as Language;
-    const validLanguages: Language[] = ['ru', 'en', 'uk', 'de', 'fr', 'es'];
+    const validLanguages: Language[] = [
+      'ru', 'en', 'uk', 'de', 'fr', 'es', 
+      'kk', 'uz', 'az', 'hy', 'be', 'ky', 'tg', 'tk', 
+      'zh', 'fa', 'tr', 'ar', 'pt', 'id'
+    ];
     
     if (saved && validLanguages.includes(saved)) {
       setLanguage(saved);
       return;
     }
 
-    // 2. Try Telegram Language
     if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
        const tgLang = window.Telegram.WebApp.initDataUnsafe.user.language_code.split('-')[0] as Language;
        if (validLanguages.includes(tgLang)) {
@@ -32,7 +34,6 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
        }
     }
 
-    // 3. Fallback to Browser Language
     const browserLang = navigator.language.split('-')[0] as Language;
     if (validLanguages.includes(browserLang)) {
       setLanguage(browserLang);
@@ -47,7 +48,6 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const t = (key: string): string => {
-    // Try current language, fallback to English, then key itself
     return translations[language]?.[key] || translations['en']?.[key] || key;
   };
 

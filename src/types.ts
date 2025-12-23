@@ -1,6 +1,9 @@
-export type Language = 'ru' | 'en' | 'uk' | 'de' | 'fr' | 'es';
+export type Language = 
+  | 'ru' | 'en' | 'uk' | 'de' | 'fr' | 'es' 
+  | 'kk' | 'uz' | 'az' | 'hy' | 'be' | 'ky' | 'tg' | 'tk' 
+  | 'zh' | 'fa' | 'tr' | 'ar' | 'pt' | 'id';
 
-export type LocalizedString = Record<Language, string>;
+export type LocalizedString = Record<string, string>; // Flexible record for many languages
 
 export enum StrategyType {
   STANDARD = 'STANDARD',
