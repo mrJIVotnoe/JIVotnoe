@@ -1,3 +1,4 @@
+
 import { StrategyType, StrategyConfig, DnsProvider } from './types';
 
 export const STRATEGIES: StrategyConfig[] = [
@@ -21,7 +22,7 @@ export const STRATEGIES: StrategyConfig[] = [
       uk: "Рекомендована стратегія. Мімікрія під Ozon.ru.",
       de: "Empfohlene Strategie. Ahmt Ozon.ru nach.",
       fr: "Stratégie recommandée. Imite Ozon.ru.",
-      es: "Estrategia recomendada. Imita Ozon.ru.",
+      es: "Estrategia recomendada. Imita o Ozon.ru.",
       zh: "推荐策略。模仿 Ozon.ru（关键基础设施）流量。",
       tr: "Önerilen strateji. Ozon.ru trafiğini taklit eder.",
       uz: "Tavsiya etilgan strategiya. Ozon.ru trafigini simulyatsiya qiladi.",
@@ -30,6 +31,24 @@ export const STRATEGIES: StrategyConfig[] = [
     command: "-o1 -r-5+se -a1 -At,r,s -d1 -n www.ozon.ru -Qr -f-1 -a1",
     tags: ["MTS", "Global", "Stable"],
     recommended: true
+  },
+  {
+    id: StrategyType.SHUTDOWN_WB,
+    name: {
+      ru: "Wildberries (Спецрезерв)",
+      en: "Wildberries (Special)",
+      uk: "Wildberries (Спецрезерв)",
+      zh: "Wildberries (特殊)"
+    },
+    description: {
+      ru: "Эффективная стратегия мимикрии под маркетплейс WB.",
+      en: "Effective strategy mimicking Wildberries marketplace.",
+      uk: "Ефективна стратегія мімікрії під WB.",
+      zh: "有效的 Wildberries 模仿策略。"
+    },
+    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n splitter.wb.ru -Qr -f-1 -a1",
+    tags: ["T2", "Megafon", "Beeline"],
+    recommended: false
   },
   {
     id: StrategyType.SHUTDOWN_VK,
@@ -89,8 +108,8 @@ export interface RegionWhitelist {
   id: string;
   name: string;
   flag: string;
-  mimicry: WhitelistEntry[]; // For -n argument
-  bypass: WhitelistEntry[];   // For split tunneling
+  mimicry: WhitelistEntry[]; 
+  bypass: WhitelistEntry[];   
 }
 
 export const REGIONAL_DATA: RegionWhitelist[] = [
@@ -161,19 +180,6 @@ export const REGIONAL_DATA: RegionWhitelist[] = [
     bypass: [
       { domain: 'alipay.com', category: 'finance' },
       { domain: 'wechat.com', category: 'social' }
-    ]
-  },
-  {
-    id: 'ir',
-    name: 'Iran',
-    flag: '🇮🇷',
-    mimicry: [
-      { domain: 'splus.ir', category: 'social' },
-      { domain: 'bale.ai', category: 'social' }
-    ],
-    bypass: [
-      { domain: 'bmi.ir', category: 'finance' },
-      { domain: 'shaparak.ir', category: 'finance' }
     ]
   }
 ];

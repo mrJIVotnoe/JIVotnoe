@@ -1,5 +1,7 @@
 {
   "name": "ByeDPI Mate",
-  "description": "Configuration utility for ByeDPI proxy",
-  "requestFramePermissions": []
+  "description": "Neural-powered configuration utility for network neutrality. Version 1.0.0 Gold Master.",
+  "requestFramePermissions": [
+    "camera"
+  ]
 }
