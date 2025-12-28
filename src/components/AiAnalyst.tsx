@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Bot, Sparkles, Send, Copy, Check, Terminal, Zap, Info } from 'lucide-react';
+import { Bot, Sparkles, Send, Copy, Check, Terminal, Zap, Info, Smartphone, Monitor, Globe } from 'lucide-react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useLanguage } from '../LanguageContext';
 import { STRATEGIES } from '../data';
@@ -9,7 +10,12 @@ export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ strategyId: string, explanation: string, command: string } | null>(null);
+  const [result, setResult] = useState<{ 
+    platform: 'android' | 'pc' | 'ios' | 'linux', 
+    explanation: string, 
+    command?: string,
+    steps: string[] 
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const analyzeProblem = async () => {
@@ -28,28 +34,32 @@ export const AiAnalyst: React.FC = () => {
       const strategiesContext = STRATEGIES.map(s => ({
         id: s.id,
         name: s.name[language] || s.name['en'],
-        desc: s.description[language] || s.description['en'],
         command: s.command
       }));
 
       const prompt = `
-        User is having internet blocking issues. 
-        Problem description: "${input}"
-        Current language: ${language}
+        User problem: "${input}"
+        Language: ${language}
+        Available strategies: ${JSON.stringify(strategiesContext)}
         
-        Available ByeDPI strategies: ${JSON.stringify(strategiesContext)}
-        
-        Information about Tools (IMPORTANT):
-        - For Android: ALWAYS recommend ByeDPIManager (v0.3.8+). 
-        - CRITICAL RULE: NEVER mention or suggest Root mode, TPROXY, or SuperUser rights. 99% of users don't have them. 
-        - Tell Android users to paste the command into the "Arguments" field in the app.
-        - For PC: Use ciadpi.exe with the command line arguments.
-        
-        Task: 
-        1. Select the best strategy ID from the list.
-        2. Provide a short, technical yet friendly explanation in ${language} why it was chosen.
-        3. Explain how to apply it (paste into "Arguments" for Android manager).
-        4. If no strategy fits perfectly, pick the 'SHUTDOWN_OZON' as it is the most robust in 2025.
+        SYSTEM RULES:
+        1. IF user mentions "iPhone", "iOS", "Apple", "iPad":
+           - Say clearly: ByeDPI does NOT exist for iOS. 
+           - Recommend VLESS/Reality via V2Box.
+           - Platform: "ios"
+        2. IF user mentions "Linux", "Ubuntu", "Debian", "Arch":
+           - Recommend downloading the ciadpi binary.
+           - MUST mention "chmod +x" and "sudo".
+           - Platform: "linux"
+        3. IF user mentions "Android", "TV", "Phone":
+           - Recommend ByeDPIManager (v0.3.8+).
+           - NO ROOT/SUPERUSER mentioned.
+           - Platform: "android"
+        4. IF user mentions "Windows", "PC":
+           - Recommend ciadpi.exe with a .cmd script.
+           - Platform: "pc"
+
+        Return JSON only.
       `;
 
       const response = await ai.models.generateContent({
@@ -60,27 +70,22 @@ export const AiAnalyst: React.FC = () => {
           responseSchema: {
             type: Type.OBJECT,
             properties: {
-              strategyId: { type: Type.STRING },
-              explanation: { type: Type.STRING }
+              platform: { type: Type.STRING, enum: ['android', 'pc', 'ios', 'linux'] },
+              explanation: { type: Type.STRING },
+              command: { type: Type.STRING },
+              steps: { type: Type.ARRAY, items: { type: Type.STRING } }
             },
-            required: ["strategyId", "explanation"]
+            required: ["platform", "explanation", "steps"]
           }
         }
       });
 
       const data = JSON.parse(response.text || '{}');
-      const selectedStrategy = STRATEGIES.find(s => s.id === data.strategyId) || STRATEGIES[0];
-
-      setResult({
-        strategyId: data.strategyId,
-        explanation: data.explanation,
-        command: selectedStrategy.command
-      });
+      setResult(data);
     } catch (err) {
       console.error(err);
       setError(t('ai_error'));
     } finally {
-      // Fix: removed invalid call to non-existent setLanguage variable and incorrect boolean assignment
       setLoading(false);
     }
   };
@@ -89,10 +94,9 @@ export const AiAnalyst: React.FC = () => {
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
       <div className="bg-gradient-to-br from-indigo-900/40 via-cyber-800 to-fuchsia-900/30 p-6 rounded-3xl border border-indigo-500/30 shadow-2xl relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full"></div>
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-fuchsia-500/10 blur-3xl rounded-full"></div>
         
         <div className="relative flex items-center gap-4 mb-4">
-          <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-500/20">
+          <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg">
             <Bot className="text-white" size={32} />
           </div>
           <div>
@@ -106,7 +110,7 @@ export const AiAnalyst: React.FC = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('ai_placeholder')}
-            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all min-h-[120px] resize-none font-sans"
+            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all min-h-[100px] resize-none font-sans"
           />
           <button
             onClick={analyzeProblem}
@@ -117,11 +121,7 @@ export const AiAnalyst: React.FC = () => {
                 : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-indigo-500/20'
             }`}
           >
-            {loading ? (
-              <Zap className="animate-spin text-indigo-400" size={20} />
-            ) : (
-              <Sparkles size={20} />
-            )}
+            {loading ? <Zap className="animate-spin text-indigo-400" size={20} /> : <Sparkles size={20} />}
             {loading ? t('ai_thinking') : t('ai_btn')}
           </button>
         </div>
@@ -137,27 +137,43 @@ export const AiAnalyst: React.FC = () => {
       {result && (
         <div className="space-y-4 animate-in slide-in-from-top-4 duration-500">
           <div className="bg-cyber-800 border border-cyber-700 p-6 rounded-3xl shadow-xl">
-            <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Sparkles size={14} />
-              {t('ai_result_title')}
-            </h4>
+            <div className="flex items-center gap-3 mb-4">
+              {result.platform === 'ios' && <Smartphone className="text-purple-400" size={20} />}
+              {result.platform === 'android' && <Bot className="text-green-400" size={20} />}
+              {result.platform === 'linux' && <Terminal className="text-teal-400" size={20} />}
+              {result.platform === 'pc' && <Monitor className="text-blue-400" size={20} />}
+              <h4 className="text-white font-black text-sm uppercase tracking-widest">
+                {t('ai_result_title')}
+              </h4>
+            </div>
             
             <p className="text-gray-200 text-sm leading-relaxed mb-6 italic">
               "{result.explanation}"
             </p>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between px-2">
-                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('command_preview')}</span>
-              </div>
-              <div className="bg-black/60 p-4 rounded-2xl border border-cyber-700 font-mono text-xs text-green-400 break-all relative group overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                {result.command}
-                <div className="absolute top-2 right-2">
-                  <CopyButton text={result.command} className="bg-cyber-800" />
+            <div className="space-y-4 mb-6">
+              {result.steps.map((step, i) => (
+                <div key={i} className="flex gap-3 items-start">
+                   <div className="bg-cyber-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">{i+1}</div>
+                   <p className="text-xs text-gray-400">{step}</p>
+                </div>
+              ))}
+            </div>
+
+            {result.command && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-2">
+                   <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('command_preview')}</span>
+                </div>
+                <div className="bg-black/60 p-4 rounded-2xl border border-cyber-700 font-mono text-xs text-green-400 break-all relative group overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                  {result.command}
+                  <div className="absolute top-2 right-2">
+                    <CopyButton text={result.command} className="bg-cyber-800" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
