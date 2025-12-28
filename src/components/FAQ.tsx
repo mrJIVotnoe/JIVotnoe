@@ -2,6 +2,7 @@
 import React from 'react';
 import { HelpCircle, ChevronDown, ShieldQuestion, LifeBuoy, AlertCircle, Terminal, Globe } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { FeedbackSystem } from './FeedbackSystem';
 
 export const FAQ: React.FC = () => {
   const { t } = useLanguage();
@@ -10,11 +11,10 @@ export const FAQ: React.FC = () => {
     { q: t('faq_q1'), a: t('faq_a1'), icon: <AlertCircle className="text-red-400" /> },
     { q: t('faq_q2'), a: t('faq_a2'), icon: <Terminal className="text-teal-400" /> },
     { q: t('faq_q3'), a: t('faq_a3'), icon: <Globe className="text-blue-400" /> },
-    { q: t('faq_q4'), a: t('faq_a4'), icon: <ShieldQuestion className="text-purple-400" /> },
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-10">
       <div className="bg-gradient-to-r from-orange-900/30 to-cyber-800 p-6 rounded-2xl border border-orange-500/30">
         <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
           <LifeBuoy className="text-orange-400" />
@@ -38,12 +38,8 @@ export const FAQ: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-8 p-6 bg-indigo-900/20 rounded-2xl border border-indigo-500/20 text-center">
-        <HelpCircle className="mx-auto text-indigo-400 mb-3" size={32} />
-        <h5 className="font-bold text-white mb-2">Нужна персональная помощь?</h5>
-        <p className="text-xs text-indigo-200/60 leading-relaxed">
-          Проект ByeDPI Mate развивается благодаря сообществу. Если ничего не помогло, напишите в профильные чаты разработчиков ByeDPI на GitHub.
-        </p>
+      <div className="mt-8">
+        <FeedbackSystem />
       </div>
     </div>
   );

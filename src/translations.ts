@@ -25,24 +25,20 @@ export const translations: Record<string, Record<string, string>> = {
     ai_no_input: "Пожалуйста, опишите ваше устройство и проблему.",
     ai_error: "Ошибка связи с нейросетью. Попробуйте позже.",
     
-    // iOS (Important for AI)
+    // Feedback
+    feedback_rate_title: "Этот совет помог?",
+    feedback_thanks: "Спасибо за отзыв! Мы станем умнее.",
+    feedback_report_issue: "Сообщить об ошибке",
+    feedback_send_to_bot: "ОТПРАВИТЬ В ПОДДЕРЖКУ",
+    feedback_placeholder: "Опишите, что пошло не так...",
+    
+    // iOS
     ios_impossibility: "ByeDPI невозможен на iOS",
     ios_solution: "Используйте VLESS / Reality протоколы через приложение V2Box.",
 
-    // Linux (Important for AI)
+    // Linux
     linux_perm_cmd: "chmod +x ciadpi-x86_64",
     linux_run_hint: "Запускайте через sudo для работы на низких портах.",
-
-    // Android Guide
-    android_install_title: "ByeDPIManager (v0.3.8+)",
-    android_download_desc: "Самая современная версия. Работает на всех Android без Root-прав.",
-    android_download_btn: "Скачать Manager (GitHub)",
-    android_instr_1: "VPN Режим",
-    android_instr_1_desc: "Работает как обычный VPN, не требует вмешательства в систему.",
-    android_instr_2: "Поле Arguments",
-    android_instr_2_desc: "Скопируйте строку ниже и вставьте её в настройки приложения (Arguments).",
-    android_instr_5: "Готово",
-    android_instr_5_desc: "Нажмите 'Connect'. Если значок ключа появился — обход активен.",
 
     // Global
     local_sni_example: "www.ozon.ru",
@@ -66,16 +62,15 @@ export const translations: Record<string, Record<string, string>> = {
     tab_ai: "AI Analyst",
 
     ai_title: "Gemini Neuro-Analyst",
-    ai_desc: "Describe your device and issue. I'll pick a strategy: ByeDPIManager, ciadpi, or VLESS.",
-    ai_placeholder: "Example: iPhone 15, YouTube is slow... or Linux, video buffers...",
+    ai_desc: "Describe your device and issue. I'll pick a strategy.",
     ai_btn: "ANALYZE SITUATION",
-    ai_thinking: "SCANNING CONTEXT...",
+    ai_thinking: "SCANNING...",
     ai_result_title: "AI Action Plan:",
-    ai_no_input: "Please describe your device and problem.",
-    ai_error: "AI connection error. Try again later.",
     
-    ios_impossibility: "ByeDPI is impossible on iOS",
-    ios_solution: "Use VLESS / Reality protocols via V2Box app.",
+    feedback_rate_title: "Was this helpful?",
+    feedback_thanks: "Thanks! We're getting smarter.",
+    feedback_report_issue: "Report Issue",
+    feedback_send_to_bot: "SEND TO SUPPORT",
     
     research_footer: "GLOBAL NETWORK NEUTRALITY INITIATIVE // BYEDPI MATE PROJECT 2025"
   }

@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
-import { Bot, Sparkles, Send, Copy, Check, Terminal, Zap, Info, Smartphone, Monitor, Globe } from 'lucide-react';
+import { Bot, Sparkles, Send, Copy, Check, Terminal, Zap, Info, Smartphone, Monitor, Globe, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useLanguage } from '../LanguageContext';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
+import { useTelegram } from '../TelegramContext';
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
+  const { webApp } = useTelegram();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ 
@@ -17,6 +19,7 @@ export const AiAnalyst: React.FC = () => {
     steps: string[] 
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rated, setRated] = useState<'up' | 'down' | null>(null);
 
   const analyzeProblem = async () => {
     if (!input.trim()) {
@@ -27,6 +30,7 @@ export const AiAnalyst: React.FC = () => {
     setLoading(true);
     setError(null);
     setResult(null);
+    setRated(null);
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -87,6 +91,20 @@ export const AiAnalyst: React.FC = () => {
       setError(t('ai_error'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRate = (type: 'up' | 'down') => {
+    setRated(type);
+    if (type === 'down' && webApp) {
+      // Можно вызвать нативную кнопку Telegram для открытия обратной связи
+      // Или просто показать сообщение
+    }
+  };
+
+  const openSupport = () => {
+    if (webApp) {
+      webApp.openTelegramLink('https://t.me/your_support_bot'); // Замените на реальный линк
     }
   };
 
@@ -161,7 +179,7 @@ export const AiAnalyst: React.FC = () => {
             </div>
 
             {result.command && (
-              <div className="space-y-3">
+              <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between px-2">
                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('command_preview')}</span>
                 </div>
@@ -174,6 +192,45 @@ export const AiAnalyst: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* AI Feedback System */}
+            <div className="border-t border-cyber-700 pt-6 mt-6">
+              {!rated ? (
+                <div className="flex flex-col items-center gap-4">
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-tighter">{t('feedback_rate_title')}</span>
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => handleRate('up')}
+                      className="p-3 bg-green-500/10 border border-green-500/20 rounded-2xl text-green-400 hover:bg-green-500 hover:text-white transition-all shadow-lg shadow-green-500/5"
+                    >
+                      <ThumbsUp size={20} />
+                    </button>
+                    <button 
+                      onClick={() => handleRate('down')}
+                      className="p-3 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-lg shadow-red-500/5"
+                    >
+                      <ThumbsDown size={20} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="animate-in zoom-in duration-300">
+                  <p className="text-center text-cyber-accent text-sm font-bold flex items-center justify-center gap-2">
+                    <Check size={16} />
+                    {t('feedback_thanks')}
+                  </p>
+                  {rated === 'down' && (
+                    <button 
+                      onClick={openSupport}
+                      className="mt-4 w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-400 border border-red-400/30 p-3 rounded-xl hover:bg-red-400/10 transition-all"
+                    >
+                      <MessageSquare size={14} />
+                      {t('feedback_send_to_bot')}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
