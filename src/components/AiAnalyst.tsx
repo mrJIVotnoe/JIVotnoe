@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Bot, Sparkles, Send, Copy, Check, Terminal, Zap, Info } from 'lucide-react';
 import { GoogleGenAI, Type } from "@google/genai";
@@ -40,10 +39,17 @@ export const AiAnalyst: React.FC = () => {
         
         Available ByeDPI strategies: ${JSON.stringify(strategiesContext)}
         
+        Information about Tools (IMPORTANT):
+        - For Android: ALWAYS recommend ByeDPIManager (v0.3.8+). 
+        - CRITICAL RULE: NEVER mention or suggest Root mode, TPROXY, or SuperUser rights. 99% of users don't have them. 
+        - Tell Android users to paste the command into the "Arguments" field in the app.
+        - For PC: Use ciadpi.exe with the command line arguments.
+        
         Task: 
         1. Select the best strategy ID from the list.
-        2. Provide a short explanation in ${language} why it was chosen.
-        3. If no strategy fits perfectly, pick the 'SHUTDOWN_OZON' as it is the most robust.
+        2. Provide a short, technical yet friendly explanation in ${language} why it was chosen.
+        3. Explain how to apply it (paste into "Arguments" for Android manager).
+        4. If no strategy fits perfectly, pick the 'SHUTDOWN_OZON' as it is the most robust in 2025.
       `;
 
       const response = await ai.models.generateContent({
@@ -74,6 +80,7 @@ export const AiAnalyst: React.FC = () => {
       console.error(err);
       setError(t('ai_error'));
     } finally {
+      // Fix: removed invalid call to non-existent setLanguage variable and incorrect boolean assignment
       setLoading(false);
     }
   };
@@ -99,7 +106,7 @@ export const AiAnalyst: React.FC = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('ai_placeholder')}
-            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all min-h-[100px] resize-none"
+            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all min-h-[120px] resize-none font-sans"
           />
           <button
             onClick={analyzeProblem}
@@ -107,11 +114,11 @@ export const AiAnalyst: React.FC = () => {
             className={`mt-4 w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
               loading 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-indigo-500/20'
+                : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white hover:scale-[1.01] active:scale-[0.99] shadow-xl shadow-indigo-500/20'
             }`}
           >
             {loading ? (
-              <Zap className="animate-spin text-indigo-400" />
+              <Zap className="animate-spin text-indigo-400" size={20} />
             ) : (
               <Sparkles size={20} />
             )}
@@ -150,13 +157,6 @@ export const AiAnalyst: React.FC = () => {
                   <CopyButton text={result.command} className="bg-cyber-800" />
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-6 p-4 bg-indigo-900/10 border border-indigo-500/20 rounded-2xl flex items-start gap-3">
-              <Info className="text-indigo-400 shrink-0 mt-0.5" size={16} />
-              <p className="text-[10px] text-gray-400 leading-normal">
-                {t('analyst_tip_text')}
-              </p>
             </div>
           </div>
         </div>

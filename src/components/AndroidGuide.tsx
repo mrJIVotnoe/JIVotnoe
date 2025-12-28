@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Download, Settings, Terminal, Play, CheckCircle, ListFilter, Package } from 'lucide-react';
+import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Cpu, Bot, Zap, Globe } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { CopyButton } from './CopyButton';
 
@@ -8,7 +9,7 @@ export const AndroidGuide: React.FC = () => {
 
   const steps = [
     { 
-      icon: <Settings size={20} className="text-gray-300" />, 
+      icon: <Shield size={20} className="text-blue-400" />, 
       title: t('android_instr_1'), 
       desc: t('android_instr_1_desc') 
     },
@@ -18,18 +19,14 @@ export const AndroidGuide: React.FC = () => {
       desc: t('android_instr_2_desc') 
     },
     { 
-      icon: <Settings size={20} className="text-yellow-400" />, 
+      icon: <Globe size={20} className="text-indigo-400" />, 
       title: t('android_instr_3'), 
       desc: t('android_instr_3_desc') 
     },
     { 
-      icon: <ListFilter size={20} className="text-blue-400" />, 
+      icon: <ListFilter size={20} className="text-orange-400" />, 
       title: t('android_instr_4'), 
-      desc: t('android_instr_4_desc'),
-      action: <div className="mt-2 flex items-center gap-2">
-        <code className="bg-black/40 px-2 py-1 rounded text-xs text-green-400 font-mono border border-cyber-700">{t('local_sni_example')}</code>
-        <CopyButton text={t('local_sni_example')} className="p-1 h-6 w-6" />
-      </div>
+      desc: t('android_instr_4_desc')
     },
     { 
       icon: <Play size={20} className="text-purple-400" />, 
@@ -39,72 +36,82 @@ export const AndroidGuide: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <section className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">1</div>
-          <h3 className="text-xl font-bold text-white">{t('android_install_title')}</h3>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <section className="bg-cyber-800 p-6 rounded-3xl border border-cyber-700 shadow-xl relative overflow-hidden">
+        {/* Background decorative element */}
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+          <Smartphone size={120} className="text-cyber-accent" />
+        </div>
+
+        <div className="flex items-center gap-4 mb-6 relative">
+          <div className="bg-gradient-to-br from-cyber-700 to-cyber-600 p-3 rounded-2xl shadow-lg">
+            <Bot size={28} className="text-white" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-white tracking-tight">{t('android_install_title')}</h3>
+            <p className="text-xs text-cyber-400 uppercase tracking-widest font-mono">Consumer Friendly Edition</p>
+          </div>
         </div>
         
-        <div className="ml-0 md:ml-14 space-y-8">
-          <div>
-             <p className="text-gray-400 text-sm mb-4">{t('android_download_desc')}</p>
+        <div className="ml-0 md:ml-4 space-y-8 relative">
+          <div className="bg-cyber-900/40 p-5 rounded-2xl border border-cyber-700/50">
+             <p className="text-gray-300 text-sm mb-6 leading-relaxed">
+               {t('android_download_desc')}
+             </p>
 
-             <div className="bg-black/30 p-4 rounded-lg mb-4 border border-cyber-700">
-                <h4 className="font-bold text-white mb-3 flex items-center gap-2">
-                  <Package size={16} className="text-cyber-accent"/>
-                  {t('android_which_file')}
-                </h4>
-                
-                <div className="space-y-3">
-                  <div className="p-3 bg-gray-800/50 rounded border border-green-900/50 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-green-900 text-green-100 text-[10px] font-bold px-2 py-1 rounded-bl">APK</div>
-                    <div className="font-mono text-green-400 text-sm font-bold mb-1">app-release.apk</div>
-                    <p className="text-xs text-gray-300">
-                      {t('android_file_desc_apk')}
-                    </p>
+             <div className="grid grid-cols-1 gap-4 mb-6">
+                <div className="p-4 bg-cyber-800/80 rounded-2xl border border-cyber-700 hover:border-indigo-500/30 transition-all group flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-indigo-600/20 p-2 rounded-xl">
+                      <Package size={24} className="text-indigo-400" />
+                    </div>
+                    <div>
+                      <div className="font-mono text-white text-sm font-bold">ByeDPIManager.apk</div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-tighter">{t('android_file_desc_apk')}</p>
+                    </div>
+                  </div>
+                  <div className="hidden sm:block">
+                    <CheckCircle size={18} className="text-green-500/50" />
                   </div>
                 </div>
              </div>
 
              <a 
-               href="https://github.com/romanvht/ByeByeDPI/releases/tag/v.1.6.8" 
+               href="https://github.com/romanvht/ByeDPIManager/releases" 
                target="_blank" 
                rel="noopener noreferrer"
-               className="inline-flex items-center gap-2 bg-cyber-500 hover:bg-cyber-400 text-white px-5 py-2.5 rounded-lg font-bold transition-colors w-full md:w-auto justify-center shadow-lg shadow-cyber-500/20 mb-8"
+               className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-8 py-3.5 rounded-2xl font-black transition-all w-full md:w-auto justify-center shadow-xl shadow-blue-500/20 active:scale-[0.98]"
              >
                <Download size={20} />
                {t('android_download_btn')}
              </a>
           </div>
 
-          <div className="relative space-y-0">
+          <div className="space-y-4">
              {steps.map((step, index) => (
-               <div key={index} className="relative pl-8 pb-8 last:pb-0">
-                  {index !== steps.length - 1 && (
-                    <div className="absolute left-[11px] top-8 bottom-0 w-0.5 bg-cyber-700"></div>
-                  )}
-                  <div className="absolute left-0 top-0 bg-cyber-800 border border-cyber-600 rounded-full w-6 h-6 flex items-center justify-center z-10 shadow-lg shadow-black/50">
-                    <div className="w-2 h-2 rounded-full bg-cyber-400"></div>
+               <div key={index} className="flex gap-4 group">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-cyber-800 border-2 border-cyber-700 rounded-xl w-10 h-10 flex items-center justify-center z-10 shadow-lg group-hover:border-cyber-accent transition-colors">
+                      {step.icon}
+                    </div>
+                    {index !== steps.length - 1 && (
+                      <div className="w-0.5 h-full bg-cyber-700/50 my-1"></div>
+                    )}
                   </div>
-                  <div className="bg-black/20 rounded-lg p-3 border border-cyber-700/50 hover:border-cyber-600 transition-colors">
-                     <div className="flex items-center gap-2 mb-1">
-                        {step.icon}
-                        <h5 className="font-bold text-gray-200 text-sm">{step.title}</h5>
-                     </div>
+                  <div className="flex-1 pb-6">
+                     <h5 className="font-black text-white text-sm mb-1 uppercase tracking-tight">{step.title}</h5>
                      <p className="text-xs text-gray-400 leading-relaxed">
                         {step.desc}
                      </p>
-                     {step.action}
                   </div>
                </div>
              ))}
           </div>
           
-          <div className="flex justify-center pt-2">
-             <div className="flex items-center gap-2 px-4 py-2 bg-green-900/20 text-green-400 rounded-full border border-green-900/50 text-xs font-bold animate-pulse">
+          <div className="flex justify-center pt-4">
+             <div className="flex items-center gap-3 px-6 py-2.5 bg-green-500/10 text-green-400 rounded-full border border-green-500/20 text-[10px] font-black tracking-widest uppercase">
                 <CheckCircle size={14} />
-                Ready to Connect
+                Universal Compatibility
              </div>
           </div>
         </div>
@@ -112,3 +119,11 @@ export const AndroidGuide: React.FC = () => {
     </div>
   );
 };
+
+// Internal icon replacement for Smartphone
+const Smartphone = ({ size, className }: { size: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+    <path d="M12 18h.01" />
+  </svg>
+);
