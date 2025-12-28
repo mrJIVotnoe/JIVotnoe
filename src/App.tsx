@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, Terminal, Share2, TerminalSquare, QrCode, X } from 'lucide-react';
+import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, Terminal, Share2, TerminalSquare, Sparkles, X } from 'lucide-react';
 import { StrategySelector } from './components/StrategySelector';
 import { DnsConfig } from './components/DnsConfig';
 import { FAQ } from './components/FAQ';
@@ -12,6 +12,7 @@ import { VpnRegionGuide } from './components/VpnRegionGuide';
 import { ExtensionProxyToggle } from './components/ExtensionProxyToggle';
 import { AndroidTvGuide } from './components/AndroidTvGuide';
 import { AndroidGuide } from './components/AndroidGuide';
+import { AiAnalyst } from './components/AiAnalyst';
 import { StrategyType, Language } from './types';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { TelegramProvider, useTelegram } from './TelegramContext';
@@ -41,9 +42,6 @@ const QrModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) 
           <h3 className="text-2xl font-black text-white mb-2 tracking-tight">{t('app_title')}</h3>
           <p className="text-cyber-400 font-mono text-xs mb-8 uppercase tracking-widest">{t('subtitle')}</p>
           <div className="bg-white p-5 rounded-[1.5rem] inline-block shadow-2xl"><img src={qrUrl} alt="QR Code" className="w-56 h-56" /></div>
-          <div className="mt-8 space-y-4">
-            <p className="text-sm text-white font-bold animate-pulse">{t('qr_hint')}</p>
-          </div>
         </div>
       </div>
     </div>
@@ -56,10 +54,9 @@ const MainApp = () => {
   const [isExtension, setIsExtension] = useState(isExtensionEnv);
   const [showQr, setShowQr] = useState(false);
   
-  const [activeTab, setActiveTab] = useState<'android' | 'windows' | 'linux' | 'ios' | 'whitelist' | 'vpn' | 'faq'>(() => {
+  const [activeTab, setActiveTab] = useState<'ai' | 'android' | 'windows' | 'linux' | 'ios' | 'whitelist' | 'vpn' | 'faq'>(() => {
     if (isExtensionEnv()) return 'windows';
-    if (platform === 'ios') return 'ios';
-    return 'android';
+    return 'ai';
   });
   
   const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
@@ -76,7 +73,7 @@ const MainApp = () => {
         onClick={() => setActiveTab(id)}
         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all whitespace-nowrap text-sm flex-shrink-0 ${
           activeTab === id
-            ? `${colorClass} text-white shadow-lg`
+            ? `${colorClass} text-white shadow-lg scale-105 z-10`
             : 'bg-cyber-800 text-gray-400 hover:bg-cyber-700'
         }`}
       >
@@ -119,6 +116,7 @@ const MainApp = () => {
       <main className={`mx-auto px-4 ${isExtension ? 'py-4' : 'py-6 max-w-4xl'}`}>
         {!isTelegram && <ExtensionProxyToggle />}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar-in-extension">
+          {renderTabButton('ai', t('tab_ai'), <Sparkles size={18} />, 'bg-gradient-to-r from-indigo-600 to-fuchsia-600')}
           {renderTabButton('android', t('tab_android'), <Bot size={18} />, 'bg-cyber-500')}
           {renderTabButton('windows', t('tab_windows'), <Monitor size={18} />, 'bg-blue-600')}
           {renderTabButton('linux', t('tab_linux'), <TerminalSquare size={18} />, 'bg-teal-600')}
@@ -128,6 +126,7 @@ const MainApp = () => {
           {renderTabButton('faq', t('tab_faq'), <HelpCircle size={18} />, 'bg-orange-600')}
         </div>
         <div className="animate-in fade-in duration-300">
+          {activeTab === 'ai' && <AiAnalyst />}
           {activeTab === 'android' && (
             <div className="space-y-8">
               <AndroidGuide />

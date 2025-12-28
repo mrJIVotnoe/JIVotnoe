@@ -4,7 +4,7 @@ import { Language } from './types';
 export const translations: Record<string, Record<string, string>> = {
   ru: {
     app_title: "ByeDPI Mate",
-    subtitle: "v1.8.0 • Финальный Билд 2025",
+    subtitle: "v1.9.0 • AI-Powered 2025",
     tab_android: "Android / TV",
     tab_windows: "Windows",
     tab_linux: "Linux (Desktop)",
@@ -12,7 +12,18 @@ export const translations: Record<string, Record<string, string>> = {
     tab_vpn: "VPN + Регион",
     tab_ios: "iOS (iPhone/iPad)",
     tab_whitelist: "Белые Списки",
-    tab_faq: "Центр Помощи (FAQ)",
+    tab_faq: "FAQ",
+    tab_ai: "AI Аналитик",
+    
+    // AI Analyst
+    ai_title: "Нейро-Аналитик Gemini",
+    ai_desc: "Опишите проблему или назовите провайдера. Нейросеть подберет идеальный набор аргументов ciadpi под вашу ситуацию.",
+    ai_placeholder: "Пример: Ростелеком, YouTube не грузит на телевизоре...",
+    ai_btn: "АНАЛИЗИРОВАТЬ СИТУАЦИЮ",
+    ai_thinking: "АНАЛИЗ ПРОТОКОЛОВ...",
+    ai_result_title: "Рекомендация ИИ:",
+    ai_no_input: "Пожалуйста, введите описание проблемы.",
+    ai_error: "Ошибка связи с нейросетью. Попробуйте позже.",
     
     // Linux
     linux_title: "Linux: Максимальный комфорт",
@@ -27,11 +38,11 @@ export const translations: Record<string, Record<string, string>> = {
     faq_q1: "Почему интернет пропадает сразу после запуска?",
     faq_a1: "Скорее всего, провайдер блокирует DNS. В наших новых командах мы добавили принудительный DNS (8.8.8.8), это решает 99% проблем.",
     faq_q2: "Терминал просит пароль, но я его не вижу при вводе.",
-    faq_a2: "Это особенность Linux. Просто введите пароль «вслепую» и нажмите Enter. Символы не будут отображаться — это нормально.",
-    faq_q3: "Что делать, если я закрыл терминал и интернет перестал работать?",
-    faq_a3: "Просто выключите кнопку в расширении или выполните команду сброса в терминале (она есть внизу вкладки Linux).",
-    faq_q4: "Как понять, что программа реально работает?",
-    faq_a4: "Если в терминале бегут строки — значит процесс идет. Если терминал замер — проверьте порт (кнопка диагностики внизу).",
+    faq_a2: "Это особенность Linux. Просто введите пароль «вслепую» и нажмите Enter.",
+    faq_q3: "Что делать, если я закрыл терминал?",
+    faq_a3: "Просто выключите кнопку в расширении или выполните команду сброса.",
+    faq_q4: "Как понять, что программа работает?",
+    faq_a4: "Если в терминале бегут строки — значит процесс идет.",
 
     // iOS
     ios_title: "iOS: Моментальный доступ",
@@ -39,9 +50,9 @@ export const translations: Record<string, Record<string, string>> = {
     ios_step_1: "1. Установите 'Плеер'",
     ios_step_1_desc: "V2Box — самый надежный и бесплатный клиент в AppStore.",
     ios_step_2: "2. Вставьте 'Ключ'",
-    ios_step_2_desc: "Скопируйте ваш VLESS-ключ и нажмите 'Import' в приложении.",
+    ios_step_2_desc: "Скопируйте ваш VLESS-ключ и нажмите 'Import'.",
     ios_step_3: "3. Готово!",
-    ios_step_3_desc: "Нажмите 'Connect'. Теперь ваш iPhone работает без границ.",
+    ios_step_3_desc: "Нажмите 'Connect'.",
 
     local_sni_example: "www.ozon.ru",
     local_services_list: "ozon.ru, sber.ru, gosuslugi.ru, vk.com",
@@ -53,7 +64,7 @@ export const translations: Record<string, Record<string, string>> = {
   },
   en: {
     app_title: "ByeDPI Mate",
-    subtitle: "v1.8.0 • Final Build 2025",
+    subtitle: "v1.9.0 • AI-Powered 2025",
     tab_android: "Android / TV",
     tab_windows: "Windows",
     tab_linux: "Linux (Desktop)",
@@ -61,7 +72,17 @@ export const translations: Record<string, Record<string, string>> = {
     tab_vpn: "VPN + Region",
     tab_ios: "iOS (iPhone)",
     tab_whitelist: "Whitelist",
-    tab_faq: "Help Center (FAQ)",
+    tab_faq: "FAQ",
+    tab_ai: "AI Analyst",
+
+    ai_title: "Gemini Neuro-Analyst",
+    ai_desc: "Describe your ISP or problem. The AI will select the perfect set of ciadpi arguments for your situation.",
+    ai_placeholder: "Example: AT&T, YouTube is slow on my TV...",
+    ai_btn: "ANALYZE SITUATION",
+    ai_thinking: "SCANNING PROTOCOLS...",
+    ai_result_title: "AI Recommendation:",
+    ai_no_input: "Please enter a description of the problem.",
+    ai_error: "AI connection error. Try again later.",
     
     linux_title: "Linux: Maximum Comfort",
     linux_desc: "Combined power of terminal and browser ease. Launch once, enjoy forever.",
@@ -83,7 +104,7 @@ export const translations: Record<string, Record<string, string>> = {
     ios_step_2: "2. Paste Key",
     ios_step_2_desc: "Copy your VLESS key and hit 'Import'.",
     ios_step_3: "3. Connect",
-    ios_step_3_desc: "Tap Connect. Your iPhone is now borderless.",
+    ios_step_3_desc: "Tap Connect.",
 
     local_sni_example: "www.google.com",
     local_services_list: "google.com, amazon.com, apple.com",
