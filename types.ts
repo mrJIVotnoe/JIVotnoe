@@ -1,6 +1,11 @@
-export type Language = 'ru' | 'en' | 'uk' | 'de' | 'fr' | 'es';
+// types.ts (root)
+export type Language = 
+  | 'ru' | 'en' | 'uk' | 'de' | 'fr' | 'es' 
+  | 'kk' | 'uz' | 'zh' | 'tr' | 'az' | 'hy' | 'be' | 'ky' | 'tg' | 'tk' 
+  | 'fa' | 'ar' | 'pt' | 'id';
 
-export type LocalizedString = Record<Language, string>;
+// Using Record<string, string> to allow flexible keys and partial translations
+export type LocalizedString = Record<string, string>;
 
 export enum StrategyType {
   STANDARD = 'STANDARD',

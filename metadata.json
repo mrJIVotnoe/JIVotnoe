@@ -1,7 +1,5 @@
 {
   "name": "ByeDPI Mate",
-  "description": "Neural-powered configuration utility for network neutrality. Version 1.0.0 Gold Master.",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "description": "Neural-powered configuration utility for network neutrality. Version 1.1.0 Maestro Edition.",
+  "requestFramePermissions": []
 }
