@@ -10,13 +10,31 @@ export function Layout({ children }: { children: ReactNode }) {
   const { isTelegram, webApp } = useTelegram();
 
   const availableLanguages = [
-    {code: 'ru', label: '🇷🇺'}, {code: 'en', label: '🇺🇸'}, {code: 'uk', label: '🇺🇦'}
+    {code: 'ru', label: '🇷🇺 RU'}, 
+    {code: 'en', label: '🇺🇸 EN'}, 
+    {code: 'uk', label: '🇺🇦 UA'},
+    {code: 'be', label: '🇧🇾 BE'},
+    {code: 'kk', label: '🇰🇿 KK'},
+    {code: 'uz', label: '🇺🇿 UZ'},
+    {code: 'az', label: '🇦🇿 AZ'},
+    {code: 'ky', label: '🇰🇬 KY'},
+    {code: 'tg', label: '🇹🇯 TG'},
+    {code: 'hy', label: '🇦🇲 HY'},
+    {code: 'tk', label: '🇹🇲 TK'},
+    {code: 'zh', label: '🇨🇳 ZH'},
+    {code: 'tr', label: '🇹🇷 TR'},
+    {code: 'fa', label: '🇮🇷 FA'},
+    {code: 'ar', label: '🇸🇦 AR'},
+    {code: 'es', label: '🇪🇸 ES'},
+    {code: 'pt', label: '🇵🇹 PT'},
+    {code: 'id', label: '🇮🇩 ID'},
+    {code: 'de', label: '🇩🇪 DE'},
+    {code: 'fr', label: '🇫🇷 FR'}
   ] as const;
 
   const handleShare = () => {
     if (webApp?.HapticFeedback) webApp.HapticFeedback.impactOccurred('light');
-    // Implement QR modal logic or native share here if needed, 
-    // for now we kept it simple in this architecture refactor
+    // Implement QR modal logic or native share here if needed
   };
 
   return (
@@ -38,17 +56,23 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
           
           <div className="flex items-center gap-3">
-             <div className="relative">
-                <Globe size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+             <div className="relative group">
+                <Globe size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-cyber-accent transition-colors" />
                 <select 
                   value={language} 
                   onChange={(e) => setLanguage(e.target.value as any)}
-                  className="bg-cyber-800 text-gray-200 text-[10px] font-black py-2.5 pl-9 pr-3 rounded-xl border border-cyber-700 focus:outline-none focus:border-cyber-500 uppercase tracking-widest cursor-pointer appearance-none hover:bg-cyber-700 transition-colors"
+                  className="bg-cyber-800 text-gray-200 text-[10px] font-black py-2.5 pl-9 pr-8 rounded-xl border border-cyber-700 focus:outline-none focus:border-cyber-500 uppercase tracking-widest cursor-pointer appearance-none hover:bg-cyber-700 transition-colors w-full min-w-[100px]"
                 >
                   {availableLanguages.map(lang => (
                     <option key={lang.code} value={lang.code}>{lang.label}</option>
                   ))}
                 </select>
+                {/* Custom arrow for better styling */}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L5 5L9 1" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
             </div>
             {!isTelegram && (
                 <button onClick={handleShare} className="text-gray-400 hover:text-white bg-cyber-800 p-2.5 rounded-xl border border-cyber-700 transition-all active:scale-90 shadow-lg group">
