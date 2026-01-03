@@ -1,3 +1,4 @@
+
 export type Language = 
   | 'ru' | 'en' | 'uk' | 'de' | 'fr' | 'es' 
   | 'kk' | 'uz' | 'az' | 'hy' | 'be' | 'ky' | 'tg' | 'tk' 

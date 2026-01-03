@@ -1,6 +1,8 @@
+
 // data.ts (root)
 import { StrategyType, StrategyConfig, DnsProvider } from './types';
 
+// We use {{SNI}} placeholder to safely replace domains at runtime without fragile regex
 export const STRATEGIES: StrategyConfig[] = [
   {
     id: StrategyType.SHUTDOWN_OZON,
@@ -24,11 +26,12 @@ export const STRATEGIES: StrategyConfig[] = [
       fr: "Stratégie recommandée. Imite Ozon.ru.",
       es: "Estrategia recomendada. Imita o Ozon.ru.",
       zh: "推荐策略。模仿 Ozon.ru（关键基础设施）流量。",
-      tr: "Önerilen стратеджи. Ozon.ru trafiğini taklit eder.",
+      tr: "Önerilen strateji. Ozon.ru trafiğini taklit eder.",
       uz: "Tavsiya etilgan strategiya. Ozon.ru trafigini simulyatsiya qiladi.",
       kk: "Ұсынылатын стратегия. Ozon.ru трафигін имитациялайды."
     },
-    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n www.ozon.ru -Qr -f-1 -a1",
+    // Template string {{SNI}} ensures we replace the correct part regardless of flag order
+    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n {{SNI}} -Qr -f-1 -a1",
     tags: ["MTS", "Global", "Stable"],
     recommended: true
   },
@@ -46,7 +49,7 @@ export const STRATEGIES: StrategyConfig[] = [
       uk: "Ефективна стратегія мімікрії під WB.",
       zh: "有效的 Wildberries 模仿策略。"
     },
-    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n splitter.wb.ru -Qr -f-1 -a1",
+    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n {{SNI}} -Qr -f-1 -a1",
     tags: ["T2", "Megafon", "Beeline"],
     recommended: false
   },
@@ -54,7 +57,7 @@ export const STRATEGIES: StrategyConfig[] = [
     id: StrategyType.SHUTDOWN_VK,
     name: { ru: "VK Tech (Backup)", en: "VK Tech (Backup)", zh: "VK 技术 (备用)", tr: "VK Tech (Yedek)" },
     description: { ru: "Использует технический домен VK.", en: "Uses VK technical domain.", zh: "使用 VK 技术域名。", tr: "VK teknik alan adını kullanır." },
-    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n stats.vk-portal.net -Qr -f-1 -a1",
+    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n {{SNI}} -Qr -f-1 -a1",
     tags: ["Universal", "Backup"],
     recommended: false
   },
@@ -62,15 +65,15 @@ export const STRATEGIES: StrategyConfig[] = [
     id: StrategyType.TELEGRAM_FIX,
     name: { ru: "Telegram Randomizer", en: "Telegram Randomizer" },
     description: { ru: "Агрессивная рандомизация.", en: "Aggressive randomization." },
-    command: "-o1 -r-5+se -a1:5+s -At,r,s -d1:2+s -n www.google.com -Qr -f-1",
+    command: "-o1 -r-5+se -a1:5+s -At,r,s -d1:2+s -n {{SNI}} -Qr -f-1",
     tags: ["High Load", "Unstable"],
     recommended: false
   },
   {
     id: StrategyType.STANDARD,
     name: { ru: "Global (Google)", en: "Global (Google)", zh: "全球 (Google)", tr: "Küresel (Google)" },
-    description: { ru: "Базовая стратегия (Google SNI).", en: "Basic strategy with Google SNI.", zh: "使用 Google SNI 的基础策略。", tr: "Google SNI ile temel стратегии." },
-    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n www.google.com -Qr -f-1 -a1",
+    description: { ru: "Базовая стратегия (Google SNI).", en: "Basic strategy with Google SNI.", zh: "使用 Google SNI 的基础策略。", tr: "Google SNI ile temel strateji." },
+    command: "-o1 -r-5+se -a1 -At,r,s -d1 -n {{SNI}} -Qr -f-1 -a1",
     tags: ["Legacy", "International"],
     recommended: false
   }
@@ -167,21 +170,23 @@ export const REGIONAL_DATA: RegionWhitelist[] = [
       { domain: 'payme.uz', category: 'finance' },
       { domain: 'my.gov.uz', category: 'gov' }
     ]
+  },
+  {
+    id: 'cn',
+    name: 'China',
+    flag: '🇨🇳',
+    mimicry: [
+      { domain: 'www.baidu.com', category: 'tech' },
+      { domain: 'www.taobao.com', category: 'retail' },
+      { domain: 'v.qq.com', category: 'social' }
+    ],
+    bypass: [
+      { domain: 'alipay.com', category: 'finance' },
+      { domain: 'wechat.com', category: 'social' }
+    ]
   }
 ];
 
-// SNI_DOMAINS and DIRECT_DOMAINS are required by the root Whitelist component
-export const SNI_DOMAINS = [
-  { domain: 'www.ozon.ru', note: 'MTS, Megafon, T2, Yota, RTK' },
-  { domain: 'stats.vk-portal.net', note: 'Universal' },
-  { domain: 'splitter.wb.ru', note: 'Alternative' },
-  { domain: 'www.google.com', note: 'Global' }
-];
-
-export const DIRECT_DOMAINS = [
-  'online.sberbank.ru',
-  'www.gosuslugi.ru',
-  'vk.com',
-  'ozon.ru',
-  'wb.ru'
-];
+// Re-export whitelists as strictly typed
+export const SNI_DOMAINS = REGIONAL_DATA.flatMap(r => r.mimicry);
+export const DIRECT_DOMAINS = REGIONAL_DATA.flatMap(r => r.bypass).map(b => b.domain);

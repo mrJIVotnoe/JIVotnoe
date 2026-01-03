@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Terminal, Zap, ShieldAlert, Monitor, TerminalSquare, Play, RefreshCw, Globe, ArrowRight, Settings, Server, Cpu, FileCode } from 'lucide-react';
+import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { StrategySelector } from './StrategySelector';
 import { StrategyType } from '../types';
@@ -15,11 +15,13 @@ export const LinuxGuide: React.FC = () => {
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const localizedSni = t('local_sni_example');
   
-  // Refined command for Linux (no -d1 by default as it might conflict with some kernel network stacks)
+  // Robust substitution logic
+  // Removed -d1 for Linux compatibility consistency
   const strategyArgs = currentStrategy.command
-    .replace(/-n [^\s]+/, `-n ${localizedSni}`);
+    .replace('{{SNI}}', localizedSni)
+    .replace(/-d1\s?/, '');
 
-  const port = "1080"; // Consistent with Windows default
+  const port = "1080"; 
 
   const magicCommand = `./ciadpi-x86_64 -i 127.0.0.1 -p ${port} ${strategyArgs}`;
   

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, Terminal, Share2, TerminalSquare, Sparkles, X, Music, Star } from 'lucide-react';
+import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, Share2, TerminalSquare, Sparkles, X, Music, Star } from 'lucide-react';
 import { StrategySelector } from './components/StrategySelector';
 import { DnsConfig } from './components/DnsConfig';
 import { FAQ } from './components/FAQ';
@@ -93,7 +93,17 @@ const MainApp = () => {
   };
 
   const availableLanguages: {code: Language, label: string}[] = [
-    {code: 'ru', label: '🇷🇺 RU'}, {code: 'en', label: '🇺🇸 EN'}, {code: 'uk', label: '🇺🇦 UA'}
+    {code: 'ru', label: '🇷🇺 Русский'}, 
+    {code: 'en', label: '🇺🇸 English'}, 
+    {code: 'uk', label: '🇺🇦 Українська'},
+    {code: 'be', label: '🇧🇾 Беларуская'},
+    {code: 'kk', label: '🇰🇿 Қазақша'},
+    {code: 'uz', label: '🇺🇿 Oʻzbekcha'},
+    {code: 'az', label: '🇦🇿 Azərbaycan'},
+    {code: 'ky', label: '🇰🇬 Кыргызча'},
+    {code: 'tg', label: '🇹🇯 Тоҷикӣ'},
+    {code: 'hy', label: '🇦🇲 Հայերեն'},
+    {code: 'tk', label: '🇹🇲 Türkmençe'}
   ];
 
   return (
@@ -135,8 +145,6 @@ const MainApp = () => {
       <main className={`mx-auto px-4 ${isExtension ? 'py-4' : 'py-8 max-w-4xl'}`}>
         {!isTelegram && <ExtensionProxyToggle />}
         
-        {/* Welcome Maestro Banner */}
-        {/* FIX: Removed undefined 'result' variable from the conditional check on line 139. */}
         {activeTab === 'ai' && (
           <div className="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-transparent border-l-4 border-indigo-500 rounded-r-2xl animate-in fade-in slide-in-from-left-4 duration-1000">
             <h2 className="text-lg font-black text-white flex items-center gap-2 mb-1">
