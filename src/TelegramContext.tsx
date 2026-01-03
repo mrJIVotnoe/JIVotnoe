@@ -1,64 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-// Define types manually to avoid extra npm dependencies
-export interface TelegramWebApp {
-  initData: string;
-  initDataUnsafe: {
-    user?: {
-      id: number;
-      first_name: string;
-      last_name?: string;
-      username?: string;
-      language_code?: string;
-    };
-  };
-  version: string;
-  platform: string;
-  isVersionAtLeast: (version: string) => boolean;
-  colorScheme: 'light' | 'dark';
-  themeParams: Record<string, any>;
-  isExpanded: boolean;
-  viewportHeight: number;
-  viewportStableHeight: number;
-  headerColor: string;
-  backgroundColor: string;
-  BackButton: {
-    isVisible: boolean;
-    show: () => void;
-    hide: () => void;
-    onClick: (cb: () => void) => void;
-    offClick: (cb: () => void) => void;
-  };
-  MainButton: {
-    text: string;
-    color: string;
-    textColor: string;
-    isVisible: boolean;
-    isActive: boolean;
-    show: () => void;
-    hide: () => void;
-    onClick: (cb: () => void) => void;
-    offClick: (cb: () => void) => void;
-  };
-  HapticFeedback: {
-    impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void;
-  };
-  ready: () => void;
-  expand: () => void;
-  close: () => void;
-  setHeaderColor: (color: string) => void;
-  setBackgroundColor: (color: string) => void;
-  openTelegramLink: (url: string) => void;
-  openLink: (url: string) => void;
-}
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: TelegramWebApp;
-    };
-  }
-}
+// Re-export the global type to ensure compatibility with existing imports
+export type TelegramWebApp = globalThis.TelegramWebApp;
 
 interface TelegramContextType {
   webApp: TelegramWebApp | null;

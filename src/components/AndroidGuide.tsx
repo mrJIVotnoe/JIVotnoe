@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Cpu, Bot, Zap, Globe } from 'lucide-react';
+import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Bot, Globe } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
-import { CopyButton } from './CopyButton';
 
 export const AndroidGuide: React.FC = () => {
   const { t } = useLanguage();
@@ -38,9 +37,8 @@ export const AndroidGuide: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <section className="bg-cyber-800 p-6 rounded-3xl border border-cyber-700 shadow-xl relative overflow-hidden">
-        {/* Background decorative element */}
         <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-          <Smartphone size={120} className="text-cyber-accent" />
+          <Bot size={120} className="text-cyber-accent" />
         </div>
 
         <div className="flex items-center gap-4 mb-6 relative">
@@ -49,7 +47,7 @@ export const AndroidGuide: React.FC = () => {
           </div>
           <div>
             <h3 className="text-2xl font-black text-white tracking-tight">{t('android_install_title')}</h3>
-            <p className="text-xs text-cyber-400 uppercase tracking-widest font-mono">Consumer Friendly Edition</p>
+            <p className="text-xs text-cyber-400 uppercase tracking-widest font-mono">{t('android_sub')}</p>
           </div>
         </div>
         
@@ -111,7 +109,7 @@ export const AndroidGuide: React.FC = () => {
           <div className="flex justify-center pt-4">
              <div className="flex items-center gap-3 px-6 py-2.5 bg-green-500/10 text-green-400 rounded-full border border-green-500/20 text-[10px] font-black tracking-widest uppercase">
                 <CheckCircle size={14} />
-                Universal Compatibility
+                {t('universal_compat')}
              </div>
           </div>
         </div>
@@ -119,11 +117,3 @@ export const AndroidGuide: React.FC = () => {
     </div>
   );
 };
-
-// Internal icon replacement for Smartphone
-const Smartphone = ({ size, className }: { size: number, className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-    <path d="M12 18h.01" />
-  </svg>
-);

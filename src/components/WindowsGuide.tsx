@@ -3,8 +3,9 @@ import { StrategySelector } from './StrategySelector';
 import { StrategyType } from '../types';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
-import { Download, Command, AlertTriangle, Zap, RotateCcw, Cpu } from 'lucide-react';
+import { Download, Command, AlertTriangle, Zap, RotateCcw } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { Collapsible } from '../shared/ui/Collapsible';
 
 export const WindowsGuide: React.FC = () => {
   const { t, language } = useLanguage();
@@ -16,7 +17,7 @@ export const WindowsGuide: React.FC = () => {
   // Localized command string
   const localizedCommand = currentStrategy.command.replace(/-n [^\s]+/, `-n ${localizedSni}`);
 
-  const isRu = language === 'ru';
+  const isRu = language === 'ru' || language === 'uk' || language === 'be' || language === 'kk';
   
   const batchFileContent = `@echo off
 chcp 65001 >nul
@@ -34,7 +35,7 @@ echo =======================================================
 echo  [2] ${isRu ? 'Запуск ByeDPI' : 'Starting ByeDPI'}
 echo =======================================================
 echo.
-echo  KEEP THIS WINDOW OPEN WHILE USING INTERNET.
+echo  ${t('win_keep_open')}
 echo.
 
 ciadpi.exe --ip 127.0.0.1 --port 1080 ${localizedCommand}
@@ -63,7 +64,7 @@ pause`;
         </div>
       </div>
 
-      <section className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
+      <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
         <div className="flex items-center gap-3 mb-4">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">1</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_1')}</h3>
@@ -79,10 +80,10 @@ pause`;
             {t('start_btn')}
           </a>
         </div>
-      </section>
+      </div>
 
-      <section>
-         <div className="flex items-center gap-3 mb-4">
+      <div className="space-y-4">
+         <div className="flex items-center gap-3 mb-2">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">2</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_2')}</h3>
         </div>
@@ -91,9 +92,9 @@ pause`;
           onSelect={setSelectedStrategyId} 
           showCommandPreview={false} 
         />
-      </section>
+      </div>
 
-      <section className="bg-cyber-800 p-6 rounded-xl border border-cyber-700 relative overflow-hidden">
+      <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700 relative overflow-hidden">
         <div className="flex items-center gap-3 mb-4">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">3</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_3')}</h3>
@@ -106,18 +107,21 @@ pause`;
              </p>
           </div>
 
-          <div className="bg-black/80 rounded-lg border border-cyber-700 overflow-hidden relative group shadow-lg">
-            <div className="flex items-center justify-between px-4 py-2 bg-cyber-900 border-b border-cyber-700">
-              <div className="flex items-center gap-2 text-gray-400 text-xs font-mono">
-                <Command size={14} />
-                run.cmd
-              </div>
-              <CopyButton text={batchFileContent} />
+          <Collapsible title={
+            <div className="flex items-center gap-2 text-gray-200">
+              <Command size={16} className="text-green-400" />
+              <span>run.cmd (Auto-Config Script)</span>
             </div>
-            <pre className="p-4 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar">
-              {batchFileContent}
-            </pre>
-          </div>
+          } defaultOpen={true}>
+            <div className="bg-black/80 rounded-lg border border-cyber-700 overflow-hidden relative group shadow-lg">
+              <div className="absolute top-2 right-2 z-10">
+                <CopyButton text={batchFileContent} />
+              </div>
+              <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar">
+                {batchFileContent}
+              </pre>
+            </div>
+          </Collapsible>
 
            <div className="mt-6 pt-6 border-t border-cyber-700/50">
              <h4 className="font-bold text-gray-200 text-sm mb-2 flex items-center gap-2">
@@ -132,7 +136,7 @@ pause`;
              </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

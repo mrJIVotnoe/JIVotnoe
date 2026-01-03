@@ -44,7 +44,7 @@ const QrModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) 
           <div className="bg-white p-6 rounded-[2rem] inline-block shadow-2xl transition-transform hover:scale-[1.02] duration-300">
             <img src={qrUrl} alt="QR Code" className="w-52 h-52" />
           </div>
-          <p className="mt-8 text-xs text-gray-500 font-mono uppercase tracking-widest">Share the Masterpiece</p>
+          <p className="mt-8 text-xs text-gray-500 font-mono uppercase tracking-widest">{t('share_cta')}</p>
         </div>
       </div>
     </div>
@@ -103,7 +103,16 @@ const MainApp = () => {
     {code: 'ky', label: '🇰🇬 Кыргызча'},
     {code: 'tg', label: '🇹🇯 Тоҷикӣ'},
     {code: 'hy', label: '🇦🇲 Հայերեն'},
-    {code: 'tk', label: '🇹🇲 Türkmençe'}
+    {code: 'tk', label: '🇹🇲 Türkmençe'},
+    {code: 'zh', label: '🇨🇳 中文'},
+    {code: 'tr', label: '🇹🇷 Türkçe'},
+    {code: 'fa', label: '🇮🇷 فارسی'},
+    {code: 'ar', label: '🇸🇦 العربية'},
+    {code: 'es', label: '🇪🇸 Español'},
+    {code: 'pt', label: '🇵🇹 Português'},
+    {code: 'id', label: '🇮🇩 Indonesia'},
+    {code: 'de', label: '🇩🇪 Deutsch'},
+    {code: 'fr', label: '🇫🇷 Français'}
   ];
 
   return (
