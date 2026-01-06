@@ -1,4 +1,4 @@
-import React, { ReactNode, PropsWithChildren } from 'react';
+import React, { ReactNode, PropsWithChildren, useEffect } from 'react';
 import { Activity, Star, Share2, Globe } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { useTelegram } from '../shared/hooks/useTelegram';
@@ -8,6 +8,19 @@ import { ExtensionProxyToggle } from '../components/ExtensionProxyToggle';
 export function Layout({ children }: PropsWithChildren<{}>) {
   const { t, language, setLanguage } = useLanguage();
   const { isTelegram, webApp } = useTelegram();
+
+  // Deep Linking: Scroll to section if hash is present
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500); // Small delay to ensure content is rendered/suspended
+    }
+  }, []);
 
   const availableLanguages = [
     {code: 'ru', label: '🇷🇺 RU'}, 
@@ -34,7 +47,16 @@ export function Layout({ children }: PropsWithChildren<{}>) {
 
   const handleShare = () => {
     if (webApp?.HapticFeedback) webApp.HapticFeedback.impactOccurred('light');
-    // Implement QR modal logic or native share here if needed
+    if (navigator.share) {
+      navigator.share({
+        title: t('app_title'),
+        text: t('subtitle'),
+        url: window.location.href
+      }).catch(console.error);
+    } else {
+      // Fallback or just ignore if not supported
+      console.log("Share API not supported");
+    }
   };
 
   return (

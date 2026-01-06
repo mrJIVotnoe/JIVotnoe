@@ -3,21 +3,28 @@ import { StrategySelector } from './StrategySelector';
 import { StrategyType } from '../types';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
-import { Download, Command, AlertTriangle, Zap, RotateCcw } from 'lucide-react';
+import { Download, Command, AlertTriangle, Zap, RotateCcw, FileDown } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { Collapsible } from '../shared/ui/Collapsible';
+import { SniScanner } from './SniScanner';
 
 export const WindowsGuide: React.FC = () => {
   const { t, language } = useLanguage();
   const [selectedStrategyId, setSelectedStrategyId] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
+  const [customSni, setCustomSni] = useState<string>('');
   
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
-  const localizedSni = t('local_sni_example');
+  const effectiveSni = customSni || t('local_sni_example');
   
-  // Localized command string
-  const localizedCommand = currentStrategy.command.replace(/-n [^\s]+/, `-n ${localizedSni}`);
+  // Robust command generation
+  let localizedCommand = currentStrategy.command;
+  if (localizedCommand.includes('{{SNI}}')) {
+    localizedCommand = localizedCommand.replace('{{SNI}}', effectiveSni);
+  } else {
+    localizedCommand = localizedCommand.replace(/-n [^\s]+/, `-n ${effectiveSni}`);
+  }
 
-  const isRu = language === 'ru' || language === 'uk' || language === 'be' || language === 'kk';
+  const isRu = ['ru', 'uk', 'be', 'kk'].includes(language);
   
   const batchFileContent = `@echo off
 chcp 65001 >nul
@@ -52,13 +59,23 @@ reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" 
 echo Proxy disabled.
 pause`;
 
+  const downloadBatchFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([batchFileContent], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "run.cmd";
+    document.body.appendChild(element); 
+    element.click();
+    document.body.removeChild(element);
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded-r-lg flex gap-3">
         <AlertTriangle className="text-yellow-500 shrink-0" />
         <div>
           <h4 className="font-bold text-yellow-200">{t('win_how_it_works')}</h4>
-          <p className="text-yellow-200/70 text-sm mt-1">
+          <p className="text-yellow-200/70 text-sm mt-1 leading-relaxed">
              {t('win_how_it_works_desc')}
           </p>
         </div>
@@ -87,10 +104,15 @@ pause`;
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">2</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_2')}</h3>
         </div>
+        
+        {/* SNI Scanner Integration */}
+        <SniScanner onSelect={setCustomSni} />
+        
         <StrategySelector 
           selectedId={selectedStrategyId} 
           onSelect={setSelectedStrategyId} 
-          showCommandPreview={false} 
+          showCommandPreview={false}
+          customSni={customSni}
         />
       </div>
 
@@ -117,9 +139,20 @@ pause`;
               <div className="absolute top-2 right-2 z-10">
                 <CopyButton text={batchFileContent} />
               </div>
-              <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar">
+              <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar leading-relaxed">
                 {batchFileContent}
               </pre>
+              
+              {/* Download Button */}
+              <div className="bg-cyber-900 border-t border-cyber-700 p-3 flex justify-end">
+                <button 
+                  onClick={downloadBatchFile}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg active:scale-95"
+                >
+                  <FileDown size={16} />
+                  {t('win_download_cmd')}
+                </button>
+              </div>
             </div>
           </Collapsible>
 

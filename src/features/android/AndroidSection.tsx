@@ -3,6 +3,7 @@ import { AndroidGuide } from '../../components/AndroidGuide';
 import { StrategySelector } from '../../components/StrategySelector';
 import { DnsConfig } from '../../components/DnsConfig';
 import { AndroidTvGuide } from '../../components/AndroidTvGuide';
+import { SniScanner } from '../../components/SniScanner';
 import { StrategyType } from '../../types';
 import { Music } from 'lucide-react';
 import { useLanguage } from '../../LanguageContext';
@@ -10,6 +11,7 @@ import { useLanguage } from '../../LanguageContext';
 export default function AndroidSection() {
   const { t } = useLanguage();
   const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
+  const [customSni, setCustomSni] = useState<string>('');
 
   return (
     <div className="space-y-12">
@@ -21,7 +23,17 @@ export default function AndroidSection() {
           <Music size={24} className="text-blue-400" />
           <h4 className="text-white font-black text-sm uppercase tracking-widest">{t('select_strategy')}</h4>
         </div>
-        <StrategySelector selectedId={selectedStrategy} onSelect={setSelectedStrategy} />
+
+        {/* SNI Scanner Integration */}
+        <div className="mb-6">
+          <SniScanner onSelect={setCustomSni} />
+        </div>
+
+        <StrategySelector 
+          selectedId={selectedStrategy} 
+          onSelect={setSelectedStrategy}
+          customSni={customSni}
+        />
       </div>
 
       <DnsConfig />

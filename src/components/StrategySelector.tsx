@@ -9,26 +9,35 @@ interface StrategySelectorProps {
   selectedId: StrategyType;
   onSelect: (id: StrategyType) => void;
   showCommandPreview?: boolean;
+  customSni?: string;
 }
 
 export const StrategySelector: React.FC<StrategySelectorProps> = ({ 
   selectedId, 
   onSelect, 
-  showCommandPreview = true 
+  showCommandPreview = true,
+  customSni
 }) => {
   const { t, language } = useLanguage();
   const currentStrategy = STRATEGIES.find(s => s.id === selectedId) || STRATEGIES[0];
   
-  // Dynamic SNI based on language
-  const localizedSni = t('local_sni_example');
+  // Use custom SNI if provided, otherwise fallback to localized default
+  const effectiveSni = customSni || t('local_sni_example');
   
-  // Replace the domain in the command string dynamically
-  // Search for the domain after -n flag and swap it
+  // Robust command generation: 
+  // 1. First try to replace the explicit {{SNI}} placeholder
+  // 2. If not found (legacy data), fallback to regex replacement of existing -n arg
   const getLocalizedCommand = (command: string) => {
-    return command.replace(/-n [^\s]+/, `-n ${localizedSni}`);
+    if (command.includes('{{SNI}}')) {
+      return command.replace('{{SNI}}', effectiveSni);
+    }
+    return command.replace(/-n [^\s]+/, `-n ${effectiveSni}`);
   };
 
   const currentCommand = getLocalizedCommand(currentStrategy.command);
+  
+  // Hardcoded backup command for Ozon strategy (Simplified version)
+  const ozonSniCommand = `-o1 -r-5+se -n ${effectiveSni}`;
 
   return (
     <div className="space-y-6">
@@ -37,14 +46,14 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
           <button
             key={strategy.id}
             onClick={() => onSelect(strategy.id)}
-            className={`flex flex-col p-4 rounded-xl border transition-all duration-200 text-left relative overflow-hidden ${
+            className={`flex flex-col p-4 rounded-xl border transition-all duration-200 text-left relative overflow-hidden group ${
               selectedId === strategy.id
                 ? 'bg-cyber-800 border-cyber-accent shadow-lg shadow-cyber-accent/10'
-                : 'bg-cyber-900 border-cyber-700 hover:border-cyber-500'
+                : 'bg-cyber-900 border-cyber-700 hover:border-cyber-500 hover:bg-cyber-800'
             }`}
           >
             {strategy.recommended && (
-              <div className="absolute top-0 right-0 bg-cyber-accent text-cyber-900 text-xs font-bold px-2 py-1 rounded-bl-lg">
+              <div className="absolute top-0 right-0 bg-cyber-accent text-cyber-900 text-[10px] font-black uppercase px-2 py-1 rounded-bl-lg">
                 {t('recommended_badge')}
               </div>
             )}
@@ -52,14 +61,14 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
               {strategy.id === StrategyType.TELEGRAM_FIX ? (
                 <AlertTriangle size={20} className="text-yellow-500" />
               ) : (
-                <Shield size={20} className={selectedId === strategy.id ? 'text-cyber-accent' : 'text-gray-400'} />
+                <Shield size={20} className={selectedId === strategy.id ? 'text-cyber-accent' : 'text-gray-400 group-hover:text-gray-300'} />
               )}
               <span className="font-bold text-gray-100">{strategy.name[language] || strategy.name['en']}</span>
             </div>
-            <p className="text-sm text-gray-400 mb-3">{strategy.description[language] || strategy.description['en']}</p>
+            <p className="text-sm text-gray-400 mb-3 leading-snug">{strategy.description[language] || strategy.description['en']}</p>
             <div className="mt-auto flex gap-2 flex-wrap">
               {strategy.tags.map(tag => (
-                <span key={tag} className="px-2 py-0.5 rounded text-xs bg-cyber-700 text-gray-300">
+                <span key={tag} className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyber-700 text-gray-300 border border-cyber-600">
                   {tag}
                 </span>
               ))}
@@ -74,7 +83,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
             <CheckCircle className="text-cyber-accent" size={20} />
             {t('command_preview')}
           </h3>
-          <div className="bg-black/50 p-4 rounded-lg font-mono text-sm text-green-400 break-all relative group">
+          <div className="bg-black/50 p-4 rounded-lg font-mono text-sm text-green-400 break-all relative group shadow-inner">
             {currentCommand}
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <CopyButton text={currentCommand} />
@@ -86,16 +95,16 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
           </p>
 
           {selectedId === StrategyType.SHUTDOWN_OZON && (
-            <div className="mt-4 p-3 bg-blue-900/20 border border-blue-900/50 rounded flex gap-3 items-start">
+            <div className="mt-4 p-3 bg-blue-900/20 border border-blue-900/50 rounded-lg flex gap-3 items-start">
               <Info className="text-blue-400 shrink-0 mt-0.5" size={18} />
               <div className="text-sm text-blue-100">
                 <span className="font-bold">{t('too_hard')}</span>
-                <p className="mt-1 opacity-80">
+                <p className="mt-1 opacity-80 text-xs leading-relaxed">
                   {t('too_hard_desc')}
                 </p>
-                <div className="mt-2 flex items-center gap-2 bg-black/40 px-2 py-1 rounded border border-blue-800/30 w-fit">
-                   <code className="text-xs font-mono text-green-300">-o1 -r-5+se -n {localizedSni}</code>
-                   <CopyButton text={`-o1 -r-5+se -n ${localizedSni}`} className="p-1 h-6 w-6" />
+                <div className="mt-3 flex items-center gap-2 bg-black/40 pl-3 pr-1 py-1 rounded border border-blue-800/30 w-fit max-w-full">
+                   <code className="text-xs font-mono text-green-300 truncate">{ozonSniCommand}</code>
+                   <CopyButton text={ozonSniCommand} className="p-1 h-6 w-6 shrink-0" />
                 </div>
               </div>
             </div>

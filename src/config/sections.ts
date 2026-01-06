@@ -6,7 +6,7 @@ const AndroidSection = lazy(() => import('../features/android/AndroidSection'));
 const WindowsGuide = lazy(() => import('../components/WindowsGuide').then(m => ({ default: m.WindowsGuide })));
 const LinuxGuide = lazy(() => import('../components/LinuxGuide').then(m => ({ default: m.LinuxGuide })));
 const VpnRegionGuide = lazy(() => import('../components/VpnRegionGuide').then(m => ({ default: m.VpnRegionGuide })));
-const IosGuide = lazy(() => import('../components/IosGuide').then(m => ({ default: m.IosGuide })));
+const AppleGuide = lazy(() => import('../components/AppleGuide').then(m => ({ default: m.AppleGuide })));
 const Whitelist = lazy(() => import('../components/Whitelist').then(m => ({ default: m.Whitelist })));
 const FAQ = lazy(() => import('../components/FAQ').then(m => ({ default: m.FAQ })));
 
@@ -30,6 +30,12 @@ export const sections = [
     Component: WindowsGuide
   },
   {
+    id: 'apple',
+    title: 'Apple Ecosystem',
+    shortTitle: 'iOS / Mac',
+    Component: AppleGuide
+  },
+  {
     id: 'linux',
     title: 'Linux / Server',
     shortTitle: 'Linux',
@@ -40,12 +46,6 @@ export const sections = [
     title: 'VPN & Region',
     shortTitle: 'VPN Region',
     Component: VpnRegionGuide
-  },
-  {
-    id: 'ios',
-    title: 'Apple iOS',
-    shortTitle: 'iOS',
-    Component: IosGuide
   },
   {
     id: 'whitelist',

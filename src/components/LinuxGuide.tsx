@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
@@ -6,17 +5,23 @@ import { StrategySelector } from './StrategySelector';
 import { StrategyType } from '../types';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
+import { SniScanner } from './SniScanner';
 
 export const LinuxGuide: React.FC = () => {
   const { t, language } = useLanguage();
   const [selectedStrategyId, setSelectedStrategyId] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
   const [activeSubTab, setActiveSubTab] = useState<'desktop' | 'server' | 'systemd'>('desktop');
+  const [customSni, setCustomSni] = useState<string>('');
   
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
-  const localizedSni = t('local_sni_example');
+  const effectiveSni = customSni || t('local_sni_example');
   
+  // Replace SNI and remove -d1 (daemon mode) for manual Linux running if needed, 
+  // though ciadpi usually runs in foreground by default unless daemonized.
+  // We use effectiveSni to generate the correct command.
   const strategyArgs = currentStrategy.command
-    .replace('{{SNI}}', localizedSni)
+    .replace('{{SNI}}', effectiveSni)
+    .replace(/-n [^\s]+/, `-n ${effectiveSni}`) // Double safety for direct replacements
     .replace(/-d1\s?/, '');
 
   const port = "1080"; 
@@ -80,7 +85,17 @@ export https_proxy=http://127.0.0.1:${port}`;
             <Zap size={20} className="text-teal-400" />
             <h4 className="text-white font-black text-sm uppercase tracking-widest">{t('select_strategy')}</h4>
          </div>
-         <StrategySelector selectedId={selectedStrategyId} onSelect={setSelectedStrategyId} showCommandPreview={false} />
+         
+         <div className="mb-6">
+           <SniScanner onSelect={setCustomSni} />
+         </div>
+
+         <StrategySelector 
+            selectedId={selectedStrategyId} 
+            onSelect={setSelectedStrategyId} 
+            showCommandPreview={false} 
+            customSni={customSni}
+         />
       </div>
 
       <div className="space-y-6">
@@ -89,12 +104,12 @@ export https_proxy=http://127.0.0.1:${port}`;
             <div className="bg-cyber-800 p-8 rounded-[3rem] border border-cyber-700 shadow-xl">
                <div className="flex items-center gap-4 mb-6">
                   <div className="bg-teal-600 h-10 w-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg">1</div>
-                  <h3 className="font-black text-white text-lg uppercase tracking-tight">Binary Launch</h3>
+                  <h3 className="font-black text-white text-lg uppercase tracking-tight">Бинарный запуск</h3>
                </div>
                
                <div className="bg-black/60 rounded-2xl border border-teal-500/30 p-5 relative group mb-6">
                   <div className="flex items-center justify-between mb-3">
-                     <span className="text-[10px] text-teal-400 font-black uppercase tracking-[0.2em]">{t('linux_term_label')}</span>
+                     <span className="text-[10px] text-teal-400 font-black uppercase tracking-[0.2em]">Terminal</span>
                      <CopyButton text={`chmod +x ciadpi-x86_64 && ${magicCommand}`} />
                   </div>
                   <code className="block text-xs font-mono text-teal-300 break-all leading-relaxed">
