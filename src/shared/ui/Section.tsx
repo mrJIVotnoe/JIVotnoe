@@ -1,14 +1,15 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, PropsWithChildren } from 'react';
+
+interface SectionProps {
+  id: string;
+  title: string;
+}
 
 export function Section({
   id,
   title,
   children,
-}: {
-  id: string;
-  title: string;
-  children: ReactNode;
-}) {
+}: PropsWithChildren<SectionProps>) {
   return (
     <section id={id} className="scroll-mt-24 mb-16 animate-in fade-in duration-700">
       {/* Visual Separator */}

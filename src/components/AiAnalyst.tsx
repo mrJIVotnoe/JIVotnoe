@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Languages } from 'lucide-react';
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Languages, AlertTriangle } from 'lucide-react';
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { useLanguage } from '../LanguageContext';
 import { STRATEGIES } from '../data';
@@ -69,7 +68,7 @@ export const AiAnalyst: React.FC = () => {
         Context: Strategies=${JSON.stringify(strategiesContext)}.
         Persona: Strict but inspiring professor. Use metaphors.
         
-        CRITICAL TASK: Detect the language of the user input (e.g., 'ru', 'en', 'uz', 'kk', 'uk', 'be', 'az'). 
+        CRITICAL TASK: Detect the language of the user input.
         If the user writes in a specific language, you MUST respond in that SAME language.
         
         Rules:
@@ -117,6 +116,10 @@ export const AiAnalyst: React.FC = () => {
 
       } else {
         // --- DIRECT MODE (Client-Side) ---
+        if (!process.env.API_KEY) {
+          throw new Error("API Key is missing in environment");
+        }
+        
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
         const response: GenerateContentResponse = await ai.models.generateContent({
@@ -133,7 +136,20 @@ export const AiAnalyst: React.FC = () => {
       }
 
       if (!responseText) throw new Error("Empty AI Response");
-      const data = JSON.parse(responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        // Fallback if response is markdown code block
+        const match = responseText.match(/```json\n([\s\S]*?)\n```/);
+        if (match) {
+           data = JSON.parse(match[1]);
+        } else {
+           throw new Error("Failed to parse JSON response");
+        }
+      }
+      
       setResult(data);
 
       // --- AUTO LANGUAGE SWITCHING LOGIC ---
@@ -148,9 +164,16 @@ export const AiAnalyst: React.FC = () => {
         }
       }
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("AI ERROR:", err);
-      setError(t('ai_error'));
+      // More descriptive error messages
+      if (err.message && err.message.includes("500")) {
+         setError("AI Service Temporary Error (500). Please try again.");
+      } else if (err.message && err.message.includes("403")) {
+         setError("Access Denied (403). Check API Key restrictions.");
+      } else {
+         setError(t('ai_error') + ` (${err.message || 'Unknown'})`);
+      }
     } finally {
       setLoading(false);
     }
@@ -250,6 +273,13 @@ export const AiAnalyst: React.FC = () => {
             {loading ? t('ai_thinking') : t('ai_btn')}
           </button>
         </div>
+        
+        {error && (
+          <div className="mt-4 p-4 bg-red-900/30 border border-red-500/30 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+             <AlertTriangle className="text-red-400 shrink-0" size={18} />
+             <p className="text-xs text-red-200 font-medium leading-relaxed">{error}</p>
+          </div>
+        )}
 
         <button 
           onClick={() => setShowBridgeSettings(!showBridgeSettings)}

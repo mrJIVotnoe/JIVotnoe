@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
 import { AlertTriangle, RefreshCcw } from 'lucide-react';
 
 interface Props {
@@ -13,11 +13,14 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false, error: null };
 
+  // Explicitly declare props to avoid TS access error
+  public readonly props: Readonly<Props> = this.props;
+
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
 

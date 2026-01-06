@@ -1,17 +1,18 @@
-import React, { useState, ReactNode } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useState, ReactNode, PropsWithChildren } from 'react';
+import { ChevronDown } from 'lucide-react';
+
+interface CollapsibleProps {
+  title: ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+}
 
 export function Collapsible({
   title,
   children,
   defaultOpen = false,
   className = ''
-}: {
-  title: ReactNode;
-  children: ReactNode;
-  defaultOpen?: boolean;
-  className?: string;
-}) {
+}: PropsWithChildren<CollapsibleProps>) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (

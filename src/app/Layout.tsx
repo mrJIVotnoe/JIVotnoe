@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, PropsWithChildren } from 'react';
 import { Activity, Star, Share2, Globe } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { useTelegram } from '../shared/hooks/useTelegram';
 import { Navigation } from '../shared/ui/Navigation';
 import { ExtensionProxyToggle } from '../components/ExtensionProxyToggle';
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children }: PropsWithChildren<{}>) {
   const { t, language, setLanguage } = useLanguage();
   const { isTelegram, webApp } = useTelegram();
 
