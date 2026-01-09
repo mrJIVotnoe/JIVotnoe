@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { HelpCircle, ChevronDown, ShieldQuestion, LifeBuoy, AlertCircle, Terminal, Globe } from 'lucide-react';
+import { HelpCircle, AlertCircle, Terminal, Globe, LifeBuoy, ShieldAlert, MonitorX } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { FeedbackSystem } from './FeedbackSystem';
 
@@ -8,9 +7,10 @@ export const FAQ: React.FC = () => {
   const { t } = useLanguage();
 
   const qa = [
-    { q: t('faq_q1'), a: t('faq_a1'), icon: <AlertCircle className="text-red-400" /> },
-    { q: t('faq_q2'), a: t('faq_a2'), icon: <Terminal className="text-teal-400" /> },
-    { q: t('faq_q3'), a: t('faq_a3'), icon: <Globe className="text-blue-400" /> },
+    { q: t('faq_q1'), a: t('faq_a1'), icon: <MonitorX className="text-red-400" /> },
+    { q: t('faq_q2'), a: t('faq_a2'), icon: <Globe className="text-blue-400" /> },
+    { q: t('faq_q3'), a: t('faq_a3'), icon: <Terminal className="text-teal-400" /> },
+    { q: t('faq_q4'), a: t('faq_a4'), icon: <ShieldAlert className="text-orange-400" /> },
   ];
 
   return (

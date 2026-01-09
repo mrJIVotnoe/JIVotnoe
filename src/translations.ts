@@ -1,4 +1,3 @@
-
 import { Language } from './types';
 
 // Helper to use English as fallback for missing keys in other languages
@@ -23,6 +22,7 @@ const en = {
     ai_result_title: "Action Score:",
     ai_no_input: "The Maestro awaits your problem description.",
     ai_error: "Network dissonance. Check Neural Bridge.",
+    
     qs_title: "Quick Start",
     qs_desc: "Select your platform",
     qs_pc: "PC / Laptop",
@@ -48,6 +48,7 @@ const en = {
     macos_desc: "macOS is a certified UNIX system. ByeDPI runs natively via Terminal.",
     macos_arch_select: "Select Architecture",
     macos_gatekeeper: "If macOS blocks the app, run this command to allow execution:",
+    
     ios_title: "iOS: The Walled Garden",
     ios_subtitle: "Direct packet manipulation is blocked by Apple. Use VLESS/V2Ray protocols to bypass the wall.",
     ios_key_inspector: "VLESS Key Inspector",
@@ -61,6 +62,7 @@ const en = {
     command_preview: "Launch Args",
     copy_all: "Copy All",
     start_btn: "Get ByeDPI",
+    
     win_how_it_works: "Windows Launch",
     win_how_it_works_desc: "The ciadpi.exe program creates a local tunnel for your traffic.",
     win_step_1: "Download",
@@ -83,11 +85,14 @@ const en = {
     select_strategy: "Select Strategy",
     too_hard: "Connection issues?",
     too_hard_desc: "If internet is unstable, try simplified SNI.",
+    
     feedback_rate_title: "Was this helpful?",
     feedback_thanks: "Thanks! We've noted your feedback.",
-    feedback_report_issue: "Report Issue",
-    feedback_send_to_bot: "WRITE TO SUPPORT",
-    feedback_placeholder: "Describe your issue...",
+    feedback_report_issue: "Report Bug / Issue",
+    feedback_send_to_bot: "OPEN SUPPORT CHAT",
+    feedback_placeholder: "Describe the bug here...",
+    feedback_copy_btn: "COPY REPORT & OPEN",
+    feedback_instruction: "1. Describe issue above\n2. Click button to copy tech info\n3. Paste in Telegram",
     
     vpn_intro_title: "Region Change (ByeDPI + VPN)",
     vpn_intro_desc: "ByeDPI does not change your IP. Combine with VPN for Spotify/ChatGPT.",
@@ -142,13 +147,15 @@ const en = {
     tv_direct_step_2: "Transfer",
     tv_direct_step_2_desc: "Send APK from Phone to TV directly.",
 
-    faq_title: "FAQ",
-    faq_q1: "Why is internet slower?",
-    faq_a1: "ByeDPI splits packets. Try changing SNI in settings.",
-    faq_q2: "Does it work with games?",
-    faq_a2: "ByeDPI works best with browser traffic (HTTPS).",
-    faq_q3: "Is it safe?",
-    faq_a3: "Yes, it's Open Source. Traffic is encrypted within TLS.",
+    faq_title: "Troubleshooting",
+    faq_q1: "Browser Error (Proxy Connection Failed)?",
+    faq_a1: "You closed ByeDPI but Windows Proxy is still ON. Run the 'run.cmd' script again or disable proxy in Windows Settings manually.",
+    faq_q2: "YouTube loads but video buffers?",
+    faq_a2: "Your ISP detects the current strategy. Try changing the Strategy above (e.g., to Wildberries) or pick a different SNI in the scanner.",
+    faq_q3: "Discord Voice / Games not connecting?",
+    faq_a3: "ByeDPI handles TCP (Sites). Discord Voice and Games use UDP. You need a VPN (NekoBox/V2Ray) with TUN mode for full support.",
+    faq_q4: "Antivirus blocked the file?",
+    faq_a4: "It's a false positive because the app modifies network packets. Add ciadpi.exe to exclusions.",
 
     bridge_toggle: "Neural Bridge",
     bridge_status_active: "TUNNEL ACTIVE",
@@ -171,7 +178,7 @@ const en = {
     scanner_btn: "SCAN NETWORK",
     scanner_checking: "SCANNING...",
     scanner_use_btn: "USE THIS SNI",
-    scanner_reachable: "REACHABLE",
+    scanner_reachable: "ДОСТУПЕН",
     scanner_unreachable: "TIMEOUT"
 };
 
@@ -187,7 +194,7 @@ export const translations: Record<string, Record<string, string>> = {
     tab_vpn: "VPN + Регион",
     tab_ios: "Apple Eco",
     tab_whitelist: "Белые Списки",
-    tab_faq: "FAQ",
+    tab_faq: "Помощь",
     tab_ai: "AI Аналитик",
     
     ai_title: "Маэстро Нейро-Аналитики",
@@ -260,9 +267,11 @@ export const translations: Record<string, Record<string, string>> = {
     too_hard_desc: "Если интернет работает нестабильно, попробуйте упрощенный SNI.",
     feedback_rate_title: "Это было полезно?",
     feedback_thanks: "Спасибо! Мы учтем ваш отзыв.",
-    feedback_report_issue: "Сообщить об ошибке",
-    feedback_send_to_bot: "НАПИСАТЬ В ПОДДЕРЖКУ",
-    feedback_placeholder: "Опишите вашу проблему...",
+    feedback_report_issue: "Сообщить о проблеме",
+    feedback_send_to_bot: "ОТКРЫТЬ ПОДДЕРЖКУ",
+    feedback_placeholder: "Опишите ошибку, устройство, провайдера...",
+    feedback_copy_btn: "СКОПИРОВАТЬ ОТЧЕТ И ОТКРЫТЬ",
+    feedback_instruction: "1. Опишите проблему\n2. Нажмите кнопку для копирования тех. данных\n3. Вставьте отчет в чат Telegram",
 
     vpn_intro_title: "Смена региона (ByeDPI + VPN)",
     vpn_intro_desc: "ByeDPI не меняет ваш IP. Для Spotify и ChatGPT используйте комбинацию с VPN.",
@@ -317,13 +326,15 @@ export const translations: Record<string, Record<string, string>> = {
     tv_direct_step_2: "Передача",
     tv_direct_step_2_desc: "Отправьте APK с телефона на ТВ напрямую.",
 
-    faq_title: "Частые вопросы",
-    faq_q1: "Почему интернет стал медленнее?",
-    faq_a1: "ByeDPI дробит пакеты. Попробуйте сменить SNI в настройках.",
-    faq_q2: "Работает ли это с играми?",
-    faq_a2: "ByeDPI лучше всего справляется с браузерным трафиком (HTTPS).",
-    faq_q3: "Это безопасно?",
-    faq_a3: "Да, это Open Source решение. Трафик зашифрован внутри TLS.",
+    faq_title: "Решение проблем",
+    faq_q1: "Ошибка в браузере (Proxy Connection Failed)?",
+    faq_a1: "Вы закрыли программу ByeDPI, но забыли выключить прокси в Windows. Запустите файл 'run.cmd' еще раз (он сам всё исправит) или выключите прокси вручную в настройках Windows.",
+    faq_q2: "YouTube грузится, но видео висят?",
+    faq_a2: "Провайдер научился распознавать текущую стратегию. Попробуйте сменить стратегию выше (например, на Wildberries) или выберите другой SNI в сканере.",
+    faq_q3: "Не работает Discord Голос / Игры?",
+    faq_a3: "ByeDPI работает с TCP (сайты). Голос в Discord и онлайн игры используют UDP. Вам нужен VPN (NekoBox/V2Ray) в режиме TUN.",
+    faq_q4: "Антивирус удалил файл?",
+    faq_a4: "Это ложное срабатывание. Программа перехватывает сетевые пакеты, что похоже на поведение вирусов. Добавьте ciadpi.exe в исключения.",
 
     bridge_toggle: "Neural Bridge",
     bridge_status_active: "ТУННЕЛЬ АКТИВЕН",

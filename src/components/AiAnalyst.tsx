@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Languages, AlertTriangle, Key } from 'lucide-react';
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal } from 'lucide-react';
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { useLanguage } from '../LanguageContext';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
-import { useTelegram } from '../TelegramContext';
-import { Language } from '../types';
+import { useTelegram } from '../shared/hooks/useTelegram';
 
 export const AiAnalyst: React.FC = () => {
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language } = useLanguage();
   const { webApp } = useTelegram();
   
   const [input, setInput] = useState('');
@@ -17,29 +16,21 @@ export const AiAnalyst: React.FC = () => {
     platform: 'android' | 'pc' | 'ios' | 'linux', 
     explanation: string, 
     command?: string,
-    steps: string[],
-    detectedLanguage?: string
+    steps: string[] 
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [rated, setRated] = useState<'up' | 'down' | null>(null);
-  const [autoSwitched, setAutoSwitched] = useState<string | null>(null);
 
-  // --- CONFIGURATION STATE ---
   const [useBridge, setUseBridge] = useState(() => localStorage.getItem('ai_use_bridge') === 'true');
   const [bridgeUrl, setBridgeUrl] = useState(() => localStorage.getItem('ai_bridge_url') || '');
-  const [userApiKey, setUserApiKey] = useState(() => localStorage.getItem('ai_user_api_key') || '');
-  
-  // Show settings if no configuration is present
-  const [showSettings, setShowSettings] = useState(() => !bridgeUrl && !userApiKey);
+  const [showBridgeSettings, setShowBridgeSettings] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
 
-  // Persistence
   useEffect(() => {
     localStorage.setItem('ai_use_bridge', String(useBridge));
     localStorage.setItem('ai_bridge_url', bridgeUrl);
-    localStorage.setItem('ai_user_api_key', userApiKey);
-  }, [useBridge, bridgeUrl, userApiKey]);
+  }, [useBridge, bridgeUrl]);
 
   useEffect(() => {
     if (result && resultRef.current) {
@@ -54,23 +45,10 @@ export const AiAnalyst: React.FC = () => {
       return;
     }
 
-    // Validation
-    if (useBridge && !bridgeUrl) {
-      setError("Bridge URL is missing. Please configure it in settings.");
-      setShowSettings(true);
-      return;
-    }
-    if (!useBridge && !userApiKey) {
-      setError("API Key is missing. Please enter your Gemini API Key in settings.");
-      setShowSettings(true);
-      return;
-    }
-
     setLoading(true);
     setError(null);
     setResult(null);
     setRated(null);
-    setAutoSwitched(null);
 
     try {
       // 1. Context Preparation
@@ -81,14 +59,10 @@ export const AiAnalyst: React.FC = () => {
       }));
 
       // 2. System Instruction
-      const systemInstruction = `You are "The Maestro of Network Neutrality", an elite engineer.
+      const systemInstruction = `You are "The Maestro of Network Neutrality", an elite engineer specializing in DPI bypass.
         Goal: Analyze user issue and orchestrate a bypass solution.
         Context: Strategies=${JSON.stringify(strategiesContext)}.
-        Persona: Strict but inspiring professor. Use metaphors.
-        
-        CRITICAL TASK: Detect the language of the user input.
-        If the user writes in a specific language, you MUST respond in that SAME language.
-        
+        Persona: Strict but inspiring professor. Use metaphors like "packet fragmentation", "digital symphony".
         Rules:
         - If Android: Recommend ByeDPIManager.
         - If iOS: Recommend V2Box (VLESS).
@@ -97,23 +71,24 @@ export const AiAnalyst: React.FC = () => {
 
       let responseText = "";
 
-      // 3. Schema Definition
+      // 3. Schema Definition (Strict Typing)
       const responseSchema = {
         type: Type.OBJECT,
         properties: {
           platform: { type: Type.STRING, enum: ['android', 'pc', 'ios', 'linux'] },
           explanation: { type: Type.STRING },
           command: { type: Type.STRING, description: "Only if applicable (PC/Linux)" },
-          steps: { type: Type.ARRAY, items: { type: Type.STRING } },
-          detectedLanguage: { type: Type.STRING, description: "ISO 639-1 code of user input (e.g. 'ru', 'uz', 'kk')"}
+          steps: { type: Type.ARRAY, items: { type: Type.STRING } }
         },
         required: ["platform", "explanation", "steps"]
       };
 
       if (useBridge && bridgeUrl) {
-        // --- BRIDGE MODE (Secure Server-Side Key) ---
+        // --- BRIDGE MODE (Advanced/Secure) ---
         const cleanBridgeUrl = bridgeUrl.trim().replace(/\/$/, '');
-        const fullUrl = `${cleanBridgeUrl}/v1beta/models/gemini-2.0-flash:generateContent`;
+        // Note: The Bridge worker MUST handle API key injection for security.
+        // We do not append the key here in client code for Bridge mode.
+        const fullUrl = `${cleanBridgeUrl}/v1beta/models/gemini-3-flash-preview:generateContent`;
         
         const res = await fetch(fullUrl, {
           method: 'POST',
@@ -128,19 +103,18 @@ export const AiAnalyst: React.FC = () => {
           })
         });
 
-        if (!res.ok) {
-           const errText = await res.text();
-           throw new Error(`Bridge Error ${res.status}: ${errText}`);
-        }
+        if (!res.ok) throw new Error(`Bridge Error: ${res.status}`);
         const json = await res.json();
         responseText = json.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
       } else {
-        // --- DIRECT MODE (Client-Side with User Key) ---
-        const ai = new GoogleGenAI({ apiKey: userApiKey });
+        // --- DIRECT MODE (Client-Side) ---
+        // Using "gemini-3-flash-preview" for text tasks as per guidelines.
+        // API Key strictly from process.env.API_KEY.
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
         const response: GenerateContentResponse = await ai.models.generateContent({
-          model: "gemini-2.0-flash", // Use stable model
+          model: "gemini-3-flash-preview",
           contents: finalInput,
           config: {
             systemInstruction,
@@ -153,40 +127,12 @@ export const AiAnalyst: React.FC = () => {
       }
 
       if (!responseText) throw new Error("Empty AI Response");
-      
-      let data;
-      try {
-        // Clean up markdown code blocks if present (Gemini sometimes adds them despite MIME type)
-        const cleanJson = responseText.replace(/```json\n|\n```/g, '').trim();
-        data = JSON.parse(cleanJson);
-      } catch (e) {
-        console.warn("JSON Parse Failed, raw text:", responseText);
-        throw new Error("Failed to parse AI response. Try again.");
-      }
-      
+      const data = JSON.parse(responseText);
       setResult(data);
 
-      // --- AUTO LANGUAGE SWITCHING ---
-      if (data.detectedLanguage && data.detectedLanguage !== language) {
-        const supportedLangs = ['ru', 'en', 'uk', 'be', 'kk', 'uz', 'az', 'ky', 'tg', 'hy', 'tk'];
-        const detected = data.detectedLanguage.toLowerCase();
-        
-        if (supportedLangs.includes(detected)) {
-          setLanguage(detected as Language);
-          setAutoSwitched(detected.toUpperCase());
-          if (webApp?.HapticFeedback) webApp.HapticFeedback.impactOccurred('medium');
-        }
-      }
-
-    } catch (err: any) {
+    } catch (err) {
       console.error("AI ERROR:", err);
-      if (err.message && err.message.includes("403")) {
-         setError("Access Denied (403). Check your API Key.");
-      } else if (err.message && err.message.includes("500")) {
-         setError("AI Service Error (500). The model is temporarily overloaded.");
-      } else {
-         setError(t('ai_error') + ` (${err.message || 'Unknown'})`);
-      }
+      setError(t('ai_error'));
     } finally {
       setLoading(false);
     }
@@ -217,114 +163,25 @@ export const AiAnalyst: React.FC = () => {
     );
   };
 
+  // Secure Worker Code Display
   const workerCode = `export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    // Security: Inject Key on Server Side
+    // Securely inject API Key on the server side
     url.searchParams.set("key", env.API_KEY);
-    const targetUrl = "https://generativelanguage.googleapis.com" + url.pathname + url.search;
     
-    // Only allow specific methods/origins if needed
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type"
-        }
-      });
-    }
-
+    const targetUrl = "https://generativelanguage.googleapis.com" + url.pathname + url.search;
     const newRequest = new Request(targetUrl, {
       method: request.method,
       headers: request.headers,
       body: request.body,
     });
-    
-    const response = await fetch(newRequest);
-    const newResponse = new Response(response.body, response);
-    newResponse.headers.set("Access-Control-Allow-Origin", "*");
-    return newResponse;
+    return fetch(newRequest);
   },
 };`;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
-      
-      {/* Settings Panel (Collapsible) */}
-      <div className={`transition-all duration-300 ${showSettings ? 'mb-6' : 'mb-0'}`}>
-        <button 
-          onClick={() => setShowSettings(!showSettings)}
-          className="flex items-center gap-2 text-[10px] font-black text-indigo-300/60 hover:text-indigo-300 uppercase tracking-[0.2em] mb-2 ml-2"
-        >
-          <Settings size={14} />
-          {t('bridge_setup_title')}
-          {showSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
-
-        {showSettings && (
-          <div className="bg-black/60 p-5 rounded-3xl border border-indigo-500/30 animate-in slide-in-from-top-2">
-            
-            {/* Mode Switcher */}
-            <div className="flex bg-cyber-900/50 p-1 rounded-xl mb-4 border border-cyber-700">
-               <button 
-                onClick={() => setUseBridge(false)}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${!useBridge ? 'bg-indigo-600 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
-               >
-                 Direct Key
-               </button>
-               <button 
-                onClick={() => setUseBridge(true)}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${useBridge ? 'bg-indigo-600 text-white shadow' : 'text-gray-400 hover:text-gray-200'}`}
-               >
-                 Cloudflare Bridge
-               </button>
-            </div>
-
-            {useBridge ? (
-              <div className="space-y-4">
-                 <div>
-                    <label className="text-[10px] text-gray-400 font-bold uppercase ml-1 mb-1 block">Worker URL</label>
-                    <input 
-                      type="text"
-                      value={bridgeUrl}
-                      onChange={(e) => setBridgeUrl(e.target.value)}
-                      placeholder="https://your-worker.workers.dev"
-                      className="w-full bg-cyber-900 border border-cyber-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-indigo-500"
-                    />
-                 </div>
-                 <div className="bg-black/80 p-3 rounded-xl border border-cyber-700">
-                    <div className="flex items-center justify-between mb-2">
-                       <h5 className="text-[10px] font-bold text-indigo-400 flex items-center gap-1"><Code size={12}/> Worker Code</h5>
-                       <CopyButton text={workerCode} className="p-1 h-6 w-6" />
-                    </div>
-                    <pre className="text-[9px] text-gray-500 font-mono overflow-x-auto whitespace-pre max-h-20 opacity-70">
-                      {workerCode}
-                    </pre>
-                 </div>
-              </div>
-            ) : (
-              <div>
-                 <label className="text-[10px] text-gray-400 font-bold uppercase ml-1 mb-1 block">Gemini API Key</label>
-                 <div className="relative">
-                   <Key size={14} className="absolute left-3 top-3 text-gray-500" />
-                   <input 
-                    type="password"
-                    value={userApiKey}
-                    onChange={(e) => setUserApiKey(e.target.value)}
-                    placeholder="AIzaSy..."
-                    className="w-full bg-cyber-900 border border-cyber-700 rounded-xl p-3 pl-9 text-xs text-white focus:outline-none focus:border-indigo-500"
-                  />
-                 </div>
-                 <p className="text-[9px] text-gray-500 mt-2 ml-1">
-                   * Key is stored locally in your browser. Get one at <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-indigo-400 underline">aistudio.google.com</a>
-                 </p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
       {!result && !loading && (
         <div className="space-y-4 animate-in slide-in-from-top-4">
            <div className="text-center">
@@ -341,9 +198,9 @@ export const AiAnalyst: React.FC = () => {
 
       <div className="bg-gradient-to-br from-indigo-900/40 via-cyber-800 to-fuchsia-900/30 p-6 rounded-[2.5rem] border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-4 right-8 flex items-center gap-2">
-           <div className={`h-1.5 w-1.5 rounded-full ${useBridge && bridgeUrl ? 'bg-blue-400 animate-pulse' : (userApiKey ? 'bg-green-400' : 'bg-red-500')}`}></div>
+           <div className={`h-1.5 w-1.5 rounded-full ${useBridge && bridgeUrl ? 'bg-blue-400 animate-pulse' : 'bg-gray-600'}`}></div>
            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
-             {useBridge && bridgeUrl ? t('bridge_status_active') : (userApiKey ? 'DIRECT KEY' : 'NO CONFIG')}
+             {useBridge && bridgeUrl ? t('bridge_status_active') : t('bridge_status_direct')}
            </span>
         </div>
 
@@ -378,11 +235,38 @@ export const AiAnalyst: React.FC = () => {
             {loading ? t('ai_thinking') : t('ai_btn')}
           </button>
         </div>
-        
-        {error && (
-          <div className="mt-4 p-4 bg-red-900/30 border border-red-500/30 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-             <AlertTriangle className="text-red-400 shrink-0" size={18} />
-             <p className="text-xs text-red-200 font-medium leading-relaxed">{error}</p>
+
+        <button 
+          onClick={() => setShowBridgeSettings(!showBridgeSettings)}
+          className="mt-6 flex items-center gap-2 text-[10px] font-black text-indigo-300/40 hover:text-indigo-300 uppercase tracking-[0.2em]"
+        >
+          <Settings size={14} />
+          {t('bridge_toggle')}
+          {showBridgeSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </button>
+
+        {showBridgeSettings && (
+          <div className="mt-4 p-5 bg-black/60 rounded-3xl border border-indigo-500/20 animate-in slide-in-from-top-2">
+            <input 
+              type="text"
+              value={bridgeUrl}
+              onChange={(e) => setBridgeUrl(e.target.value)}
+              placeholder={t('bridge_url_placeholder')}
+              className="w-full bg-cyber-900 border border-cyber-700 rounded-xl p-3 text-xs text-white mb-4 focus:outline-none focus:border-indigo-500"
+            />
+            
+            <div className="space-y-3">
+              <h5 className="text-[10px] font-black text-indigo-400 uppercase flex items-center gap-2">
+                <Code size={14} />
+                {t('bridge_setup_title')} (SECURE MODE)
+              </h5>
+              <div className="bg-black/80 p-4 rounded-2xl border border-cyber-700 font-mono text-[10px] text-gray-400 relative overflow-hidden">
+                <pre className="overflow-x-auto whitespace-pre">{workerCode}</pre>
+                <div className="absolute top-2 right-2">
+                  <CopyButton text={workerCode} className="p-1.5 bg-cyber-800" />
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -390,16 +274,6 @@ export const AiAnalyst: React.FC = () => {
       {result && (
         <div ref={resultRef} className="space-y-4 animate-in slide-in-from-bottom-6 duration-700">
           <div className="bg-cyber-800 border border-cyber-700 p-7 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-            
-            {autoSwitched && (
-              <div className="mb-4 bg-indigo-500/20 border border-indigo-500/40 rounded-xl p-3 flex items-center gap-3 animate-pulse">
-                <Languages size={18} className="text-indigo-400" />
-                <span className="text-xs text-indigo-200">
-                  {t('ai_desc').includes('Опишите') ? "Язык автоматически переключен на Русский" : `Language automatically switched to ${autoSwitched}`}
-                </span>
-              </div>
-            )}
-
             <div className="flex items-center gap-4 mb-6 relative">
               <div className="bg-cyber-900/50 p-3 rounded-2xl border border-cyber-700">
                 {result.platform === 'ios' && <Smartphone className="text-purple-400" size={24} />}

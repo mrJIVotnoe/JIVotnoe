@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import './index.css';
+import { App } from './app/App';
+import { LanguageProvider } from './LanguageContext';
+import { TelegramProvider } from './TelegramContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -10,6 +13,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <TelegramProvider>
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    </TelegramProvider>
   </React.StrictMode>
 );
