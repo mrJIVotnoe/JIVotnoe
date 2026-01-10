@@ -1,7 +1,9 @@
+
 import React, { useState, useMemo } from 'react';
 import { ShieldCheck, Network, AlertCircle, Globe, Landmark, ShoppingBag, Hash, Filter } from 'lucide-react';
 import { CopyButton } from './CopyButton';
-import { REGIONAL_DATA, WhitelistEntry } from '../data';
+import { REGIONAL_DATA } from '../data';
+import { WhitelistEntry } from '../types';
 import { useLanguage } from '../LanguageContext';
 
 export const Whitelist: React.FC = () => {

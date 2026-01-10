@@ -10,22 +10,31 @@ interface StrategySelectorProps {
   selectedId: StrategyType;
   onSelect: (id: StrategyType) => void;
   showCommandPreview?: boolean;
+  customSni?: string;
 }
 
 export const StrategySelector: React.FC<StrategySelectorProps> = ({ 
   selectedId, 
   onSelect, 
-  showCommandPreview = true 
+  showCommandPreview = true,
+  customSni
 }) => {
   const { t, language } = useLanguage();
   const currentStrategy = STRATEGIES.find(s => s.id === selectedId) || STRATEGIES[0];
   
-  // Dynamic SNI based on language
+  // Dynamic SNI based on language or custom input
   const localizedSni = t('local_sni_example');
+  const effectiveSni = customSni || localizedSni;
   
-  // Robust substitution using the template variable
-  const currentCommand = currentStrategy.command.replace('{{SNI}}', localizedSni);
-  const ozonSniCommand = "-o1 -r-5+se -n " + localizedSni;
+  // Robust substitution using the template variable or regex fallback
+  let currentCommand = currentStrategy.command;
+  if (currentCommand.includes('{{SNI}}')) {
+    currentCommand = currentCommand.replace('{{SNI}}', effectiveSni);
+  } else {
+    currentCommand = currentCommand.replace(/-n [^\s]+/, `-n ${effectiveSni}`);
+  }
+  
+  const ozonSniCommand = "-o1 -r-5+se -n " + effectiveSni;
 
   return (
     <div className="space-y-6">

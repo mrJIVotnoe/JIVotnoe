@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-// Re-export the global type to ensure compatibility with existing imports
-export type TelegramWebApp = globalThis.TelegramWebApp;
-
+// Use the global TelegramWebApp type defined in types/telegram.d.ts
 interface TelegramContextType {
   webApp: TelegramWebApp | null;
   isTelegram: boolean;

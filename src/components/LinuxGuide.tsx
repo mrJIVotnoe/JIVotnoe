@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
@@ -16,12 +17,9 @@ export const LinuxGuide: React.FC = () => {
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
   
-  // Replace SNI and remove -d1 (daemon mode) for manual Linux running if needed, 
-  // though ciadpi usually runs in foreground by default unless daemonized.
-  // We use effectiveSni to generate the correct command.
   const strategyArgs = currentStrategy.command
     .replace('{{SNI}}', effectiveSni)
-    .replace(/-n [^\s]+/, `-n ${effectiveSni}`) // Double safety for direct replacements
+    .replace(/-n [^\s]+/, `-n ${effectiveSni}`) 
     .replace(/-d1\s?/, '');
 
   const port = "1080"; 
@@ -104,7 +102,7 @@ export https_proxy=http://127.0.0.1:${port}`;
             <div className="bg-cyber-800 p-8 rounded-[3rem] border border-cyber-700 shadow-xl">
                <div className="flex items-center gap-4 mb-6">
                   <div className="bg-teal-600 h-10 w-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg">1</div>
-                  <h3 className="font-black text-white text-lg uppercase tracking-tight">Бинарный запуск</h3>
+                  <h3 className="font-black text-white text-lg uppercase tracking-tight">{t('linux_binary_run')}</h3>
                </div>
                
                <div className="bg-black/60 rounded-2xl border border-teal-500/30 p-5 relative group mb-6">
@@ -131,12 +129,12 @@ export https_proxy=http://127.0.0.1:${port}`;
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-black/30 p-5 rounded-2xl border border-cyber-700 flex flex-col items-center text-center">
                      <Globe size={24} className="text-blue-400 mb-3" />
-                     <div className="text-[10px] text-gray-500 uppercase font-black mb-1">SOCKS5 Host</div>
+                     <div className="text-[10px] text-gray-500 uppercase font-black mb-1">{t('linux_socks_host')}</div>
                      <div className="text-sm font-mono text-white">127.0.0.1</div>
                   </div>
                   <div className="bg-black/30 p-5 rounded-2xl border border-cyber-700 flex flex-col items-center text-center">
                      <RefreshCw size={24} className="text-teal-400 mb-3" />
-                     <div className="text-[10px] text-gray-500 uppercase font-black mb-1">Port</div>
+                     <div className="text-[10px] text-gray-500 uppercase font-black mb-1">{t('linux_socks_port')}</div>
                      <div className="text-sm font-mono text-white">{port}</div>
                   </div>
                </div>

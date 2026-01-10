@@ -30,3 +30,17 @@ export interface DnsProvider {
   description: LocalizedString;
   type: 'security' | 'privacy' | 'backup';
 }
+
+export interface WhitelistEntry {
+  domain: string;
+  category: 'finance' | 'retail' | 'tech' | 'social' | 'gov';
+  note?: string;
+}
+
+export interface RegionWhitelist {
+  id: string;
+  name: string;
+  flag: string;
+  mimicry: WhitelistEntry[]; 
+  bypass: WhitelistEntry[];   
+}

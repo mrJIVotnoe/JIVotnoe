@@ -6,8 +6,8 @@ import { StrategyType } from '../types';
 import { SniScanner } from './SniScanner';
 import { CopyButton } from './CopyButton';
 import { STRATEGIES } from '../data';
+import { generateCommand } from '../utils/commandGenerator';
 
-// Note: Using named export to match src/config/sections.ts lazy load configuration
 export const AppleGuide: React.FC = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'macos' | 'ios'>('macos');
@@ -25,13 +25,15 @@ export const AppleGuide: React.FC = () => {
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
   
-  const strategyArgs = currentStrategy.command
-    .replace('{{SNI}}', effectiveSni)
-    .replace(/-n [^\s]+/, `-n ${effectiveSni}`)
-    .replace(/-d1\s?/, '');
+  const macCommand = generateCommand({
+    os: 'macos',
+    strategy: currentStrategy,
+    sni: effectiveSni,
+    port: 1080,
+    arch: arch
+  });
 
   const binaryName = arch === 'silicon' ? './ciadpi-aarch64' : './ciadpi-x86_64';
-  const macCommand = `${binaryName} -i 127.0.0.1 -p 1080 ${strategyArgs}`;
 
   // iOS Logic (VLESS Parser)
   const parseVless = (input: string) => {
@@ -82,10 +84,11 @@ export const AppleGuide: React.FC = () => {
 
       {activeTab === 'macos' && (
         <div className="space-y-8 animate-in slide-in-from-left-4">
+          {/* ... (Existing Intro) ... */}
           <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-6 rounded-[2rem] border border-gray-700 shadow-2xl relative overflow-hidden">
             <h3 className="text-xl font-black text-white mb-2 flex items-center gap-3">
               <Command className="text-gray-400" size={24} />
-              macOS Terminal Control
+              {t('macos_terminal_control')}
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
               {t('macos_desc')}
@@ -122,7 +125,7 @@ export const AppleGuide: React.FC = () => {
              <div className="bg-yellow-900/10 border border-yellow-500/20 p-4 rounded-2xl flex items-start gap-3">
                <AlertTriangle size={18} className="text-yellow-500 shrink-0 mt-0.5" />
                <div className="space-y-1">
-                 <p className="text-xs text-yellow-200 font-bold">Gatekeeper Warning</p>
+                 <p className="text-xs text-yellow-200 font-bold">{t('macos_gatekeeper_title')}</p>
                  <p className="text-[10px] text-yellow-200/70 leading-relaxed">
                    {t('macos_gatekeeper')}
                  </p>
@@ -205,30 +208,30 @@ export const AppleGuide: React.FC = () => {
                <div className="bg-blue-900/10 rounded-xl border border-blue-500/20 p-4 animate-in zoom-in-95 duration-300">
                   <div className="flex items-center gap-2 mb-4">
                      <Check className="text-green-400" size={16} />
-                     <span className="text-xs font-bold text-blue-200">Valid VLESS Configuration</span>
+                     <span className="text-xs font-bold text-blue-200">{t('ios_vless_valid')}</span>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                      <div className="bg-black/30 p-2 rounded-lg">
-                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Server Host</div>
+                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">{t('ios_field_host')}</div>
                         <div className="text-xs text-white font-mono truncate flex items-center gap-1">
                           <Server size={10} className="text-gray-400"/> {parsedKey.host}
                         </div>
                      </div>
                      <div className="bg-black/30 p-2 rounded-lg">
-                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">SNI (Camouflage)</div>
+                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">{t('ios_field_sni')}</div>
                         <div className="text-xs text-green-300 font-mono truncate flex items-center gap-1">
                           <Globe size={10} className="text-gray-400"/> {parsedKey.sni}
                         </div>
                      </div>
                      <div className="bg-black/30 p-2 rounded-lg">
-                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Security</div>
+                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">{t('ios_field_security')}</div>
                         <div className="text-xs text-white font-mono truncate flex items-center gap-1">
                           <ShieldCheck size={10} className="text-gray-400"/> {parsedKey.security}
                         </div>
                      </div>
                      <div className="bg-black/30 p-2 rounded-lg">
-                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Protocol</div>
+                        <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">{t('ios_field_proto')}</div>
                         <div className="text-xs text-white font-mono truncate">{parsedKey.type}</div>
                      </div>
                   </div>
@@ -236,17 +239,17 @@ export const AppleGuide: React.FC = () => {
                   {parsedKey.sni === 'none' && (
                     <div className="mt-3 text-[10px] text-orange-300 bg-orange-900/20 p-2 rounded border border-orange-500/20 flex gap-2">
                        <AlertTriangle size={12} className="shrink-0" />
-                       Warning: No SNI detected. This key might be easily blocked.
+                       {t('ios_warn_no_sni')}
                     </div>
                   )}
                </div>
              ) : keyInput ? (
                <div className="text-center p-4 text-xs text-red-400 bg-red-900/10 rounded-xl border border-red-900/20">
-                  Invalid or unsupported key format.
+                  {t('ios_err_invalid')}
                </div>
              ) : (
                <div className="text-center p-8 text-gray-600 text-xs border border-dashed border-cyber-700 rounded-xl">
-                  Paste a key to analyze its structure
+                  {t('ios_hint_paste')}
                </div>
              )}
           </div>
@@ -259,18 +262,18 @@ export const AppleGuide: React.FC = () => {
              <ol className="space-y-4 ml-2 border-l border-cyber-700 pl-6 relative">
                 <li className="relative">
                    <span className="absolute -left-[31px] bg-cyber-900 border border-cyber-600 rounded-full w-2.5 h-2.5 mt-1.5"></span>
-                   <p className="text-sm font-bold text-white mb-1">Скачайте V2Box</p>
-                   <p className="text-xs text-gray-400">Лучшее бесплатное решение в AppStore.</p>
+                   <p className="text-sm font-bold text-white mb-1">{t('ios_step_1')}</p>
+                   <p className="text-xs text-gray-400">{t('ios_step_1_desc')}</p>
                 </li>
                 <li className="relative">
                    <span className="absolute -left-[31px] bg-cyber-900 border border-cyber-600 rounded-full w-2.5 h-2.5 mt-1.5"></span>
-                   <p className="text-sm font-bold text-white mb-1">Скопируйте ключ</p>
-                   <p className="text-xs text-gray-400">Используйте ключ, проверенный в инспекторе выше.</p>
+                   <p className="text-sm font-bold text-white mb-1">{t('ios_step_2')}</p>
+                   <p className="text-xs text-gray-400">{t('ios_step_2_desc')}</p>
                 </li>
                 <li className="relative">
                    <span className="absolute -left-[31px] bg-cyber-900 border border-cyber-600 rounded-full w-2.5 h-2.5 mt-1.5"></span>
-                   <p className="text-sm font-bold text-white mb-1">Import from Clipboard</p>
-                   <p className="text-xs text-gray-400">V2Box автоматически определит настройки.</p>
+                   <p className="text-sm font-bold text-white mb-1">{t('ios_step_3')}</p>
+                   <p className="text-xs text-gray-400">{t('ios_step_3_desc')}</p>
                 </li>
              </ol>
           </div>

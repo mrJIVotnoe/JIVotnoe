@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { App } from './app/App';
 import { LanguageProvider } from './LanguageContext';
+import { TelegramProvider } from './TelegramContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,8 +13,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <LanguageProvider>
-      <App />
-    </LanguageProvider>
+    <TelegramProvider>
+      <LanguageProvider>
+        <App />
+      </LanguageProvider>
+    </TelegramProvider>
   </React.StrictMode>
 );

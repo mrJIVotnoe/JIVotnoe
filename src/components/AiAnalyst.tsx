@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal } from 'lucide-react';
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
-import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
-import { useTelegram } from '../shared/hooks/useTelegram';
+import { useTelegram } from '../TelegramContext';
+import { analyzeIssue, AiAnalysisResult } from '../services/aiService';
+import { WORKER_CODE_TEMPLATE } from '../config/constants';
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
@@ -12,12 +12,7 @@ export const AiAnalyst: React.FC = () => {
   
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ 
-    platform: 'android' | 'pc' | 'ios' | 'linux', 
-    explanation: string, 
-    command?: string,
-    steps: string[] 
-  } | null>(null);
+  const [result, setResult] = useState<AiAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [rated, setRated] = useState<'up' | 'down' | null>(null);
 
@@ -38,7 +33,7 @@ export const AiAnalyst: React.FC = () => {
     }
   }, [result]);
 
-  const analyzeProblem = async (overrideInput?: string) => {
+  const handleAnalyze = async (overrideInput?: string) => {
     const finalInput = overrideInput || input;
     if (!finalInput.trim()) {
       setError(t('ai_no_input'));
@@ -51,88 +46,16 @@ export const AiAnalyst: React.FC = () => {
     setRated(null);
 
     try {
-      // 1. Context Preparation
-      const strategiesContext = STRATEGIES.map(s => ({
-        id: s.id,
-        name: s.name[language] || s.name['en'],
-        command: s.command
-      }));
-
-      // 2. System Instruction
-      const systemInstruction = `You are "The Maestro of Network Neutrality", an elite engineer specializing in DPI bypass.
-        Goal: Analyze user issue and orchestrate a bypass solution.
-        Context: Strategies=${JSON.stringify(strategiesContext)}.
-        Persona: Strict but inspiring professor. Use metaphors like "packet fragmentation", "digital symphony".
-        Rules:
-        - If Android: Recommend ByeDPIManager.
-        - If iOS: Recommend V2Box (VLESS).
-        - If PC: Recommend ciadpi.exe with strategy.
-        - Output strictly JSON matching the schema.`;
-
-      let responseText = "";
-
-      // 3. Schema Definition (Strict Typing)
-      const responseSchema = {
-        type: Type.OBJECT,
-        properties: {
-          platform: { type: Type.STRING, enum: ['android', 'pc', 'ios', 'linux'] },
-          explanation: { type: Type.STRING },
-          command: { type: Type.STRING, description: "Only if applicable (PC/Linux)" },
-          steps: { type: Type.ARRAY, items: { type: Type.STRING } }
-        },
-        required: ["platform", "explanation", "steps"]
-      };
-
-      if (useBridge && bridgeUrl) {
-        // --- BRIDGE MODE (Advanced/Secure) ---
-        const cleanBridgeUrl = bridgeUrl.trim().replace(/\/$/, '');
-        // Note: The Bridge worker MUST handle API key injection for security.
-        // We do not append the key here in client code for Bridge mode.
-        const fullUrl = `${cleanBridgeUrl}/v1beta/models/gemini-3-flash-preview:generateContent`;
-        
-        const res = await fetch(fullUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: finalInput }] }],
-            config: {
-              systemInstruction,
-              responseMimeType: "application/json",
-              responseSchema: responseSchema
-            }
-          })
-        });
-
-        if (!res.ok) throw new Error(`Bridge Error: ${res.status}`);
-        const json = await res.json();
-        responseText = json.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-      } else {
-        // --- DIRECT MODE (Client-Side) ---
-        // Using "gemini-3-flash-preview" for text tasks as per guidelines.
-        // API Key strictly from process.env.API_KEY.
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        const response: GenerateContentResponse = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: finalInput,
-          config: {
-            systemInstruction,
-            responseMimeType: "application/json",
-            responseSchema: responseSchema
-          }
-        });
-        
-        responseText = response.text || "";
-      }
-
-      if (!responseText) throw new Error("Empty AI Response");
-      const data = JSON.parse(responseText);
+      const data = await analyzeIssue({
+        input: finalInput,
+        language,
+        useBridge,
+        bridgeUrl
+      });
       setResult(data);
-
-    } catch (err) {
-      console.error("AI ERROR:", err);
-      setError(t('ai_error'));
+    } catch (err: any) {
+      console.error("AI Service Error:", err);
+      setError(t('ai_error') + ` (${err.message})`);
     } finally {
       setLoading(false);
     }
@@ -153,7 +76,7 @@ export const AiAnalyst: React.FC = () => {
     };
     return (
       <button 
-        onClick={() => analyzeProblem(prompt)}
+        onClick={() => handleAnalyze(prompt)}
         disabled={loading}
         className={`flex flex-col items-center gap-3 p-4 rounded-3xl border transition-all hover:scale-[1.02] shadow-lg ${colorStyles[color]} active:scale-[0.98]`}
       >
@@ -162,23 +85,6 @@ export const AiAnalyst: React.FC = () => {
       </button>
     );
   };
-
-  // Secure Worker Code Display
-  const workerCode = `export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    // Securely inject API Key on the server side
-    url.searchParams.set("key", env.API_KEY);
-    
-    const targetUrl = "https://generativelanguage.googleapis.com" + url.pathname + url.search;
-    const newRequest = new Request(targetUrl, {
-      method: request.method,
-      headers: request.headers,
-      body: request.body,
-    });
-    return fetch(newRequest);
-  },
-};`;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
@@ -225,7 +131,7 @@ export const AiAnalyst: React.FC = () => {
             className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all min-h-[130px] resize-none font-medium placeholder-gray-600"
           />
           <button
-            onClick={() => analyzeProblem()}
+            onClick={() => handleAnalyze()}
             disabled={loading}
             className={`mt-4 w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
               loading ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white shadow-xl hover:shadow-indigo-500/20 active:scale-[0.98]'
@@ -234,6 +140,13 @@ export const AiAnalyst: React.FC = () => {
             {loading ? <Zap className="animate-spin" size={18} /> : <Zap size={18} />}
             {loading ? t('ai_thinking') : t('ai_btn')}
           </button>
+
+          <div className="flex justify-center mt-3">
+             <div className="flex items-center gap-1.5 text-[9px] text-gray-500 uppercase tracking-widest bg-black/20 px-3 py-1 rounded-full border border-white/5">
+                <Info size={10} />
+                {t('ai_powered_by')}
+             </div>
+          </div>
         </div>
 
         <button 
@@ -261,12 +174,18 @@ export const AiAnalyst: React.FC = () => {
                 {t('bridge_setup_title')} (SECURE MODE)
               </h5>
               <div className="bg-black/80 p-4 rounded-2xl border border-cyber-700 font-mono text-[10px] text-gray-400 relative overflow-hidden">
-                <pre className="overflow-x-auto whitespace-pre">{workerCode}</pre>
+                <pre className="overflow-x-auto whitespace-pre">{WORKER_CODE_TEMPLATE}</pre>
                 <div className="absolute top-2 right-2">
-                  <CopyButton text={workerCode} className="p-1.5 bg-cyber-800" />
+                  <CopyButton text={WORKER_CODE_TEMPLATE} className="p-1.5 bg-cyber-800" />
                 </div>
               </div>
             </div>
+          </div>
+        )}
+        
+        {error && (
+          <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-xl text-xs text-red-200 text-center animate-in fade-in">
+            {error}
           </div>
         )}
       </div>

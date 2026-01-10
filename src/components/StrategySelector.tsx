@@ -1,9 +1,10 @@
 import React from 'react';
 import { STRATEGIES } from '../data';
 import { StrategyType } from '../types';
-import { Shield, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, Info, Split, EyeOff, Activity, ShieldAlert, Cpu } from 'lucide-react';
 import { CopyButton } from './CopyButton';
 import { useLanguage } from '../LanguageContext';
+import { Tooltip } from '../shared/ui/Tooltip';
 
 interface StrategySelectorProps {
   selectedId: StrategyType;
@@ -21,12 +22,8 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   const { t, language } = useLanguage();
   const currentStrategy = STRATEGIES.find(s => s.id === selectedId) || STRATEGIES[0];
   
-  // Use custom SNI if provided, otherwise fallback to localized default
   const effectiveSni = customSni || t('local_sni_example');
   
-  // Robust command generation: 
-  // 1. First try to replace the explicit {{SNI}} placeholder
-  // 2. If not found (legacy data), fallback to regex replacement of existing -n arg
   const getLocalizedCommand = (command: string) => {
     if (command.includes('{{SNI}}')) {
       return command.replace('{{SNI}}', effectiveSni);
@@ -35,9 +32,58 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   };
 
   const currentCommand = getLocalizedCommand(currentStrategy.command);
-  
-  // Hardcoded backup command for Ozon strategy (Simplified version)
   const ozonSniCommand = `-o1 -r-5+se -n ${effectiveSni}`;
+
+  // Helper to render command anatomy with tooltips
+  const renderCommandAnatomy = (cmd: string) => {
+    const parts = cmd.split(' ');
+    
+    return (
+      <div className="flex flex-wrap gap-2 font-mono text-sm mt-2">
+        {parts.map((part, idx) => {
+          let description = "";
+          let color = "text-gray-300";
+          let icon = null;
+
+          if (part.startsWith('-o')) {
+            description = t('cmd_desc_o');
+            color = "text-orange-400 font-bold";
+            icon = <Split size={12} />;
+          } else if (part.startsWith('-r')) {
+            description = t('cmd_desc_r');
+            color = "text-blue-400";
+          } else if (part.startsWith('-n')) {
+            description = t('cmd_desc_n'); // Skip next arg usually, but simplified here
+            color = "text-green-400 font-bold";
+            icon = <EyeOff size={12} />;
+          } else if (part.includes('.')) { 
+            // Likely the domain
+            description = t('cmd_desc_domain');
+            color = "text-green-300 underline decoration-dashed";
+          } else if (part.startsWith('-a')) {
+            description = t('cmd_desc_a');
+            color = "text-purple-400";
+          } else if (part.startsWith('-f')) {
+             description = t('cmd_desc_f');
+             color = "text-red-400";
+             icon = <ShieldAlert size={12} />;
+          } else if (part.startsWith('-At')) {
+             description = t('cmd_desc_At');
+             color = "text-cyan-400";
+          }
+
+          return (
+            <Tooltip key={idx} content={description || t('cmd_desc_generic')}>
+              <span className={`cursor-help hover:bg-white/10 rounded px-1 transition-colors flex items-center gap-1 ${color}`}>
+                {icon}
+                {part}
+              </span>
+            </Tooltip>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -83,11 +129,17 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
             <CheckCircle className="text-cyber-accent" size={20} />
             {t('command_preview')}
           </h3>
-          <div className="bg-black/50 p-4 rounded-lg font-mono text-sm text-green-400 break-all relative group shadow-inner">
-            {currentCommand}
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          
+          <div className="bg-black/50 p-4 rounded-lg relative group shadow-inner border border-white/5">
+             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <CopyButton text={currentCommand} />
             </div>
+            {renderCommandAnatomy(currentCommand)}
+          </div>
+          
+          <div className="mt-3 flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest">
+            <Cpu size={12} />
+            <span>{t('command_tooltip_hint')}</span>
           </div>
           
           <p className="mt-4 text-sm text-gray-400">

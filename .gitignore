@@ -13,6 +13,13 @@ dist
 dist-ssr
 *.local
 
+# Environment Variables (Secrets) - CRITICAL
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,3 +30,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# OS Generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
