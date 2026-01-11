@@ -1,3 +1,5 @@
+import { StrategyType } from './strategies'
+
 export type Platform =
   | 'windows'
   | 'linux'
@@ -17,7 +19,7 @@ export interface DecisionInput {
 }
 
 export interface DecisionResult {
-  strategy: import('./strategies').StrategyType
+  strategy: StrategyType
   confidence: number
   explanation: string[]
 }

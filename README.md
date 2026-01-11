@@ -6,7 +6,8 @@
 
 ## 🌟 Ключевые фичи
 - Мультиплатформенные гайды и настройки.
-- AI Analyst на базе Google Gemini для диагностики проблем (e.g., "YouTube тормозит на Xiaomi TV").
+- **Core Engine v0.1**: Детерминированное ядро для выбора стратегий обхода.
+- AI Analyst на базе Google Gemini для диагностики проблем.
 - Стратегии для ByeDPI: STANDARD, TELEGRAM_FIX и т.д.
 - Поддержка Telegram Web App и PWA.
 - Локализация на 20+ языков.
@@ -20,8 +21,10 @@
 4. Запусти: `npm run dev`
 5. Билд: `npm run build`
 
-## 🧠 AI Интеграция
-Использует @google/genai для анализа пользовательских запросов.
+## 🧠 Architecture
+- **Feature-Sliced Design**: Модульная структура (`src/features`, `src/shared`).
+- **Core (`src/core`)**: Изолированное ядро логики принятия решений.
+- **Store (`src/store`)**: Zustand stores с персистенцией и адаптерами к Core.
 
 ## ⚠️ Disclaimer
 Для образовательных целей. Не поощряем обход блокировок, где это незаконно.
