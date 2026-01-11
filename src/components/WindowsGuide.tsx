@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { StrategySelector } from './StrategySelector';
-import { StrategyType } from '../types';
+import React from 'react';
+import { StrategySelector } from '../features/strategies/components/StrategySelector';
 import { STRATEGIES } from '../data';
-import { CopyButton } from './CopyButton';
-import { Download, Command, AlertTriangle, Zap, RotateCcw, FileDown } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { CopyButton } from '../shared/ui/CopyButton';
+import { Download, Command, AlertTriangle, RotateCcw, FileDown } from 'lucide-react';
+import { useLanguage } from '../features/localization/LanguageContext';
 import { Collapsible } from '../shared/ui/Collapsible';
-import { SniScanner } from './SniScanner';
+import { SniScanner } from '../features/strategies/components/SniScanner';
+import { useStrategiesStore } from '../store/strategies.store';
 
 export const WindowsGuide: React.FC = () => {
   const { t, language } = useLanguage();
-  const [selectedStrategyId, setSelectedStrategyId] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
-  const [customSni, setCustomSni] = useState<string>('');
+  
+  // Use Store instead of local state
+  const { selectedStrategyId, customSni, setCustomSni } = useStrategiesStore();
   
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
@@ -108,12 +109,7 @@ pause`;
         {/* SNI Scanner Integration */}
         <SniScanner onSelect={setCustomSni} />
         
-        <StrategySelector 
-          selectedId={selectedStrategyId} 
-          onSelect={setSelectedStrategyId} 
-          showCommandPreview={false}
-          customSni={customSni}
-        />
+        <StrategySelector showCommandPreview={false} />
       </div>
 
       <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700 relative overflow-hidden">

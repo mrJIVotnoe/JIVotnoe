@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
-import { STRATEGIES } from '../data';
-import { Language } from '../types';
+import { STRATEGIES } from '../../strategies/data';
+import { Language } from '../../../types';
 
 export interface AiAnalysisResult {
   platform: 'android' | 'pc' | 'ios' | 'linux';
@@ -79,15 +79,12 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl }: An
 
   } else {
     // Direct Client Mode
-    // Support both specific VITE_ key (as per README) and standard API_KEY
-    const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
-
     // Check for API Key existence to prevent obscure crashes for GitHub cloners
-    if (!apiKey) {
+    if (!process.env.API_KEY) {
       throw new Error("API Key is missing. Please create a .env.local file with VITE_GEMINI_API_KEY.");
     }
 
-    const ai = new GoogleGenAI({ apiKey: apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: input,

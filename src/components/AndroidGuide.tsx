@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Bot, Globe } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 export const AndroidGuide: React.FC = () => {
   const { t } = useLanguage();

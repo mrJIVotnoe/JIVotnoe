@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tv, Smartphone, ArrowRight, Download, Cloud, Share2 } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 export const AndroidTvGuide: React.FC = () => {
   const { t } = useLanguage();

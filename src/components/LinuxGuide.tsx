@@ -1,18 +1,18 @@
-
 import React, { useState } from 'react';
 import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
-import { StrategySelector } from './StrategySelector';
-import { StrategyType } from '../types';
+import { useLanguage } from '../features/localization/LanguageContext';
+import { StrategySelector } from '../features/strategies/components/StrategySelector';
 import { STRATEGIES } from '../data';
-import { CopyButton } from './CopyButton';
-import { SniScanner } from './SniScanner';
+import { CopyButton } from '../shared/ui/CopyButton';
+import { SniScanner } from '../features/strategies/components/SniScanner';
+import { useStrategiesStore } from '../store/strategies.store';
 
 export const LinuxGuide: React.FC = () => {
   const { t, language } = useLanguage();
-  const [selectedStrategyId, setSelectedStrategyId] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
   const [activeSubTab, setActiveSubTab] = useState<'desktop' | 'server' | 'systemd'>('desktop');
-  const [customSni, setCustomSni] = useState<string>('');
+  
+  // Use Store
+  const { selectedStrategyId, customSni, setCustomSni } = useStrategiesStore();
   
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
@@ -88,12 +88,7 @@ export https_proxy=http://127.0.0.1:${port}`;
            <SniScanner onSelect={setCustomSni} />
          </div>
 
-         <StrategySelector 
-            selectedId={selectedStrategyId} 
-            onSelect={setSelectedStrategyId} 
-            showCommandPreview={false} 
-            customSni={customSni}
-         />
+         <StrategySelector showCommandPreview={false} />
       </div>
 
       <div className="space-y-6">

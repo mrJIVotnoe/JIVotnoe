@@ -4,7 +4,7 @@ import { Language } from './types';
 // Полная база английских ключей (Source of Truth)
 const en = {
     app_title: "ByeDPI Mate",
-    subtitle: "v1.1.0 • Neural Sentinel • 2025",
+    subtitle: "v1.7.0 • Neural Sentinel • 2025",
     
     // Tabs
     tab_android: "Android / TV",
@@ -184,26 +184,33 @@ const en = {
     tv_direct_step_2: "Transfer",
     tv_direct_step_2_desc: "Send APK from Phone to TV directly.",
 
-    // FAQ REWORK
-    faq_title: "Knowledge Base & Protocol",
-    faq_search: "Search database...",
-    faq_cat_basics: "Basics & Mechanics",
-    faq_cat_trouble: "Troubleshooting",
-    faq_cat_security: "Security & Privacy",
-    faq_q_yt: "Why does YouTube still buffer/lag?",
-    faq_a_yt: "YouTube uses QUIC (UDP) protocol which is harder to filter. ByeDPI works best with TCP. Solution: Block QUIC in your browser (chrome://flags -> Experimental QUIC protocol -> Disabled) to force TCP mode.",
-    faq_q_av: "Antivirus says 'ciadpi.exe' is a threat!",
-    faq_a_av: "False Positive. This is command-line network software that intercepts packets (like a local Man-in-the-Middle). Antiviruses often flag generic packet modifiers. Check the file on VirusTotal if unsure.",
-    faq_q_vpn: "Is this a VPN? Does it hide me?",
-    faq_a_vpn: "NO. This is a Packet Modifier (DPI Bypass). Your IP address remains visible to sites. Your provider can still see WHERE you connect, but cannot see/block the CONTENT due to packet fragmentation. It provides Access, not Anonymity.",
-    faq_q_mobile: "Why is it hard on Mobile?",
-    faq_a_mobile: "Desktop OS allow full network control. Android/iOS lock this down. Mobile apps must act as a 'Fake VPN' to intercept traffic, which is battery-intensive and restricted by the OS.",
-    faq_q_sni: "What is SNI and why change it?",
-    faq_a_sni: "SNI (Server Name Indication) is the label on your envelope telling the provider where you are going. Using '-n google.com' puts a fake label on the envelope, confusing the censorship machine.",
-    faq_q_discord: "Voice chat in Discord is broken!",
-    faq_a_discord: "Voice uses UDP. ByeDPI handles TCP well. For full UDP support, you might need 'Zapret' (Linux/Router) or a full VPN (VLESS/Amnezia).",
-    faq_q_blocked: "Provider blocked access completely!",
-    faq_a_blocked: "If the IP address of the server is blacklisted (not just the domain), DPI bypass won't help. You need a proxy or VPN with an IP outside the blocked region.",
+    // FAQ REWORK - Dot Notation
+    "faq.title": "Knowledge Base & Protocol",
+    "faq.search.placeholder": "Search database...",
+    "faq.category.basics": "Basics & Mechanics",
+    "faq.category.trouble": "Troubleshooting",
+    "faq.category.security": "Security & Privacy",
+    
+    "faq.q.yt": "Why does YouTube still buffer/lag?",
+    "faq.a.yt": "YouTube uses QUIC (UDP) protocol which is harder to filter. ByeDPI works best with TCP. Solution: Block QUIC in your browser (chrome://flags -> Experimental QUIC protocol -> Disabled) to force TCP mode.",
+    
+    "faq.q.av": "Antivirus says 'ciadpi.exe' is a threat!",
+    "faq.a.av": "False Positive. This is command-line network software that intercepts packets (like a local Man-in-the-Middle). Antiviruses often flag generic packet modifiers. Check the file on VirusTotal if unsure.",
+    
+    "faq.q.vpn": "Is this a VPN? Does it hide me?",
+    "faq.a.vpn": "NO. This is a Packet Modifier (DPI Bypass). Your IP address remains visible to sites. Your provider can still see WHERE you connect, but cannot see/block the CONTENT due to packet fragmentation. It provides Access, not Anonymity.",
+    
+    "faq.q.mobile": "Why is it hard on Mobile?",
+    "faq.a.mobile": "Desktop OS allow full network control. Android/iOS lock this down. Mobile apps must act as a 'Fake VPN' to intercept traffic, which is battery-intensive and restricted by the OS.",
+    
+    "faq.q.sni": "What is SNI and why change it?",
+    "faq.a.sni": "SNI (Server Name Indication) is the label on your envelope telling the provider where you are going. Using '-n google.com' puts a fake label on the envelope, confusing the censorship machine.",
+    
+    "faq.q.discord": "Voice chat in Discord is broken!",
+    "faq.a.discord": "Voice uses UDP. ByeDPI works best with TCP. For full UDP support, you might need 'Zapret' (Linux/Router) or a full VPN (VLESS/Amnezia).",
+    
+    "faq.q.blocked": "Provider blocked access completely!",
+    "faq.a.blocked": "If the IP address of the server is blacklisted (not just the domain), DPI bypass won't help. You need a proxy or VPN with an IP outside the blocked region.",
 
     // Extensions & Bridge
     bridge_toggle: "Neural Bridge",
@@ -255,6 +262,8 @@ export const translations: Record<string, Record<string, string>> = {
     
     // Переопределения для Русского
     app_title: "ByeDPI Mate",
+    subtitle: "v1.7.0 • Neural Sentinel • 2025",
+    
     tab_android: "Android / TV",
     tab_windows: "Windows",
     tab_linux: "Linux",
@@ -423,26 +432,33 @@ export const translations: Record<string, Record<string, string>> = {
     tv_direct_step_2: "Передача",
     tv_direct_step_2_desc: "Отправьте APK с телефона на ТВ напрямую.",
 
-    // FAQ REWORK
-    faq_title: "База Знаний и Протоколы",
-    faq_search: "Поиск по базе...",
-    faq_cat_basics: "Основы и Механика",
-    faq_cat_trouble: "Диагностика Проблем",
-    faq_cat_security: "Безопасность",
-    faq_q_yt: "Почему YouTube все еще тормозит?",
-    faq_a_yt: "YouTube использует протокол QUIC (UDP), который сложнее фильтровать. ByeDPI лучше работает с TCP. Решение: Отключите QUIC в браузере (chrome://flags -> Experimental QUIC protocol -> Disabled), чтобы заставить YouTube использовать TCP.",
-    faq_q_av: "Антивирус удаляет 'ciadpi.exe'!",
-    faq_a_av: "Это ложное срабатывание (False Positive). Программа перехватывает трафик (как локальный Man-in-the-Middle) для его модификации. Антивирусы помечают любое такое поведение как 'RiskTool'. Добавьте папку в исключения.",
-    faq_q_vpn: "Это VPN? Скрывает ли он меня?",
-    faq_a_vpn: "НЕТ. Это модификатор пакетов. Ваш IP-адрес виден сайтам. Ваш провайдер видит, КУДА вы идете (IP сервера), но не может заблокировать контент из-за фрагментации пакетов. Это инструмент Доступа, а не Анонимности.",
-    faq_q_mobile: "Почему на телефоне сложнее?",
-    faq_a_mobile: "На ПК у программ есть прямой доступ к сети. Android/iOS изолируют приложения. Мобильным утилитам приходится притворяться 'Локальным VPN', чтобы перехватить трафик, что тратит батарею и имеет ограничения ОС.",
-    faq_q_sni: "Что такое SNI и зачем его менять?",
-    faq_a_sni: "SNI (Server Name Indication) — это 'наклейка на конверте', говорящая провайдеру, куда вы идете. Использование '-n ozon.ru' меняет наклейку на разрешенную, сбивая с толку цензуру.",
-    faq_q_discord: "Не работает голос в Discord!",
-    faq_a_discord: "Голос использует UDP. ByeDPI работает с TCP. Для голосовой связи лучше подходит Zapret (на роутере/Linux) или полноценный VPN (Amnezia/VLESS).",
-    faq_q_blocked: "Провайдер заблокировал всё!",
-    faq_a_blocked: "Если заблокирован сам IP-адрес сервера (а не домен), DPI обход не поможет. В этом случае нужен прокси или VPN с зарубежным IP.",
+    // FAQ REWORK - Dot Notation
+    "faq.title": "База Знаний и Протоколы",
+    "faq.search.placeholder": "Поиск по базе...",
+    "faq.category.basics": "Основы и Механика",
+    "faq.category.trouble": "Диагностика Проблем",
+    "faq.category.security": "Безопасность",
+    
+    "faq.q.yt": "Почему YouTube все еще тормозит?",
+    "faq.a.yt": "YouTube использует протокол QUIC (UDP), который сложнее фильтровать. ByeDPI лучше работает с TCP. Решение: Отключите QUIC в браузере (chrome://flags -> Experimental QUIC protocol -> Disabled), чтобы заставить YouTube использовать TCP.",
+    
+    "faq.q.av": "Антивирус удаляет 'ciadpi.exe'!",
+    "faq.a.av": "Это ложное срабатывание (False Positive). Программа перехватывает трафик (как локальный Man-in-the-Middle) для его модификации. Антивирусы помечают любое такое поведение как 'RiskTool'. Добавьте папку в исключения.",
+    
+    "faq.q.vpn": "Это VPN? Скрывает ли он меня?",
+    "faq.a.vpn": "НЕТ. Это модификатор пакетов. Ваш IP-адрес виден сайтам. Ваш провайдер видит, КУДА вы идете (IP сервера), но не может заблокировать контент из-за фрагментации пакетов. Это инструмент Доступа, а не Анонимности.",
+    
+    "faq.q.mobile": "Почему на телефоне сложнее?",
+    "faq.a.mobile": "На ПК у программ есть прямой доступ к сети. Android/iOS изолируют приложения. Мобильным утилитам приходится притворяться 'Локальным VPN', чтобы перехватить трафик, что тратит батарею и имеет ограничения ОС.",
+    
+    "faq.q.sni": "Что такое SNI и зачем его менять?",
+    "faq.a.sni": "SNI (Server Name Indication) — это 'наклейка на конверте', говорящая провайдеру, куда вы идете. Использование '-n ozon.ru' меняет наклейку на разрешенную, сбивая с толку цензуру.",
+    
+    "faq.q.discord": "Не работает голос в Discord!",
+    "faq.a.discord": "Голос использует UDP. ByeDPI работает с TCP. Для голосовой связи лучше подходит Zapret (на роутере/Linux) или полноценный VPN (Amnezia/VLESS).",
+    
+    "faq.q.blocked": "Провайдер заблокировал всё!",
+    "faq.a.blocked": "Если заблокирован сам IP-адрес сервера (а не домен), DPI обход не поможет. В этом случае нужен прокси или VPN с зарубежным IP.",
 
     bridge_toggle: "Neural Bridge",
     bridge_status_active: "ТУННЕЛЬ АКТИВЕН",
@@ -468,7 +484,7 @@ export const translations: Record<string, Record<string, string>> = {
     disclaimer_text: "Это ПО является образовательным инструментом. Разработчики не несут ответственности за использование сгенерированных конфигураций. Используйте на свой страх и риск.",
     privacy_header: "Данные",
     privacy_point_1: "Мы не собираем ваш IP или историю браузера.",
-    privacy_point_2: "AI-запросы отправляются напрямую в Google Gemini API.",
+    privacy_point_2: "AI requests are sent directly to Google Gemini API.",
     privacy_point_3: "Все настройки хранятся локально на вашем устройстве.",
     privacy_link: "Политика конфиденциальности",
     close_btn: "Я понимаю",
@@ -483,4 +499,3 @@ export const translations: Record<string, Record<string, string>> = {
     bridge_url_placeholder: "URL воркера Cloudflare"
   }
 };
-    

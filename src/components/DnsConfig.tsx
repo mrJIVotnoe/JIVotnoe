@@ -1,8 +1,8 @@
 import React from 'react';
 import { DNS_SERVERS } from '../data';
-import { CopyButton } from './CopyButton';
+import { CopyButton } from '../shared/ui/CopyButton';
 import { Globe } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 export const DnsConfig: React.FC = () => {
   const { t, language } = useLanguage();

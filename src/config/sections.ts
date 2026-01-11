@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 // Lazy load features to improve initial bundle size
-const AiAnalyst = lazy(() => import('../components/AiAnalyst').then(m => ({ default: m.AiAnalyst })));
+const AiAnalyst = lazy(() => import('../features/ai/components/AiAnalyst').then(m => ({ default: m.AiAnalyst })));
 const AndroidSection = lazy(() => import('../features/android/AndroidSection'));
 const WindowsGuide = lazy(() => import('../components/WindowsGuide').then(m => ({ default: m.WindowsGuide })));
 const LinuxGuide = lazy(() => import('../components/LinuxGuide').then(m => ({ default: m.LinuxGuide })));

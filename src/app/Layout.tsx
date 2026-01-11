@@ -1,6 +1,6 @@
 import React, { ReactNode, PropsWithChildren, useEffect, useState } from 'react';
 import { Activity, Star, Share2, Globe, Shield } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 import { useTelegram } from '../shared/hooks/useTelegram';
 import { Navigation } from '../shared/ui/Navigation';
 import { ExtensionProxyToggle } from '../components/ExtensionProxyToggle';

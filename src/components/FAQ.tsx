@@ -1,38 +1,57 @@
+
 import React, { useState } from 'react';
 import { HelpCircle, AlertTriangle, ShieldAlert, Smartphone, Zap, Search, LifeBuoy, WifiOff, VolumeX } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 import { FeedbackSystem } from './FeedbackSystem';
 import { Collapsible } from '../shared/ui/Collapsible';
+
+const faqKeys = {
+  title: 'faq.title',
+  searchPlaceholder: 'faq.search.placeholder',
+  categories: {
+    basics: 'faq.category.basics',
+    troubleshooting: 'faq.category.trouble',
+    security: 'faq.category.security'
+  },
+  questions: {
+    yt: { q: 'faq.q.yt', a: 'faq.a.yt' },
+    sni: { q: 'faq.q.sni', a: 'faq.a.sni' },
+    vpn: { q: 'faq.q.vpn', a: 'faq.a.vpn' },
+    av: { q: 'faq.q.av', a: 'faq.a.av' },
+    discord: { q: 'faq.q.discord', a: 'faq.a.discord' },
+    blocked: { q: 'faq.q.blocked', a: 'faq.a.blocked' },
+    mobile: { q: 'faq.q.mobile', a: 'faq.a.mobile' }
+  }
+};
 
 export const FAQ: React.FC = () => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
 
-  // Structure matches src/translations.ts EXACTLY
   const categories = [
     {
       id: 'basics',
-      title: t('faq_cat_basics'),
+      title: t(faqKeys.categories.basics),
       items: [
-        { q: t('faq_q_yt'), a: t('faq_a_yt'), icon: <Zap className="text-red-400" /> },
-        { q: t('faq_q_sni'), a: t('faq_a_sni'), icon: <HelpCircle className="text-blue-400" /> },
-        { q: t('faq_q_vpn'), a: t('faq_a_vpn'), icon: <ShieldAlert className="text-orange-400" /> },
+        { q: t(faqKeys.questions.yt.q), a: t(faqKeys.questions.yt.a), icon: <Zap className="text-red-400" /> },
+        { q: t(faqKeys.questions.sni.q), a: t(faqKeys.questions.sni.a), icon: <HelpCircle className="text-blue-400" /> },
+        { q: t(faqKeys.questions.vpn.q), a: t(faqKeys.questions.vpn.a), icon: <ShieldAlert className="text-orange-400" /> },
       ]
     },
     {
       id: 'trouble',
-      title: t('faq_cat_trouble'),
+      title: t(faqKeys.categories.troubleshooting),
       items: [
-        { q: t('faq_q_av'), a: t('faq_a_av'), icon: <AlertTriangle className="text-yellow-400" /> },
-        { q: t('faq_q_discord'), a: t('faq_a_discord'), icon: <VolumeX className="text-indigo-400" /> },
-        { q: t('faq_q_blocked'), a: t('faq_a_blocked'), icon: <WifiOff className="text-red-500" /> },
+        { q: t(faqKeys.questions.av.q), a: t(faqKeys.questions.av.a), icon: <AlertTriangle className="text-yellow-400" /> },
+        { q: t(faqKeys.questions.discord.q), a: t(faqKeys.questions.discord.a), icon: <VolumeX className="text-indigo-400" /> },
+        { q: t(faqKeys.questions.blocked.q), a: t(faqKeys.questions.blocked.a), icon: <WifiOff className="text-red-500" /> },
       ]
     },
     {
-      id: 'mobile',
-      title: t('faq_cat_security'), // Mapping Mobile to Security/Other for now as per translations
+      id: 'security',
+      title: t(faqKeys.categories.security), 
       items: [
-        { q: t('faq_q_mobile'), a: t('faq_a_mobile'), icon: <Smartphone className="text-green-400" /> },
+        { q: t(faqKeys.questions.mobile.q), a: t(faqKeys.questions.mobile.a), icon: <Smartphone className="text-green-400" /> },
       ]
     }
   ];
@@ -55,13 +74,13 @@ export const FAQ: React.FC = () => {
         <div className="relative z-10">
           <h3 className="text-2xl font-black text-white mb-4 flex items-center gap-3">
             <LifeBuoy className="text-orange-400" size={28} />
-            {t('faq_title')}
+            {t(faqKeys.title)}
           </h3>
           
           <div className="relative max-w-md">
              <input 
                type="text" 
-               placeholder={t('faq_search')}
+               placeholder={t(faqKeys.searchPlaceholder)}
                value={search}
                onChange={(e) => setSearch(e.target.value)}
                className="w-full bg-black/40 border border-cyber-600 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-orange-500 transition-all placeholder-gray-500"

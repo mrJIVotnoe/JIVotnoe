@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, ShieldAlert, FileText, Lock } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 interface PrivacyModalProps {
   isOpen: boolean;

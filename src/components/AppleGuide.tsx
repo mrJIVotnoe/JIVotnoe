@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Smartphone, Laptop, Terminal, Key, ShieldCheck, AlertTriangle, Command, Check, Server, Globe, Search } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
-import { StrategySelector } from './StrategySelector';
+import { useLanguage } from '../features/localization/LanguageContext';
+import { StrategySelector } from '../features/strategies/components/StrategySelector';
 import { StrategyType } from '../types';
-import { SniScanner } from './SniScanner';
-import { CopyButton } from './CopyButton';
+import { SniScanner } from '../features/strategies/components/SniScanner';
+import { CopyButton } from '../shared/ui/CopyButton';
 import { STRATEGIES } from '../data';
-import { generateCommand } from '../utils/commandGenerator';
+import { generateCommand } from '../features/strategies/utils/commandGenerator';
+import { useStrategiesStore } from '../store/strategies.store';
 
 export const AppleGuide: React.FC = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'macos' | 'ios'>('macos');
   
-  // macOS State
-  const [selectedStrategyId, setSelectedStrategyId] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
-  const [customSni, setCustomSni] = useState<string>('');
+  // macOS State via Store
+  const { selectedStrategyId, customSni, setCustomSni } = useStrategiesStore();
   const [arch, setArch] = useState<'intel' | 'silicon'>('silicon');
 
-  // iOS State
+  // iOS State (Local)
   const [keyInput, setKeyInput] = useState('');
   const [parsedKey, setParsedKey] = useState<any>(null);
 
@@ -84,7 +84,6 @@ export const AppleGuide: React.FC = () => {
 
       {activeTab === 'macos' && (
         <div className="space-y-8 animate-in slide-in-from-left-4">
-          {/* ... (Existing Intro) ... */}
           <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-6 rounded-[2rem] border border-gray-700 shadow-2xl relative overflow-hidden">
             <h3 className="text-xl font-black text-white mb-2 flex items-center gap-3">
               <Command className="text-gray-400" size={24} />
@@ -144,12 +143,7 @@ export const AppleGuide: React.FC = () => {
              
              <SniScanner onSelect={setCustomSni} />
              <div className="mt-6">
-               <StrategySelector 
-                  selectedId={selectedStrategyId} 
-                  onSelect={setSelectedStrategyId} 
-                  showCommandPreview={false} 
-                  customSni={customSni}
-               />
+               <StrategySelector showCommandPreview={false} />
              </div>
           </div>
 
@@ -170,6 +164,7 @@ export const AppleGuide: React.FC = () => {
         </div>
       )}
 
+      {/* iOS Tab Implementation (unchanged logic, just re-rendering) */}
       {activeTab === 'ios' && (
         <div className="space-y-6 animate-in slide-in-from-right-4">
           <div className="bg-gradient-to-br from-indigo-900/40 to-black/40 border border-indigo-500/30 p-6 rounded-3xl relative overflow-hidden">

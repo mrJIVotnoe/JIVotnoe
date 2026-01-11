@@ -1,6 +1,6 @@
 import { Language } from '../types';
 
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.7.0";
 
 export const AVAILABLE_LANGUAGES: {code: Language, label: string}[] = [
   {code: 'ru', label: '🇷🇺 Русский'}, 

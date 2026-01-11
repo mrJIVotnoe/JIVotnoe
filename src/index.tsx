@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { App } from './app/App';
-import { LanguageProvider } from './LanguageContext';
-import { TelegramProvider } from './TelegramContext';
+import { LanguageProvider } from './features/localization/LanguageContext';
+import { TelegramProvider } from './features/telegram/TelegramContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

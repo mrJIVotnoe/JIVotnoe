@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Smartphone, HelpCircle, Bot, Monitor, ListFilter, Globe, Share2, TerminalSquare, Sparkles, Music, Star } from 'lucide-react';
-import { StrategySelector } from './components/StrategySelector';
+import { StrategySelector } from './features/strategies/components/StrategySelector';
 import { DnsConfig } from './components/DnsConfig';
 import { FAQ } from './components/FAQ';
 import { IosGuide } from './components/IosGuide';
@@ -11,11 +11,12 @@ import { VpnRegionGuide } from './components/VpnRegionGuide';
 import { ExtensionProxyToggle } from './components/ExtensionProxyToggle';
 import { AndroidTvGuide } from './components/AndroidTvGuide';
 import { AndroidGuide } from './components/AndroidGuide';
-import { AiAnalyst } from './components/AiAnalyst';
+import { AiAnalyst } from './features/ai/components/AiAnalyst';
 import { QrModal } from './components/QrModal';
-import { StrategyType, Language } from './types';
-import { LanguageProvider, useLanguage } from './LanguageContext';
-import { TelegramProvider, useTelegram } from './TelegramContext';
+import { Language } from './types';
+import { LanguageProvider, useLanguage } from './features/localization/LanguageContext';
+import { TelegramProvider, useTelegram } from './features/telegram/TelegramContext';
+import { AVAILABLE_LANGUAGES } from './config/constants';
 
 declare const chrome: any;
 
@@ -34,8 +35,6 @@ const MainApp = () => {
     return 'ai';
   });
   
-  const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>(StrategyType.SHUTDOWN_OZON);
-
   useEffect(() => {
     setIsExtension(isExtensionEnv());
   }, []);
@@ -64,29 +63,6 @@ const MainApp = () => {
     );
   };
 
-  const availableLanguages: {code: Language, label: string}[] = [
-    {code: 'ru', label: '🇷🇺 Русский'}, 
-    {code: 'en', label: '🇺🇸 English'}, 
-    {code: 'uk', label: '🇺🇦 Українська'},
-    {code: 'be', label: '🇧🇾 Беларуская'},
-    {code: 'kk', label: '🇰🇿 Қазақша'},
-    {code: 'uz', label: '🇺🇿 Oʻzbekcha'},
-    {code: 'az', label: '🇦🇿 Azərbaycan'},
-    {code: 'ky', label: '🇰🇬 Кыргызча'},
-    {code: 'tg', label: '🇹🇯 Тоҷикӣ'},
-    {code: 'hy', label: '🇦🇲 Հայերեն'},
-    {code: 'tk', label: '🇹🇲 Türkmençe'},
-    {code: 'zh', label: '🇨🇳 中文'},
-    {code: 'tr', label: '🇹🇷 Türkçe'},
-    {code: 'fa', label: '🇮🇷 فارسی'},
-    {code: 'ar', label: '🇸🇦 العربية'},
-    {code: 'es', label: '🇪🇸 Español'},
-    {code: 'pt', label: '🇵🇹 Português'},
-    {code: 'id', label: '🇮🇩 Indonesia'},
-    {code: 'de', label: '🇩🇪 Deutsch'},
-    {code: 'fr', label: '🇫🇷 Français'}
-  ];
-
   return (
     <div className={`min-h-screen bg-cyber-900 text-slate-200 ${isExtension ? 'pb-4' : 'pb-24'}`}>
       <QrModal isOpen={showQr} onClose={() => setShowQr(false)} />
@@ -112,7 +88,7 @@ const MainApp = () => {
               onChange={(e) => setLanguage(e.target.value as Language)}
               className="bg-cyber-700 text-gray-200 text-[10px] font-black py-2.5 px-3 rounded-xl border border-cyber-600 focus:outline-none uppercase tracking-widest shadow-inner cursor-pointer"
             >
-              {availableLanguages.map(lang => (
+              {AVAILABLE_LANGUAGES.map(lang => (
                 <option key={lang.code} value={lang.code}>{lang.label}</option>
               ))}
             </select>
@@ -157,7 +133,7 @@ const MainApp = () => {
                   <Music size={24} className="text-blue-400" />
                   <h4 className="text-white font-black text-sm uppercase tracking-widest">{t('select_strategy')}</h4>
                 </div>
-                <StrategySelector selectedId={selectedStrategy} onSelect={setSelectedStrategy} />
+                <StrategySelector />
               </div>
               <DnsConfig />
               <AndroidTvGuide />

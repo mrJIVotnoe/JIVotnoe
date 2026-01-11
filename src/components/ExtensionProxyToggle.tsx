@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Power, Radio, ShieldCheck, AlertCircle, Monitor, ArrowDown, FileTerminal } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 declare const chrome: any;
 

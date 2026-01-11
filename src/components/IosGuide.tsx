@@ -1,8 +1,7 @@
-
 import React from 'react';
-import { Smartphone, ShieldAlert, Key, CheckCircle, Apple, ExternalLink, Zap } from 'lucide-react';
-import { CopyButton } from './CopyButton';
-import { useLanguage } from '../LanguageContext';
+import { Smartphone, ShieldAlert, Key, CheckCircle, Apple, ExternalLink, Zap, ChevronRight } from 'lucide-react';
+import { CopyButton } from '../shared/ui/CopyButton';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 export const IosGuide: React.FC = () => {
   const { t } = useLanguage();
@@ -15,8 +14,8 @@ export const IosGuide: React.FC = () => {
             <ShieldAlert className="text-red-400" size={32} />
           </div>
           <div>
-            <h4 className="font-bold text-white text-xl">ByeDPI на iPhone невозможен</h4>
-            <p className="text-red-200/60 text-sm">Apple запрещает приложениям напрямую менять пакеты.</p>
+            <h4 className="font-bold text-white text-xl">{t('ios_title')}</h4>
+            <p className="text-red-200/60 text-sm">{t('ios_subtitle')}</p>
           </div>
         </div>
         <p className="text-xs text-gray-400 leading-relaxed">
@@ -28,8 +27,8 @@ export const IosGuide: React.FC = () => {
         <div className="bg-cyber-800 p-6 rounded-2xl border border-cyber-700 shadow-xl flex items-center gap-5">
            <div className="bg-blue-600 h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl text-white shrink-0">1</div>
            <div className="flex-1">
-              <h3 className="font-bold text-white text-lg">Приложение V2Box</h3>
-              <p className="text-xs text-gray-400">Лучший бесплатный клиент в AppStore.</p>
+              <h3 className="font-bold text-white text-lg">{t('ios_step_1')}</h3>
+              <p className="text-xs text-gray-400">{t('ios_step_1_desc')}</p>
            </div>
            <a href="https://apps.apple.com/app/v2box/id6446814690" target="_blank" className="bg-blue-600/10 p-3 rounded-xl hover:bg-blue-600/20 transition-colors">
               <ExternalLink size={20} className="text-blue-400" />
@@ -40,8 +39,8 @@ export const IosGuide: React.FC = () => {
            <div className="flex items-center gap-5 mb-4">
               <div className="bg-purple-600 h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl text-white shrink-0">2</div>
               <div className="flex-1">
-                 <h3 className="font-bold text-white text-lg">Импорт ключа</h3>
-                 <p className="text-xs text-gray-400">Нажмите '+' -> 'Import from Clipboard'.</p>
+                 <h3 className="font-bold text-white text-lg">{t('ios_step_2')}</h3>
+                 <p className="text-xs text-gray-400">{t('ios_step_2_desc')}</p>
               </div>
            </div>
            <div className="bg-black/30 p-4 rounded-xl border border-dashed border-gray-600 flex gap-3 items-center">
@@ -53,6 +52,35 @@ export const IosGuide: React.FC = () => {
            </div>
         </div>
       </div>
+
+      {/* Step 3: Whitelist */}
+        <div className="bg-cyber-800 p-6 rounded-2xl border border-cyber-700 shadow-xl">
+           <div className="flex items-center gap-3 mb-4">
+              <div className="bg-cyber-600 h-8 w-8 rounded-lg flex items-center justify-center font-bold text-white">3</div>
+              <h3 className="text-xl font-bold text-white">Ускорение (Routing)</h3>
+           </div>
+           
+           <p className="text-sm text-gray-400 mb-4">
+             Чтобы российские приложения (Банки, Госуслуги, Ozon) работали быстро и без сбоев, их нужно пустить <b>мимо</b> прокси.
+           </p>
+
+           <div className="bg-black/40 p-4 rounded-xl border border-cyber-700 flex items-center justify-between group">
+              <div className="text-sm font-mono text-gray-300 truncate mr-4">
+                ozon.ru, wb.ru, vk.com, gosuslugi.ru, sberbank.ru
+              </div>
+              <CopyButton text="ozon.ru,wb.ru,vk.com,gosuslugi.ru,sberbank.ru" className="bg-cyber-700 group-hover:bg-green-600 transition-colors" />
+           </div>
+
+           <div className="mt-4 p-3 bg-cyber-900/50 rounded-lg text-xs text-gray-400 border border-cyber-700/50">
+             <span className="font-bold text-gray-300">Инструкция для V2Box:</span>
+             <ol className="list-decimal list-inside mt-1 space-y-1 ml-1">
+               <li>Settings &rarr; Routing &rarr; Add Rule</li>
+               <li>Type: <b>Domain Keyword</b></li>
+               <li>Action: <b>Direct</b></li>
+               <li>Вставьте скопированный список</li>
+             </ol>
+           </div>
+        </div>
 
       <div className="bg-indigo-900/10 p-5 rounded-2xl border border-indigo-500/20 flex gap-4">
          <Zap className="text-indigo-400 shrink-0" size={20} />

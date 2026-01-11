@@ -1,10 +1,9 @@
-
 import React, { useState, useMemo } from 'react';
 import { ShieldCheck, Network, AlertCircle, Globe, Landmark, ShoppingBag, Hash, Filter } from 'lucide-react';
-import { CopyButton } from './CopyButton';
+import { CopyButton } from '../shared/ui/CopyButton';
 import { REGIONAL_DATA } from '../data';
 import { WhitelistEntry } from '../types';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../features/localization/LanguageContext';
 
 export const Whitelist: React.FC = () => {
   const { t, language } = useLanguage();

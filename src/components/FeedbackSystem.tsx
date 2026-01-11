@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, ExternalLink, ShieldCheck, Heart, Copy, Check, Mail, Github, Send } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
-import { useTelegram } from '../TelegramContext';
+import { useLanguage } from '../features/localization/LanguageContext';
+import { useTelegram } from '../features/telegram/TelegramContext';
 
 export const FeedbackSystem: React.FC = () => {
   const { t } = useLanguage();
