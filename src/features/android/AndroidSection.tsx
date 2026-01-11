@@ -1,8 +1,8 @@
 import React from 'react';
-import { AndroidGuide } from '../../components/AndroidGuide';
+import { AndroidGuide } from './components/AndroidGuide';
 import { StrategySelector } from '../strategies/components/StrategySelector';
-import { DnsConfig } from '../../components/DnsConfig';
-import { AndroidTvGuide } from '../../components/AndroidTvGuide';
+import { DnsConfig } from '../dns/components/DnsConfig';
+import { AndroidTvGuide } from './components/AndroidTvGuide';
 import { SniScanner } from '../strategies/components/SniScanner';
 import { Music } from 'lucide-react';
 import { useLanguage } from '../localization/LanguageContext';
@@ -28,6 +28,7 @@ export default function AndroidSection() {
           <SniScanner onSelect={setCustomSni} />
         </div>
 
+        {/* Uses Global Store - Persistence across tabs */}
         <StrategySelector />
       </div>
 

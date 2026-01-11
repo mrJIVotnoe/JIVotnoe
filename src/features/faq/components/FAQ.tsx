@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { HelpCircle, AlertTriangle, ShieldAlert, Smartphone, Zap, Search, LifeBuoy, WifiOff, VolumeX } from 'lucide-react';
-import { useLanguage } from '../features/localization/LanguageContext';
+import { useLanguage } from '../../localization/LanguageContext';
 import { FeedbackSystem } from './FeedbackSystem';
-import { Collapsible } from '../shared/ui/Collapsible';
+import { Collapsible } from '../../../shared/ui/Collapsible';
 
 export const FAQ: React.FC = () => {
   const { t } = useLanguage();

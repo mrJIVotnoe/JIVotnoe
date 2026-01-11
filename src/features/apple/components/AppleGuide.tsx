@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Smartphone, Laptop, Terminal, Key, ShieldCheck, AlertTriangle, Command, Check, Server, Globe, Search } from 'lucide-react';
-import { useLanguage } from '../features/localization/LanguageContext';
-import { StrategySelector } from '../features/strategies/components/StrategySelector';
-import { SniScanner } from '../features/strategies/components/SniScanner';
-import { CopyButton } from '../shared/ui/CopyButton';
-import { STRATEGIES } from '../data';
-import { generateCommand } from '../features/strategies/utils/commandGenerator';
-import { useStrategiesStore } from '../store/strategies.store';
+import { useLanguage } from '../../localization/LanguageContext';
+import { StrategySelector } from '../../strategies/components/StrategySelector';
+import { SniScanner } from '../../strategies/components/SniScanner';
+import { CopyButton } from '../../../shared/ui/CopyButton';
+import { STRATEGIES } from '../../../data';
+import { generateCommand } from '../../strategies/utils/commandGenerator';
+import { useStrategiesStore } from '../../../store/strategies.store';
 
 export const AppleGuide: React.FC = () => {
   const { t } = useLanguage();

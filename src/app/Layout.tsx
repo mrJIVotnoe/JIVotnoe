@@ -3,8 +3,8 @@ import { Activity, Star, Share2, Globe, Shield } from 'lucide-react';
 import { useLanguage } from '../features/localization/LanguageContext';
 import { useTelegram } from '../shared/hooks/useTelegram';
 import { Navigation } from '../shared/ui/Navigation';
-import { ExtensionProxyToggle } from '../components/ExtensionProxyToggle';
-import { PrivacyModal } from '../components/PrivacyModal';
+import { ExtensionProxyToggle } from '../features/proxy/components/ExtensionProxyToggle';
+import { PrivacyModal } from '../shared/components/PrivacyModal';
 import { AVAILABLE_LANGUAGES } from '../config/constants';
 
 export function Layout({ children }: PropsWithChildren<{}>) {

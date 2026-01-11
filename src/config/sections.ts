@@ -3,12 +3,12 @@ import { lazy } from 'react';
 // Lazy load features to improve initial bundle size
 const AiAnalyst = lazy(() => import('../features/ai/components/AiAnalyst').then(m => ({ default: m.AiAnalyst })));
 const AndroidSection = lazy(() => import('../features/android/AndroidSection'));
-const WindowsGuide = lazy(() => import('../components/WindowsGuide').then(m => ({ default: m.WindowsGuide })));
-const LinuxGuide = lazy(() => import('../components/LinuxGuide').then(m => ({ default: m.LinuxGuide })));
-const VpnRegionGuide = lazy(() => import('../components/VpnRegionGuide').then(m => ({ default: m.VpnRegionGuide })));
-const AppleGuide = lazy(() => import('../components/AppleGuide').then(m => ({ default: m.AppleGuide })));
-const Whitelist = lazy(() => import('../components/Whitelist').then(m => ({ default: m.Whitelist })));
-const FAQ = lazy(() => import('../components/FAQ').then(m => ({ default: m.FAQ })));
+const WindowsGuide = lazy(() => import('../features/windows/components/WindowsGuide').then(m => ({ default: m.WindowsGuide })));
+const LinuxGuide = lazy(() => import('../features/linux/components/LinuxGuide').then(m => ({ default: m.LinuxGuide })));
+const VpnRegionGuide = lazy(() => import('../features/vpn/components/VpnRegionGuide').then(m => ({ default: m.VpnRegionGuide })));
+const AppleGuide = lazy(() => import('../features/apple/components/AppleGuide').then(m => ({ default: m.AppleGuide })));
+const Whitelist = lazy(() => import('../features/whitelist/components/Whitelist').then(m => ({ default: m.Whitelist })));
+const FAQ = lazy(() => import('../features/faq/components/FAQ').then(m => ({ default: m.FAQ })));
 
 export const sections = [
   {

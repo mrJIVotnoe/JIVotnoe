@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Globe, Shield, Smartphone, Monitor, Lock, Puzzle } from 'lucide-react';
-import { CopyButton } from '../shared/ui/CopyButton';
-import { useLanguage } from '../features/localization/LanguageContext';
-import { IpChecker } from '../features/vpn/components/IpChecker';
+import { CopyButton } from '../../../shared/ui/CopyButton';
+import { useLanguage } from '../../localization/LanguageContext';
+import { IpChecker } from './IpChecker';
 
 export const VpnRegionGuide: React.FC = () => {
   const { t } = useLanguage();
