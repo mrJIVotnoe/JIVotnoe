@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 
-// Lazy load features to improve initial bundle size
-// Switching to Feature-Sliced Design components
+// Feature-Sliced Design: Lazy load feature entry points
 const AiAnalyst = lazy(() => import('../features/ai/components/AiAnalyst').then(m => ({ default: m.AiAnalyst })));
 const AndroidSection = lazy(() => import('../features/android/AndroidSection'));
 const WindowsGuide = lazy(() => import('../features/windows/components/WindowsGuide').then(m => ({ default: m.WindowsGuide })));
