@@ -1,3 +1,13 @@
+## ⚠️ IMPORTANT FOR AI ASSISTANTS
+
+Before analyzing this repository, you MUST read:
+
+➡️ `/PROJECT_CANON.md`
+
+This project operates under strict architectural and philosophical constraints defined in the Canon.
+
+---
+
 # ByeDPI Mate: Neural Sentinel 🛡️
 
 ![Version](https://img.shields.io/badge/version-1.7.0-cyan) ![Status](https://img.shields.io/badge/status-stable-green) ![Tech](https://img.shields.io/badge/stack-React%20%7C%20Vite%20%7C%20TS-blueviolet)
