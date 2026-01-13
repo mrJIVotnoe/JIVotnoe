@@ -1,38 +1,40 @@
-import { DecisionInput, DecisionResult } from '../domain/types'
-import { StrategyType } from '../domain/strategies'
-import { strategyCapabilities } from '../knowledge/strategyCapabilities'
-import { analyze } from './analyze'
-import { explain } from './explain'
 
-export function decide(input: DecisionInput): DecisionResult {
-  const analysis = analyze(input)
+import { DecisionInput, DecisionResult } from '../domain/types';
+import { StrategyCatalog } from '../knowledge/strategies';
+import { DecisionRules } from '../knowledge/rules';
+import { analyzeContext } from './analyze';
+import { generateExplanation } from './explain';
 
-  if (analysis.platform === 'browser') {
-    return {
-      strategy: 'unsupported',
-      confidence: 1,
-      explanation: explain('unsupported', analysis),
+export function decideStrategy(input: DecisionInput): DecisionResult {
+  // 1. Analyze Context
+  const analysis = analyzeContext(input);
+  
+  // 2. Match Rules
+  const matchedRule = DecisionRules.find(rule => rule.match(input));
+  
+  // 3. Resolve Strategy
+  const strategyId = matchedRule ? matchedRule.strategyId : 'unsupported';
+  const strategy = StrategyCatalog[strategyId] || StrategyCatalog['unsupported'];
+  
+  // 4. Construct Result
+  const explanationRaw = matchedRule ? matchedRule.reason : 'No matching rule found for this context.';
+  
+  const result: DecisionResult = {
+    strategyId: strategy.id,
+    confidence: matchedRule ? matchedRule.confidence : 0.1,
+    restrictionClass: analysis.restriction,
+    explanation: [explanationRaw],
+    warnings: [],
+    tags: [input.platform, input.targetApp],
+    meta: {
+        analysisConditions: analysis.conditions
     }
+  };
+
+  // 5. Enrich Warnings
+  if (analysis.restriction === 'PLATFORM_RESTRICTION') {
+      result.warnings.push('Execution disabled in browser environment.');
   }
 
-  for (const strategy of Object.keys(strategyCapabilities) as StrategyType[]) {
-    const cap = strategyCapabilities[strategy]
-
-    if (
-      cap.platforms.includes(analysis.platform) &&
-      analysis.symptoms.some(s => cap.handles.includes(s))
-    ) {
-      return {
-        strategy,
-        confidence: 0.8,
-        explanation: explain(strategy, analysis),
-      }
-    }
-  }
-
-  return {
-    strategy: 'unsupported',
-    confidence: 0.5,
-    explanation: explain('unsupported', analysis),
-  }
+  return result;
 }

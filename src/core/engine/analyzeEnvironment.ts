@@ -1,7 +1,9 @@
-import { DecisionInput, AnalysisResult, RestrictionClass } from '../domain/types'
+
+import { DecisionInput, AnalysisResult } from '../domain/types'
+import { RestrictionClass, NetworkSymptom } from '../domain/enums'
 
 export function analyzeEnvironment(input: DecisionInput): AnalysisResult {
-  let restrictionClass: RestrictionClass = 'UNKNOWN_RESTRICTION';
+  let restrictionClass: RestrictionClass = RestrictionClass.NONE;
   const evidence: string[] = [];
   const explanation: string[] = [
     "Environment shift detected (2026-01-10)",
@@ -10,15 +12,15 @@ export function analyzeEnvironment(input: DecisionInput): AnalysisResult {
   ];
 
   if (input.platform === 'browser') {
-    restrictionClass = 'PLATFORM_LEVEL_RESTRICTION';
+    restrictionClass = RestrictionClass.PLATFORM_RESTRICTION;
     evidence.push('Execution context is restricted (Browser Sandbox)');
     explanation.push('Direct packet manipulation is not possible in this environment.');
-  } else if (input.symptoms.includes('telegram_fail') || input.symptoms.includes('whatsapp_fail')) {
-    restrictionClass = 'TLS_HANDSHAKE_INTERFERENCE';
+  } else if (input.symptoms.includes(NetworkSymptom.TELEGRAM_FAIL) || input.symptoms.includes(NetworkSymptom.WHATSAPP_FAIL)) {
+    restrictionClass = RestrictionClass.TLS_FINGERPRINTING;
     evidence.push('High-entropy traffic discrimination detected');
     explanation.push('Targeted protocol analysis active.');
   } else {
-    restrictionClass = 'TLS_HANDSHAKE_INTERFERENCE';
+    restrictionClass = RestrictionClass.TLS_FINGERPRINTING;
     evidence.push('General DPI fingerprinting suspected');
   }
 

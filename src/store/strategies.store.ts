@@ -1,7 +1,8 @@
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { StrategyType } from '../types';
-import { decide, analyzeEnvironment, DecisionInput, DecisionResult, AnalysisResult } from '../core';
+import { decide, analyzeEnvironment, DecisionInput, DecisionResult, AnalysisResult, NetworkSymptom } from '../core';
 
 interface StrategiesState {
   selectedStrategyId: StrategyType;
@@ -31,20 +32,23 @@ export const useStrategiesStore = create<StrategiesState>()(
       // Core Adapter Implementation
       getStrategyFromCore: (input: DecisionInput) => {
         // Enforce Analysis-Only for Browser or specific symptoms
-        if (input.platform === 'browser' || input.symptoms.includes('telegram_fail')) {
+        if (input.platform === 'browser' || input.symptoms.includes(NetworkSymptom.TELEGRAM_FAIL)) {
            const analysis = analyzeEnvironment(input);
            return {
-             strategy: 'unsupported' as any, // Cast to maintain compatibility
+             strategyId: 'unsupported',
              confidence: 1,
+             restrictionClass: analysis.restrictionClass,
              explanation: analysis.explanation,
+             warnings: [],
+             tags: [],
              analysis: analysis
-           };
+           } as any; 
         }
         return decide(input);
       },
 
       runAnalysis: (input: DecisionInput) => {
-        if (input.platform === 'browser' || input.symptoms.includes('telegram_fail')) {
+        if (input.platform === 'browser' || input.symptoms.includes(NetworkSymptom.TELEGRAM_FAIL)) {
           const result = analyzeEnvironment(input);
           set({ analysisMode: true, currentAnalysis: result });
         } else {

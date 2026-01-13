@@ -1,20 +1,28 @@
-import { StrategyType } from '../domain/strategies'
-import { Platform, Symptom } from '../domain/types'
 
-export function explain(
-  strategy: StrategyType,
-  ctx: { platform: Platform; symptoms: Symptom[] }
+import { DecisionResult, StrategyDescriptor } from '../domain/types';
+
+export function generateExplanation(
+  result: DecisionResult,
+  strategy: StrategyDescriptor,
+  lang: 'ru' | 'en' = 'en'
 ): string[] {
-  if (strategy === 'unsupported') {
-    return [
-      `Execution is not supported on platform: ${ctx.platform}`,
-      'Browser can be used only for analysis and instructions',
-    ]
+  const steps: string[] = [];
+
+  if (lang === 'ru') {
+    steps.push(`Диагностика: ${result.restrictionClass}`);
+    steps.push(`Решение: ${strategy.name}`);
+    steps.push(`Причина: ${result.explanation.join('. ')}`);
+    if (result.confidence < 0.5) {
+      steps.push('Внимание: Низкая уверенность в решении.');
+    }
+  } else {
+    steps.push(`Diagnosis: ${result.restrictionClass}`);
+    steps.push(`Solution: ${strategy.name}`);
+    steps.push(`Reason: ${result.explanation.join('. ')}`);
+    if (result.confidence < 0.5) {
+      steps.push('Warning: Low confidence in solution.');
+    }
   }
 
-  return [
-    `Selected strategy: ${strategy}`,
-    `Platform: ${ctx.platform}`,
-    `Detected symptoms: ${ctx.symptoms.join(', ')}`,
-  ]
+  return steps;
 }

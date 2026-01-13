@@ -1,21 +1,23 @@
+
 import { StrategyType } from '../domain/strategies'
-import { Platform, Symptom } from '../domain/types'
+import { Platform } from '../domain/types'
+import { NetworkSymptom } from '../domain/enums'
 
 export const strategyCapabilities: Record<
   StrategyType,
   {
     platforms: Platform[]
-    handles: Symptom[]
+    handles: NetworkSymptom[]
   }
 > = {
   byedpi: {
     platforms: ['windows', 'linux'],
-    handles: ['dpi_block', 'tcp_reset'],
+    handles: [NetworkSymptom.DPI_BLOCK, NetworkSymptom.TCP_RESET],
   },
 
   v2ray: {
     platforms: ['android', 'windows'],
-    handles: ['sni_block', 'tls_handshake_fail'],
+    handles: [NetworkSymptom.SNI_BLOCK, NetworkSymptom.TLS_HANDSHAKE_FAIL],
   },
 
   unsupported: {

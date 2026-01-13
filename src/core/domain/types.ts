@@ -1,43 +1,43 @@
-import { StrategyType } from './strategies'
 
-export type Platform =
-  | 'windows'
-  | 'linux'
-  | 'macos'
-  | 'android'
-  | 'browser'
+import { NetworkSymptom, AppTarget, RestrictionClass } from './enums';
 
-export type Symptom =
-  | 'dpi_block'
-  | 'sni_block'
-  | 'tcp_reset'
-  | 'tls_handshake_fail'
-  | 'telegram_fail'
-  | 'whatsapp_fail'
-
-export type RestrictionClass =
-  | 'TLS_HANDSHAKE_INTERFERENCE'
-  | 'QUIC_BLOCKING'
-  | 'DNS_MANIPULATION'
-  | 'PLATFORM_LEVEL_RESTRICTION'
-  | 'UNKNOWN_RESTRICTION'
-
-export interface AnalysisResult {
-  restrictionClass: RestrictionClass
-  confidence: number
-  evidence: string[]
-  executionSupported: false
-  explanation: string[]
-}
+export type Platform = 'android' | 'windows' | 'linux' | 'ios' | 'browser';
 
 export interface DecisionInput {
-  platform: Platform
-  symptoms: Symptom[]
+  platform: Platform;
+  targetApp: AppTarget;
+  symptoms: NetworkSymptom[];
+  region?: string;
+}
+
+export interface StrategyDescriptor {
+  id: string;
+  name: string;
+  intent: string;
+  riskLevel: 'safe' | 'moderate' | 'high';
+  compatibility: Platform[];
 }
 
 export interface DecisionResult {
-  strategy: StrategyType
-  confidence: number
-  explanation: string[]
-  analysis?: AnalysisResult
+  strategyId: string;
+  confidence: number; // 0.0 to 1.0
+  restrictionClass: RestrictionClass;
+  explanation: string[];
+  warnings: string[];
+  tags: string[];
+  meta?: Record<string, any>;
+}
+
+export interface DetectedCondition {
+  type: 'restriction' | 'capability' | 'environment';
+  value: string;
+  weight: number;
+}
+
+export interface AnalysisResult {
+  restrictionClass: RestrictionClass;
+  confidence: number;
+  evidence: string[];
+  executionSupported: boolean;
+  explanation: string[];
 }
