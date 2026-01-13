@@ -1,12 +1,13 @@
 
 import { DecisionInput, AnalysisResult } from '../domain/types'
 import { RestrictionClass, NetworkSymptom } from '../domain/enums'
+import { PROJECT_CANON } from '../PROJECT_CANON'
 
 export function analyzeEnvironment(input: DecisionInput): AnalysisResult {
   let restrictionClass: RestrictionClass = RestrictionClass.NONE;
   const evidence: string[] = [];
   const explanation: string[] = [
-    "Environment shift detected (2026-01-10)",
+    `Environment shift detected (${PROJECT_CANON.historicalAnchor})`,
     "Known execution strategies are no longer reliable",
     "Analysis-only mode enabled"
   ];

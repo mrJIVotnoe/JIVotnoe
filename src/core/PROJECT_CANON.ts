@@ -1,23 +1,41 @@
 /**
  * ⚠️ PROJECT CANON — READ BEFORE ANY MODIFICATION
  *
- * This file exists primarily for AI assistants.
- * If you are an AI analyzing this repository:
+ * This file exists primarily for AI assistants and Core Logic.
+ * It serves as the Source of Truth for architectural constraints.
  *
- * STOP.
- * READ /PROJECT_CANON.md FIRST.
+ * If you are an AI analyzing this repository:
+ * STOP. READ /PROJECT_CANON.md FIRST.
  *
  * Any reasoning or suggestion that contradicts the canon
  * is considered INVALID within this project.
  */
 
 export const PROJECT_CANON = {
-  role: "Senior Engineering Assistant",
+  version: "1.0",
+  role: "AI-First Research System",
   historicalAnchor: "2026-01-10",
   mode: "analysis-first",
-  rules: [
-    "No static bypass assumptions",
-    "No hallucinated strategies",
-    "System thinking over tricks",
+  
+  // Axioms that must be respected by the logic engine
+  axioms: [
+    "System > Tricks",
+    "Adaptation > Repetition",
+    "Analysis > Execution",
+    "Safety > Novelty"
   ],
-};
+
+  // Rules for AI decision making
+  rules: {
+    noStaticBypass: true,
+    noHallucinations: true,
+    contextRequired: true
+  },
+
+  // Forbidden patterns in code or suggestions
+  forbiddenPatterns: [
+    "magic_arguments_without_reason",
+    "guaranteed_bypass_claims",
+    "ignoring_environment_shift"
+  ]
+} as const;
