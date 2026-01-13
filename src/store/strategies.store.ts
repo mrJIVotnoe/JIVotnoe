@@ -1,35 +1,64 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { StrategyType } from '../types';
-import { decide, DecisionInput, DecisionResult } from '../core';
+import { decide, analyzeEnvironment, DecisionInput, DecisionResult, AnalysisResult } from '../core';
 
 interface StrategiesState {
   selectedStrategyId: StrategyType;
   customSni: string;
+  analysisMode: boolean;
+  currentAnalysis: AnalysisResult | null;
+  
   setStrategyId: (id: StrategyType) => void;
   setCustomSni: (sni: string) => void;
   
   // Core Adapter
   getStrategyFromCore: (input: DecisionInput) => DecisionResult;
+  runAnalysis: (input: DecisionInput) => void;
 }
 
 export const useStrategiesStore = create<StrategiesState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       selectedStrategyId: StrategyType.SHUTDOWN_OZON,
       customSni: '',
+      analysisMode: false,
+      currentAnalysis: null,
       
       setStrategyId: (id) => set({ selectedStrategyId: id }),
       setCustomSni: (sni) => set({ customSni: sni }),
 
       // Core Adapter Implementation
       getStrategyFromCore: (input: DecisionInput) => {
+        // Enforce Analysis-Only for Browser or specific symptoms
+        if (input.platform === 'browser' || input.symptoms.includes('telegram_fail')) {
+           const analysis = analyzeEnvironment(input);
+           return {
+             strategy: 'unsupported' as any, // Cast to maintain compatibility
+             confidence: 1,
+             explanation: analysis.explanation,
+             analysis: analysis
+           };
+        }
         return decide(input);
+      },
+
+      runAnalysis: (input: DecisionInput) => {
+        if (input.platform === 'browser' || input.symptoms.includes('telegram_fail')) {
+          const result = analyzeEnvironment(input);
+          set({ analysisMode: true, currentAnalysis: result });
+        } else {
+          set({ analysisMode: false, currentAnalysis: null });
+        }
       }
     }),
     {
       name: 'byedpi-strategies',
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ 
+        selectedStrategyId: state.selectedStrategyId, 
+        customSni: state.customSni 
+      }), 
     }
   )
 );
