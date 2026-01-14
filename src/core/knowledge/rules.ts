@@ -1,3 +1,11 @@
+/**
+ * Decision Logic Rules
+ *
+ * Static knowledge base mapping normalized context conditions to specific strategies.
+ * Used during Step 3 of the Decision Model.
+ *
+ * Implements: PROJECT_WHITEPAPER.md → Section 4.3: Rule Matching
+ */
 
 import { DecisionInput } from '../domain/types';
 import { NetworkSymptom, AppTarget } from '../domain/enums';

@@ -1,3 +1,16 @@
+/**
+ * Decision Pipeline Implementation
+ *
+ * Executes the deterministic logic flow to select a strategy or diagnosis.
+ *
+ * Pipeline Steps:
+ * 1. Input Normalization (handled by caller/types)
+ * 2. Context Analysis (analyzeContext)
+ * 3. Rule Matching (DecisionRules)
+ * 4. Outcome Generation
+ *
+ * Implements: PROJECT_WHITEPAPER.md → Section 4: DECISION MODEL
+ */
 
 import { DecisionInput, DecisionResult } from '../domain/types';
 import { StrategyCatalog } from '../knowledge/strategies';
@@ -5,6 +18,10 @@ import { DecisionRules } from '../knowledge/rules';
 import { analyzeContext } from './analyze';
 import { generateExplanation } from './explain';
 
+/**
+ * The main decision function.
+ * Deterministic: Same Input => Same Result.
+ */
 export function decideStrategy(input: DecisionInput): DecisionResult {
   // 1. Analyze Context
   const analysis = analyzeContext(input);

@@ -1,3 +1,13 @@
+/**
+ * Environment Shift Protocol (2026)
+ *
+ * Implements the fallback logic for high-entropy blocking environments
+ * where execution strategies are unreliable.
+ *
+ * Triggers "Analysis Mode" instead of "Execution Mode".
+ *
+ * Implements: PROJECT_WHITEPAPER.md → Section 6: ENVIRONMENT SHIFT 2026
+ */
 
 import { DecisionInput, AnalysisResult } from '../domain/types'
 import { RestrictionClass, NetworkSymptom } from '../domain/enums'

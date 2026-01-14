@@ -1,8 +1,25 @@
+/**
+ * Domain Definitions
+ *
+ * Defines the strict vocabulary used by the Core Engine to model the network environment.
+ * These types serve as the interface between the chaotic reality (User/AI input)
+ * and the deterministic logic (Core).
+ *
+ * Implements: PROJECT_WHITEPAPER.md → Section 4.1: Input Normalization
+ */
 
 import { NetworkSymptom, AppTarget, RestrictionClass } from './enums';
 
 export type Platform = 'android' | 'windows' | 'linux' | 'ios' | 'browser';
 
+/**
+ * DecisionInput
+ *
+ * The normalized representation of the user's environment.
+ * The AI or UI must map raw text/forms into this rigid structure.
+ *
+ * Defined in PROJECT_WHITEPAPER.md → Section 4.1
+ */
 export interface DecisionInput {
   platform: Platform;
   targetApp: AppTarget;
@@ -18,6 +35,14 @@ export interface StrategyDescriptor {
   compatibility: Platform[];
 }
 
+/**
+ * DecisionResult
+ *
+ * The deterministic output of the decision engine.
+ * Contains the strategy intent, confidence score, and diagnostic explanation.
+ *
+ * Defined in PROJECT_WHITEPAPER.md → Section 4.4
+ */
 export interface DecisionResult {
   strategyId: string;
   confidence: number; // 0.0 to 1.0

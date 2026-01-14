@@ -1,7 +1,11 @@
 /**
- * CORE ENGINE
- * Deterministic system logic.
- * UI is a projection. Core is the source of truth.
+ * Core Engine Entry Point
+ *
+ * The "Source of Truth" for the application.
+ * This module converts raw environmental data into structured diagnostic outputs.
+ * It operates independently of the UI and AI layers.
+ *
+ * Implements: PROJECT_WHITEPAPER.md → Section 1: WHAT THIS SYSTEM IS
  */
 
 import { decideStrategy } from './engine/decide';
