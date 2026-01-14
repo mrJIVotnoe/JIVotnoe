@@ -1,6 +1,12 @@
 # PROJECT CANON
 ## AI-First Canon Architecture
 
+## Axiom 0 — Human Architect Time
+This project is governed by the axiom defined in:
+HUMAN_ARCHITECT_TIME_AXIOM.md
+
+This axiom has priority over all other architectural, technical, or AI-related rules.
+
 **Version:** 1.0 (Foundational)
 **Status:** ACTIVE / NON-NEGOTIABLE
 

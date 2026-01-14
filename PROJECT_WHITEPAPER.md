@@ -31,6 +31,10 @@ The system logic is governed by the axioms defined in `src/core/PROJECT_CANON.ts
 3.  **Analysis > Execution:** When confidence is low or the environment is hostile, the system defaults to explaining *why* a connection failed rather than suggesting a risky or futile bypass attempt.
 4.  **Safety > Novelty:** Known, stable protocols are preferred over experimental evasion techniques.
 
+Axiom 0 — Human Architect Time:
+Defined in HUMAN_ARCHITECT_TIME_AXIOM.md.
+This axiom supersedes all system logic and exists to minimize irreversible human time loss.
+
 ### 4. DECISION MODEL
 
 The decision-making process is deterministic and follows a strict pipeline defined in `src/core/engine/decide.ts` and `src/core/engine/analyzeEnvironment.ts`:

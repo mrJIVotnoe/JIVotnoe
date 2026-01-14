@@ -6,6 +6,13 @@ Before analyzing this repository, you MUST read:
 
 This project operates under strict architectural and philosophical constraints defined in the Canon.
 
+## Architectural Axiom
+
+This project follows a strict rule:
+The Time of the Human Architect is the highest-value resource.
+
+See: HUMAN_ARCHITECT_TIME_AXIOM.md
+
 ---
 
 # ByeDPI Mate: Neural Sentinel 🛡️
