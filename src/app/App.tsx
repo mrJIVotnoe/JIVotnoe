@@ -4,7 +4,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { sections } from '../config/sections';
 import { Section } from '../shared/ui/Section';
 import { Loader2 } from 'lucide-react';
-import { PROJECT_CANON } from '../core/PROJECT_CANON';
+import { PROJECT_CANON } from '../core';
 
 export function App() {
   useEffect(() => {

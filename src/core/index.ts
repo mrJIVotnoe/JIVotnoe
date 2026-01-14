@@ -1,12 +1,19 @@
+/**
+ * CORE ENGINE
+ * Deterministic system logic.
+ * UI is a projection. Core is the source of truth.
+ */
 
 import { decideStrategy } from './engine/decide';
 import { generateExplanation } from './engine/explain';
 import { StrategyCatalog } from './knowledge/strategies';
 import { DecisionInput, DecisionResult } from './domain/types';
 import { analyzeEnvironment } from './engine/analyzeEnvironment';
+import { PROJECT_CANON } from './PROJECT_CANON';
 
 export * from './domain/types';
 export * from './domain/enums';
+export { PROJECT_CANON } from './PROJECT_CANON';
 
 export { decideStrategy as decide } from './engine/decide';
 export { analyzeEnvironment } from './engine/analyzeEnvironment';
@@ -30,5 +37,7 @@ export const Core = {
     return generateExplanation(decision, strategy, lang);
   },
 
-  analyzeEnvironment
+  analyzeEnvironment,
+  
+  canon: PROJECT_CANON
 };
