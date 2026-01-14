@@ -1,69 +1,83 @@
 # PROJECT WHITE PAPER
-## Public Architecture Case Study & AI-First Development Log
+## System Architecture & Logic Documentation
+
+**Version:** 1.7.0 (Maestro Edition)
+**Scope:** Core Logic & Decision Engine
+**Status:** ACTIVE
 
 ---
 
-### 1. PURPOSE
+### 1. WHAT THIS SYSTEM IS
 
-This document serves as the extended architectural documentation for the **ByeDPI Mate (JIVotnoe)** project. It is designed to be read by both human engineers and Artificial Intelligence assistants.
+**ByeDPI Mate** is a deterministic network analysis engine designed to diagnose connectivity issues and suggest architectural strategies for packet inspection evasion.
 
-It expands upon the axioms defined in `PROJECT_CANON.md` by providing the reasoning, historical context, and philosophical framework behind the technical decisions. It is a critical component of the **AI-First Canon Architecture**, ensuring that AI agents interacting with this repository possess the necessary context to maintain system integrity and avoid hallucinated or degrading solutions.
+At its heart lies `src/core/`, an isolated TypeScript module that operates independently of the user interface. This Core serves as the "Source of Truth," converting raw environmental data (Platform, Symptoms, Target Application) into structured diagnostic outputs.
 
-### 2. HISTORICAL CONTEXT
+It is a **Research & Diagnostic Instrument**. Its primary function is to classify the type of network restriction (`RestrictionClass`) active in a given environment and determine if a bypass is theoretically possible within the user's constraints.
 
-**The 2025–2026 Environment Shift**
-On approximately January 10, 2026, a fundamental shift in Deep Packet Inspection (DPI) and Traffic Analysis logic was observed globally. Network filtering systems transitioned from static, signature-based detection to behavioral analysis and Machine Learning-driven classification.
+### 2. WHAT THIS SYSTEM IS NOT
 
-**Collapse of Static Strategies**
-Prior to this shift, static "bypass strategies" (e.g., specific CLI arguments like `-o1 -r-5+se`) were reliable. Post-shift, these static patterns became signatures themselves. Any widely distributed, repeatable "trick" is now rapidly identified and neutralized by the network environment.
+*   **NOT a Static Config Generator:** The system does not rely on a fixed list of "working arguments" that are blindly applied.
+*   **NOT a VPN Provider:** It does not tunnel traffic through remote servers (except when recommending third-party VLESS protocols for iOS).
+*   **NOT a "Magic Button":** The system explicitly refuses to generate execution commands for environments where local packet manipulation is technically impossible (e.g., Browser Sandbox, iOS).
+*   **NOT an AI Oracle:** The AI component is used strictly for parsing natural language into structured data; it does not make architectural decisions.
 
-**System Evolution**
-Consequently, this project evolved from a simple configuration tool into an adaptive research system. It no longer aims to provide a "silver bullet" but rather to analyze the environment and suggest adaptation strategies based on deterministic logic, acknowledging that the "correct" configuration is ephemeral.
+### 3. CORE PRINCIPLES
 
-### 3. CORE ARCHITECTURAL INSIGHT
+The system logic is governed by the axioms defined in `src/core/PROJECT_CANON.ts`:
 
-1.  **The Project is a SYSTEM, Not a Tool**: It is an analytical engine designed to understand network restrictions, not just a UI wrapper for a CLI binary.
-2.  **UI is a Projection**: The user interface is merely a visual representation of the Core Logic. The truth resides in `src/core`, not in the React components.
-3.  **Deterministic Engine > Static Configs**: Decisions must be made by a deterministic engine (`src/core/engine/decide.ts`) that evaluates inputs (Platform, Symptoms, Target) against a knowledge base, rather than relying on hardcoded lists of "working" arguments.
-4.  **AI is an Analyst, Not an Oracle**: The AI's role is to parse user symptoms and map them to known architectural patterns. It must not invent or guess technical parameters that contradict the Core Logic.
+1.  **System > Tricks:** Structural understanding of the network stack takes precedence over temporary exploits.
+2.  **Adaptation > Repetition:** The system prioritizes analyzing the current specific context over repeating historically successful patterns.
+3.  **Analysis > Execution:** When confidence is low or the environment is hostile, the system defaults to explaining *why* a connection failed rather than suggesting a risky or futile bypass attempt.
+4.  **Safety > Novelty:** Known, stable protocols are preferred over experimental evasion techniques.
 
-### 4. AI-FIRST CANON ARCHITECTURE (EXPANDED)
+### 4. DECISION MODEL
 
-**The Context Problem**
-Large Language Models (LLMs) suffer from context loss across sessions and resets. Without a persistent source of truth, an AI assistant inevitably drifts towards "hallucination"—inventing plausible but non-functional solutions or regressing to outdated patterns.
+The decision-making process is deterministic and follows a strict pipeline defined in `src/core/engine/decide.ts` and `src/core/engine/analyzeEnvironment.ts`:
 
-**Canon Injection**
-To solve this, the "Canon" is embedded directly into the repository structure:
-*   `PROJECT_CANON.md`: Defines the **Axioms** (What is true? What is forbidden?).
-*   `PROJECT_WHITEPAPER.md`: Defines the **Reasoning** (Why is it true?).
-*   `src/core/PROJECT_CANON.ts`: Enforces the **Constraints** in code.
+#### Step 1: Input Normalization
+The system accepts a `DecisionInput` object containing:
+*   `platform`: (android | windows | linux | ios | browser)
+*   `targetApp`: (TELEGRAM | YOUTUBE | WHATSAPP | UNIVERSAL)
+*   `symptoms`: Array of `NetworkSymptom` (e.g., DPI_BLOCK, TLS_HANDSHAKE_FAIL)
 
-This structure allows any AI agent to "boot" itself into the correct context by analyzing the file structure, effectively preventing architectural drift.
+#### Step 2: Context Analysis (`analyzeContext`)
+The input is weighed to detect specific conditions:
+*   **Browser:** Automatically triggers `RestrictionClass.PLATFORM_RESTRICTION` due to lack of raw socket access.
+*   **TLS Failures:** Maps to `RestrictionClass.TLS_FINGERPRINTING`.
+*   **Complex Symptoms:** If multiple failure types are detected, it signals a high-entropy block (`PROTOCOL_WHITELISTING`).
 
-### 5. ROLES MODEL
+#### Step 3: Rule Matching (`DecisionRules`)
+The normalized context is matched against a static set of logic rules (`src/core/knowledge/rules.ts`).
+*   *Example:* If Platform is `iOS` -> Force `vless_tunnel` strategy (Reason: Walled Garden restriction).
+*   *Example:* If Target is `TELEGRAM` -> Suggest `telegram_obfuscation` strategy (MTProto heuristics).
 
-To maintain architectural integrity, clear roles are defined:
+#### Step 4: Outcome Generation
+The system returns a `DecisionResult` containing:
+*   **Strategy Intent:** The abstract approach (e.g., "Universal Fragmentation").
+*   **Confidence Score:** A value from 0.0 to 1.0 indicating reliability.
+*   **Explanation:** A human-readable diagnosis of the restriction.
 
-*   **Architect (Human)**: Defines the vision, axioms, and ethical boundaries. The source of intent.
-*   **Senior AI (Implementation Assistant)**: Guardian of the Canon. Validates changes against architectural constraints. Refuses requests that violate the Canon (e.g., "make a button that fixes everything").
-*   **Junior AI (Code Executor)**: Performs specific coding tasks but must always read `PROJECT_CANON.md` before generating code.
+### 5. ROLE OF AI
 
-### 6. WHY THIS IS PUBLIC
+The Artificial Intelligence (Google Gemini) integration is restricted to the **Interface Layer**.
 
-This repository is public for the following reasons:
+*   **Permitted Role:** The AI analyzes user text (e.g., "YouTube is slow on my TV") and maps it to the `DecisionInput` format (Platform: Android, Target: YouTube, Symptom: Throttling).
+*   **Forbidden Role:** The AI is **not** allowed to invent new CLI arguments, suggest strategies not present in the `StrategyCatalog`, or override the Core's safety warnings. The `responseSchema` in `AiAnalyst.tsx` enforces strict JSON output adhering to known types.
 
-1.  **Educational Purpose**: To demonstrate **AI-First Architecture** and **Feature-Sliced Design** in a complex, real-world scenario.
-2.  **Research Transparency**: To document the evolution of network neutrality tools and the corresponding evolution of censorship systems.
-3.  **No Promise of Success**: We explicitly state that this tool is for research. We do not promise successful bypass of restrictions, as such promises are technically impossible to sustain in the 2026 environment.
-4.  **Ethical Boundary**: The project operates within the boundaries of network analysis and does not facilitate illegal activities.
+### 6. ENVIRONMENT SHIFT 2026 (PROTOCOL)
 
-### 7. HOW TO USE THIS REPOSITORY
+Defined in `PROJECT_CANON.ts` as `historicalAnchor: "2026-01-10"`.
 
-For both Humans and AI agents, the required reading order is:
+The system logic hardcodes a reaction to the "2026 Shift" — a transition from static blocking to behavioral analysis by ISPs.
 
-1.  **READ** `PROJECT_CANON.md` (The Laws).
-2.  **READ** `PROJECT_WHITEPAPER.md` (The Logic).
-3.  **ANALYZE** `src/core` (The Brain).
-4.  **ANALYZE** `src/features` and `src/shared` (The Body).
+*   **Impact on Code:** In `src/store/strategies.store.ts`, if the platform is `browser` or the symptom is `TELEGRAM_FAIL`, the system bypasses the standard decision engine and calls `analyzeEnvironment()`.
+*   **Result:** This forces the UI into **Analysis Mode**. Execution buttons are disabled, and the user is presented with a diagnostic report explaining that "Known execution strategies are no longer reliable" due to protocol whitelisting.
 
-Only after understanding these layers should code modifications be proposed or implemented.
+### 7. USER ROLE vs SYSTEM ROLE
+
+*   **User Role:** The observer. The user provides the symptoms and describes the environment.
+*   **System Role:** The analyst. The system maps those symptoms to the underlying network architecture (DPI, TSPU, Firewall) and determines the theoretical limits of circumvention for that specific case.
+
+---
+*Generated based on src/core/ logic analysis.*
