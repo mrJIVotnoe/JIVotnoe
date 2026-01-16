@@ -13,6 +13,15 @@ The Time of the Human Architect is the highest-value resource.
 
 See: HUMAN_ARCHITECT_TIME_AXIOM.md
 
+## Project Canons
+
+This project is governed by a set of immutable laws ensuring architectural integrity:
+
+- [📜 Project Canon](PROJECT_CANON.md) - The source of truth for AI behavior.
+- [🤖 AI Team Canon](AI_TEAM_CANON.md) - Hierarchy and collaboration rules.
+- [⏳ Axiom 0](HUMAN_ARCHITECT_TIME_AXIOM.md) - The supreme value of Human Time.
+- [📄 Whitepaper](PROJECT_WHITEPAPER.md) - Technical architecture and logic.
+
 ---
 
 # ByeDPI Mate: Neural Sentinel 🛡️

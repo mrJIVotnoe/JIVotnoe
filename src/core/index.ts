@@ -10,6 +10,7 @@
 
 import { decideStrategy } from './engine/decide';
 import { generateExplanation } from './engine/explain';
+import { consultKnowledge } from './engine/consult';
 import { StrategyCatalog } from './knowledge/strategies';
 import { DecisionInput, DecisionResult } from './domain/types';
 import { analyzeEnvironment } from './engine/analyzeEnvironment';
@@ -21,15 +22,22 @@ export { PROJECT_CANON } from './PROJECT_CANON';
 
 export { decideStrategy as decide } from './engine/decide';
 export { analyzeEnvironment } from './engine/analyzeEnvironment';
+export { consultKnowledge } from './engine/consult';
 
 /**
  * Main entry point for the Core Decision Engine.
  * Takes a context input and returns a deterministic strategy recommendation.
  */
 export const Core = {
+  // Execution Logic (Deterministic)
   decide: (input: DecisionInput): DecisionResult => {
     const decision = decideStrategy(input);
     return decision;
+  },
+  
+  // Advisory Logic (Informational)
+  consult: (decision: DecisionResult) => {
+    return consultKnowledge(decision);
   },
   
   getStrategyMetadata: (id: string) => {
