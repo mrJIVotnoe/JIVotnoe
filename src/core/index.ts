@@ -1,3 +1,4 @@
+
 /**
  * Core Engine Entry Point
  *
@@ -14,10 +15,12 @@ import { consultKnowledge } from './engine/consult';
 import { StrategyCatalog } from './knowledge/strategies';
 import { DecisionInput, DecisionResult } from './domain/types';
 import { analyzeEnvironment } from './engine/analyzeEnvironment';
+import { generateDetailedExplanation } from './explanation/generator';
 import { PROJECT_CANON } from './PROJECT_CANON';
 
 export * from './domain/types';
 export * from './domain/enums';
+export * from './explanation/types';
 export { PROJECT_CANON } from './PROJECT_CANON';
 
 export { decideStrategy as decide } from './engine/decide';
@@ -47,6 +50,11 @@ export const Core = {
   explain: (decision: DecisionResult, lang: 'ru' | 'en' = 'en') => {
     const strategy = StrategyCatalog[decision.strategyId];
     return generateExplanation(decision, strategy, lang);
+  },
+
+  // Extended Explanation Layer (Read-Only Knowledge Integration)
+  explainDetailed: (decision: DecisionResult, input: DecisionInput) => {
+    return generateDetailedExplanation(decision, input);
   },
 
   analyzeEnvironment,

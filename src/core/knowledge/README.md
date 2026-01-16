@@ -1,3 +1,4 @@
+
 # Core Knowledge Base 📚
 
 This directory contains **Static Knowledge** about the network environment.
@@ -14,6 +15,14 @@ This directory contains **Static Knowledge** about the network environment.
 *   `scenarios.ru.ts`: Explanations of *why* certain strategies exist, written for educational purposes.
 *   `rules.ts` & `strategies.ts`: (Legacy) Mapping logic for the decision engine.
 *   `scenario.db.ts`: Abstract definitions of evasion techniques (Fragmentation, disorder).
+
+## Read-Only Knowledge API
+
+This API (`getObservations.ts`) provides observational data only.
+
+*   It must **never** be used to influence deterministic decision logic.
+*   It is intended strictly for `explain`, `diagnostics`, and `UI` layers.
+*   Core logic must remain fully functional if this module is removed.
 
 ## Usage Rule
 

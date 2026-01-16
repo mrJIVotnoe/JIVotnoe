@@ -1,3 +1,4 @@
+
 // Knowledge is informational, not prescriptive
 
 /**
@@ -17,3 +18,6 @@ export * from './rules';
 // Regional Knowledge Bases
 export * from './whitelist.ru';
 export * from './scenarios.ru';
+
+// Read-Only API
+export * from './getObservations';
