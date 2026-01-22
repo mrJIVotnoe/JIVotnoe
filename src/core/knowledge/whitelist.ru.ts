@@ -1,3 +1,4 @@
+
 // Knowledge is informational, not prescriptive
 
 /**
@@ -11,33 +12,57 @@
 
 export const RU_WHITELIST_OBSERVATIONS = [
   {
-    domain: 'www.ozon.ru',
+    domain: 'st.ozone.ru',
     category: 'RETAIL_INFRASTRUCTURE',
-    observation: 'Критически важный узел e-commerce. Часто находится в белых списках провайдеров (MTS, Megafon) для обеспечения работы платежей.',
+    observation: 'Высокоэффективный SNI. Подтверждена работа на МТС, Мегафон, T2, Yota. Часто находится в "неприкасаемых" списках DPI для обеспечения работы e-commerce.',
     trustLevel: 'HIGH'
   },
   {
-    domain: 'wb.ru',
-    category: 'RETAIL_INFRASTRUCTURE',
-    observation: 'Высоконагруженный узел Wildberries. Исторически наблюдалась высокая проходимость TLS handshakes без DPI фильтрации.',
-    trustLevel: 'HIGH'
-  },
-  {
-    domain: 'vk.com',
+    domain: 'stats.vk-portal.net',
     category: 'SOCIAL_INFRASTRUCTURE',
-    observation: 'Внутренняя социальная сеть. Трафик к этому домену обычно не подвергается шейпингу, но может анализироваться.',
+    observation: 'Технический домен VK. Стабильно работает на МТС, Мегафон, T2, Ростелеком. Используется для внутренней телеметрии, поэтому редко блокируется.',
+    trustLevel: 'HIGH'
+  },
+  {
+    domain: 'splitter.wb.ru',
+    category: 'RETAIL_INFRASTRUCTURE',
+    observation: 'Технический балансировщик Wildberries. Работает на большинстве мобильных операторов (МТС, Мегафон, Yota). Альтернатива Ozon.',
+    trustLevel: 'HIGH'
+  },
+  {
+    domain: 'goya.rutube.ru',
+    category: 'MEDIA_INFRASTRUCTURE',
+    observation: 'Видео-CDN Rutube. Пропускается DPI на МТС, Мегафон и T2 для обеспечения потокового видео. Хороший кандидат для SNI.',
     trustLevel: 'MEDIUM'
+  },
+  {
+    domain: 'alfabank.ru',
+    category: 'FINANCE_INFRASTRUCTURE',
+    observation: 'Банковский сектор. Требует прямого соединения (Direct/Split Tunneling). Работа через прокси часто приводит к разрыву сессии безопасности.',
+    trustLevel: 'CRITICAL'
+  },
+  {
+    domain: 'tbank.ru',
+    category: 'FINANCE_INFRASTRUCTURE',
+    observation: 'Т-Банк (Тинькофф). Критическая инфраструктура. Обязательно исключать из туннелирования во избежание блокировки ЛК.',
+    trustLevel: 'CRITICAL'
+  },
+  {
+    domain: 'moscow.megafon.ru',
+    category: 'TECH_INFRASTRUCTURE',
+    observation: 'Инфраструктурный домен Мегафона. Может быть эффективен как SNI внутри сети самого оператора (Intranet spoofing).',
+    trustLevel: 'MEDIUM'
+  },
+  {
+    domain: 'beeline.ru',
+    category: 'RISK_ZONE',
+    observation: 'На сети Билайн наблюдается аномально высокий уровень фильтрации SNI. Большинство стандартных мимикрий (Ozon/VK) могут не работать.',
+    trustLevel: 'LOW'
   },
   {
     domain: 'gosuslugi.ru',
     category: 'GOV_INFRASTRUCTURE',
-    observation: 'Государственный портал. Требует прямого соединения (Direct) из-за проверки российских IP адресов и TLS сертификатов (Mintsifry).',
-    trustLevel: 'CRITICAL'
-  },
-  {
-    domain: 'sberbank.ru',
-    category: 'FINANCE_INFRASTRUCTURE',
-    observation: 'Банковский сектор. Требует российских TLS сертификатов. Использование в туннеле приводит к разрыву соединения.',
+    observation: 'Портал Госуслуг. Недоступен из-за пределов РФ. При использовании VPN/Proxy часто недоступен. Требует прямого подключения.',
     trustLevel: 'CRITICAL'
   }
 ] as const;

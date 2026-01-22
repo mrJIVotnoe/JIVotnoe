@@ -1,3 +1,4 @@
+
 /**
  * Explanation Generator
  * 
@@ -15,6 +16,7 @@ import { DecisionResult, DecisionInput } from '../domain/types';
 import { AppTarget } from '../domain/enums';
 import { consultKnowledge } from '../engine/consult';
 import { getScenarioObservations, getWhitelistObservations } from '../knowledge';
+import { TSPU_PROFILE } from '../knowledge/adversary.ru';
 import { DetailedExplanation, ObservationBlock } from './types';
 
 export function generateDetailedExplanation(
@@ -32,6 +34,17 @@ export function generateDetailedExplanation(
   // In a multi-region future, this would accept input.region.
   const ruScenarios = getScenarioObservations('ru'); 
   const ruWhitelist = getWhitelistObservations('ru');
+
+  // --- Adversary Intelligence Injection ---
+  // If the symptoms indicate advanced blocking, mention the Adversary
+  if (decision.restrictionClass === 'TLS_FINGERPRINTING' || decision.restrictionClass === 'PROTOCOL_WHITELISTING') {
+    observations.push({
+      type: 'CONTEXT_WARNING',
+      title: `Adversary Detected: ${TSPU_PROFILE.name}`,
+      content: `Symptom matches signatures of ${TSPU_PROFILE.description}. Known weakness exploited: ${TSPU_PROFILE.knownWeaknesses.join(', ')}.`,
+      source: 'KnowledgeBase'
+    });
+  }
 
   // --- Heuristic Matching for Observations ---
   // These matches provide context ("Did you know?") without affecting the chosen strategy.

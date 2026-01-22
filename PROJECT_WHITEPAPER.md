@@ -1,9 +1,19 @@
+
 # PROJECT WHITE PAPER
 ## System Architecture & Logic Documentation
 
-**Version:** 1.7.0 (Maestro Edition)
+**Version:** 1.7.1 (Genesis Edition)
 **Scope:** Core Logic & Decision Engine
 **Status:** ACTIVE
+
+---
+
+### 0. PHILOSOPHICAL ALIGNMENT (THE "WHY")
+
+Before defining *how* the system works, we define *why* it exists.
+This project is an instrument of **Connectivity Preservation**. It operates in an adversarial environment (The "Vis-a-Vis" / TSPU) where entropy (disconnection) is the default state. 
+
+The goal is not merely "free internet", but the preservation of the Human-to-Human and Human-to-AI dialogue channel against automated suppression.
 
 ---
 

@@ -5,6 +5,8 @@
  * Defines the vocabulary for static research scenarios.
  * These types are used for educational and analytical purposes only.
  * They describe theoretical interactions with DPI systems.
+ * 
+ * Updated with Geneva Taxonomy (CCS '19).
  */
 
 export type TrustSurface = 

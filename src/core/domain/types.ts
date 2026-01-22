@@ -1,3 +1,4 @@
+
 /**
  * Domain Definitions
  *
@@ -80,4 +81,19 @@ export interface KnowledgeSignal {
   insight: string;
   technicalRelevance: string;
   historicalEffectiveness: number;
+}
+
+/**
+ * Adversary Profile
+ * 
+ * Defines the technical capabilities of the censoring entity.
+ * Based on research of TSPU (Technical Means of Countering Threats).
+ */
+export interface AdversaryProfile {
+  id: string;
+  name: string; // e.g. "TSPU (RDP.ru)"
+  type: 'IN_LINE' | 'ON_PATH' | 'HYBRID';
+  capabilities: string[]; // e.g. ["SNI_READ", "QUIC_THROTTLE"]
+  knownWeaknesses: string[]; // e.g. ["FRAGMENTATION_BUFFER", "TCP_STATE_DESYNC"]
+  description: string;
 }

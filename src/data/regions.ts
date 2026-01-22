@@ -1,3 +1,4 @@
+
 import { RegionWhitelist } from '../types';
 
 export const REGIONAL_DATA: RegionWhitelist[] = [
@@ -20,14 +21,23 @@ export const REGIONAL_DATA: RegionWhitelist[] = [
     name: 'Russia',
     flag: '🇷🇺',
     mimicry: [
-      { domain: 'www.ozon.ru', category: 'retail', note: 'Best for MTS' },
-      { domain: 'stats.vk-portal.net', category: 'social', note: 'Universal' },
-      { domain: 'splitter.wb.ru', category: 'retail', note: 'Alternative' }
+      { domain: 'st.ozone.ru', category: 'retail', note: 'MTS, Megafon, T2, Yota (Top Tier)' },
+      { domain: 'stats.vk-portal.net', category: 'social', note: 'MTS, Megafon, RTK (Stable)' },
+      { domain: 'splitter.wb.ru', category: 'retail', note: 'MTS, Megafon, T2' },
+      { domain: 'goya.rutube.ru', category: 'social', note: 'Video CDN (High Bandwidth)' },
+      { domain: 'mddc.tinkoff.ru', category: 'finance', note: 'Alternative SNI' },
+      { domain: 'moscow.megafon.ru', category: 'tech', note: 'Best for Megafon users' },
+      { domain: 'api.mindbox.ru', category: 'tech', note: 'Generic Marketing API' }
     ],
     bypass: [
       { domain: 'online.sberbank.ru', category: 'finance' },
-      { domain: 'www.gosuslugi.ru', category: 'gov' },
-      { domain: 'vk.com', category: 'social' }
+      { domain: 'alfabank.ru', category: 'finance' },
+      { domain: 'tbank.ru', category: 'finance' },
+      { domain: 'lk.gosuslugi.ru', category: 'gov' },
+      { domain: 'www.nalog.gov.ru', category: 'gov' },
+      { domain: 'vk.com', category: 'social' },
+      { domain: 'wildberries.ru', category: 'retail' },
+      { domain: 'ozon.ru', category: 'retail' }
     ]
   },
   {

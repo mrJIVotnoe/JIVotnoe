@@ -18,6 +18,7 @@ export * from './rules';
 // Regional Knowledge Bases
 export * from './whitelist.ru';
 export * from './scenarios.ru';
+export * from './adversary.ru';
 
 // Read-Only API
 export * from './getObservations';
