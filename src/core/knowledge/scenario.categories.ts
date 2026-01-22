@@ -1,3 +1,4 @@
+
 /**
  * Static Categories for DPI Interaction Models.
  * 
@@ -18,13 +19,13 @@ export const SCENARIO_CATEGORIES: Record<ScenarioCategory, CategoryDescriptor> =
   MASKING: {
     id: 'MASKING',
     label: 'Signal Masking',
-    intent: 'Camouflage traffic as legitimate trusted services.',
+    intent: 'Camouflage traffic as legitimate trusted services (SNI/TLS).',
     philosophicalAlign: 'To become invisible, one must look like everything else.'
   },
   PRESSURE: {
     id: 'PRESSURE',
-    label: 'State Pressure',
-    intent: 'Overwhelm or timeout the inspection state machine.',
+    label: 'Resource Exhaustion',
+    intent: 'Overwhelm the inspector\'s CPU or Memory (State Holding).',
     philosophicalAlign: 'The system has finite resources; the chaos is infinite.'
   },
   ENTROPY: {
@@ -35,7 +36,7 @@ export const SCENARIO_CATEGORIES: Record<ScenarioCategory, CategoryDescriptor> =
   },
   STATE: {
     id: 'STATE',
-    label: 'State Manipulation',
+    label: 'State Desynchronization',
     intent: 'Desynchronize the middlebox TCP state from the endpoint state (Geneva Class).',
     philosophicalAlign: 'The map is not the territory; the censor\'s state is not the connection.'
   }

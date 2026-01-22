@@ -52,6 +52,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       );
     }
 
-    return (this.props as ErrorBoundaryProps).children;
+    return this.props.children;
   }
 }

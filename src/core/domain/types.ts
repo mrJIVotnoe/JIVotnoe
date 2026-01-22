@@ -76,7 +76,7 @@ export interface AnalysisResult {
  */
 export interface KnowledgeSignal {
   sourceScenario: string;
-  category: 'MASKING' | 'PRESSURE' | 'ENTROPY' | 'UNKNOWN';
+  category: 'MASKING' | 'PRESSURE' | 'ENTROPY' | 'STATE' | 'UNKNOWN';
   insight: string;
   technicalRelevance: string;
   historicalEffectiveness: number;
