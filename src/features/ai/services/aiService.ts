@@ -1,6 +1,8 @@
+
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { STRATEGIES } from '../../strategies/data';
 import { Language } from '../../../types';
+import { ProbeResult } from '../../../core/engine/probe';
 
 export interface AiAnalysisResult {
   platform: 'android' | 'pc' | 'ios' | 'linux';
@@ -14,9 +16,10 @@ interface AnalyzeParams {
   language: Language;
   useBridge: boolean;
   bridgeUrl: string;
+  probeData?: ProbeResult[]; // Optional diagnostic data
 }
 
-export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl }: AnalyzeParams): Promise<AiAnalysisResult> => {
+export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData }: AnalyzeParams): Promise<AiAnalysisResult> => {
   // 1. Prepare Context
   const strategiesContext = STRATEGIES.map(s => ({
     id: s.id,
@@ -29,6 +32,18 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl }: An
      'zh': 'Chinese', 'tr': 'Turkish', 'es': 'Spanish'
   };
   const targetLang = langNames[language] || 'Russian';
+
+  // Format probe data for the AI if available
+  let diagnosticReport = "No network scan performed.";
+  if (probeData && probeData.length > 0) {
+    const grouped = probeData.reduce((acc, r) => {
+      acc[r.target.category] = acc[r.target.category] || [];
+      acc[r.target.category].push(`${r.target.name}: ${r.status} (${r.latency}ms)`);
+      return acc;
+    }, {} as Record<string, string[]>);
+    
+    diagnosticReport = "NETWORK DIAGNOSTIC REPORT:\n" + JSON.stringify(grouped, null, 2);
+  }
 
   // 2. Define Schema
   const responseSchema = {
@@ -43,17 +58,27 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl }: An
   };
 
   const systemInstruction = `You are "The Maestro of Network Neutrality", an elite engineer.
-    NOTICE: The network environment has shifted as of 2026-01-10.
-    Direct execution of bypass strategies is currently disabled for security analysis.
     
-    Goal: Analyze user issue and explain the situation.
-    Context: Strategies=${JSON.stringify(strategiesContext)}.
+    Goal: Analyze user issue and diagnostic data to provide a precise report.
+    
+    Diagnostic Data:
+    ${diagnosticReport}
+    
+    Strategies Context:
+    ${JSON.stringify(strategiesContext)}
+    
     Persona: Strict, analytical, objective.
+    
+    Analysis Logic:
+    1. Check the Diagnostic Report. If a service is BLOCKED or TIMEOUT, it confirms the user's issue.
+    2. If Google/YouTube are BLOCKED (QUIC/UDP issues usually), suggest checking browser QUIC flags or using TCP strategies.
+    3. If Telegram is OK but WhatsApp is BLOCKED, explain protocol differences (MTProto vs standard HTTPS).
+    4. Provide "Where to dig next" advice based on the specific services that failed.
+    
     Rules:
     - IMPORTANT: Reply ONLY in ${targetLang} language.
-    - If the user asks for bypass/strategies: State that the environment has changed and strategies are unreliable.
-    - Provide DIAGNOSIS ONLY. Do not provide executable steps.
-    - Use the phrase "Analysis-only mode enabled" in your explanation.
+    - If diagnostic shows mostly BLOCKED, warn about ISP-level restrictions.
+    - If everything is AVAILABLE but user complains, suggest throttling/QoS issues.
     - Output strictly JSON matching the schema.`;
 
   // 3. Execute Request
@@ -81,13 +106,12 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl }: An
     return JSON.parse(text);
 
   } else {
-    // Direct Client Mode
-    // Check for API Key existence to prevent obscure crashes for GitHub cloners
-    if (!process.env.API_KEY) {
-      throw new Error("API Key is missing. Please create a .env.local file with VITE_GEMINI_API_KEY.");
+    const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) {
+      throw new Error("API Key is missing.");
     }
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey: apiKey });
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: input,

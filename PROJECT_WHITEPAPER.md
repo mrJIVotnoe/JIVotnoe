@@ -2,7 +2,7 @@
 # PROJECT WHITE PAPER
 ## System Architecture & Logic Documentation
 
-**Version:** 1.7.1 (Genesis Edition)
+**Version:** 1.7.2 (Diagnosis Edition)
 **Scope:** Core Logic & Decision Engine
 **Status:** ACTIVE
 
@@ -24,6 +24,11 @@ The goal is not merely "free internet", but the preservation of the Human-to-Hum
 At its heart lies `src/core/`, an isolated TypeScript module that operates independently of the user interface. This Core serves as the "Source of Truth," converting raw environmental data (Platform, Symptoms, Target Application) into structured diagnostic outputs.
 
 It is a **Research & Diagnostic Instrument**. Its primary function is to classify the type of network restriction (`RestrictionClass`) active in a given environment and determine if a bypass is theoretically possible within the user's constraints.
+
+**Key Components:**
+1.  **Core Decision Engine:** Deterministic logic mapping inputs to strategies.
+2.  **NetProbe (New):** Active diagnostic module for empirical verification of reachability via `no-cors` heuristics.
+3.  **AI Analyst:** Natural language interface for interpreting probe data.
 
 ### 2. WHAT THIS SYSTEM IS NOT
 
@@ -90,7 +95,7 @@ The system logic hardcodes a reaction to the "2026 Shift" — a transition from 
 
 ### 7. USER ROLE vs SYSTEM ROLE
 
-*   **User Role:** The observer. The user provides the symptoms and describes the environment.
+*   **User Role:** The observer (as per HUMAN-AI-USER AXIOM). The user provides the symptoms, triggers NetProbe, and describes the environment.
 *   **System Role:** The analyst. The system maps those symptoms to the underlying network architecture (DPI, TSPU, Firewall) and determines the theoretical limits of circumvention for that specific case.
 
 ---

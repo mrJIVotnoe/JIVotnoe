@@ -1,24 +1,28 @@
-import React, { useEffect, useRef } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info } from 'lucide-react';
+
+import React, { useEffect, useRef, useState } from 'react';
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info, Activity, ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useTelegram } from '../../telegram/TelegramContext';
 import { WORKER_CODE_TEMPLATE } from '../../../config/constants';
 import { useAiStore } from '../../../store/ai.store';
+import { runNetworkDiagnostics, ProbeResult } from '../../../core/engine/probe';
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
   const { webApp } = useTelegram();
   
-  // Use AI Store
   const { 
     input, setInput, 
-    loading, result, error, rated, 
-    useBridge, bridgeUrl, setBridgeSettings,
+    loading, result, error, rated, probeData,
+    useBridge, bridgeUrl, setBridgeSettings, setProbeData,
     analyze, rate 
   } = useAiStore();
 
-  const [showBridgeSettings, setShowBridgeSettings] = React.useState(false);
+  const [showBridgeSettings, setShowBridgeSettings] = useState(false);
+  const [is scanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,40 +38,68 @@ export const AiAnalyst: React.FC = () => {
     }
   };
 
-  const QuickStartCard = ({ icon: Icon, title, prompt, color }: any) => {
-    const colorStyles: any = {
-      blue: 'border-blue-500/30 bg-blue-500/5 text-blue-400 hover:border-blue-400',
-      green: 'border-green-500/30 bg-green-500/5 text-green-400 hover:border-green-400',
-      purple: 'border-purple-500/30 bg-purple-500/5 text-purple-400 hover:border-purple-400'
-    };
+  const runDiagnostics = async () => {
+    setIsScanning(true);
+    setScanProgress(0);
+    setProbeData([]); // Clear previous
+    
+    try {
+      const results = await runNetworkDiagnostics((completed, total) => {
+        setScanProgress((completed / total) * 100);
+      });
+      setProbeData(results);
+      
+      // Auto-analyze after scan if no input
+      if (!input) {
+         analyze(language, "Analyze my network diagnostic results.");
+      }
+    } catch (e) {
+      console.error("Probe failed", e);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const DiagnosticSummary = ({ data }: { data: ProbeResult[] }) => {
+    const blocked = data.filter(d => d.status === 'BLOCKED' || d.status === 'TIMEOUT').length;
+    const available = data.filter(d => d.status === 'AVAILABLE').length;
+    const health = Math.round((available / data.length) * 100);
+    
+    let healthColor = 'text-green-400';
+    if (health < 70) healthColor = 'text-yellow-400';
+    if (health < 40) healthColor = 'text-red-400';
+
     return (
-      <button 
-        onClick={() => analyze(language, prompt)}
-        disabled={loading}
-        className={`flex flex-col items-center gap-3 p-4 rounded-3xl border transition-all hover:scale-[1.02] shadow-lg ${colorStyles[color]} active:scale-[0.98]`}
-      >
-        <div className="p-3 rounded-2xl bg-black/40"><Icon size={24} /></div>
-        <span className="text-[10px] font-black uppercase tracking-tight text-center">{title}</span>
-      </button>
+      <div className="bg-black/30 p-4 rounded-xl border border-cyber-700 mb-4 animate-in fade-in">
+         <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">NetProbe Status</span>
+            <span className={`text-sm font-black ${healthColor}`}>{health}% HEALTH</span>
+         </div>
+         <div className="flex gap-2 mb-3">
+            <div className="h-1 bg-cyber-700 flex-1 rounded-full overflow-hidden">
+               <div className={`h-full ${healthColor}`} style={{ width: `${health}%` }}></div>
+            </div>
+         </div>
+         <div className="grid grid-cols-2 gap-2">
+            {data.map(item => (
+               <div key={item.target.id} className="flex items-center justify-between text-[10px] bg-cyber-900/50 p-2 rounded border border-cyber-700/50">
+                  <span className="text-gray-300 truncate pr-2">{item.target.name}</span>
+                  {item.status === 'AVAILABLE' ? (
+                     <span className="text-green-400 font-bold flex items-center gap-1"><ShieldCheck size={10}/> OK</span>
+                  ) : (
+                     <span className="text-red-400 font-bold flex items-center gap-1"><ShieldAlert size={10}/> {item.status === 'TIMEOUT' ? 'T/O' : 'BLK'}</span>
+                  )}
+               </div>
+            ))}
+         </div>
+      </div>
     );
   };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
-      {!result && !loading && (
-        <div className="space-y-4 animate-in slide-in-from-top-4">
-           <div className="text-center">
-              <h4 className="text-white font-black text-lg mb-1">{t('qs_title')}</h4>
-              <p className="text-gray-500 text-xs">{t('qs_desc')}</p>
-           </div>
-           <div className="grid grid-cols-3 gap-3">
-              <QuickStartCard icon={Monitor} title={t('qs_pc')} prompt={t('qs_pc_prompt')} color="blue" />
-              <QuickStartCard icon={Smartphone} title={t('qs_mobile')} prompt={t('qs_mobile_prompt')} color="green" />
-              <QuickStartCard icon={Tv} title={t('qs_tv')} prompt={t('qs_tv_prompt')} color="purple" />
-           </div>
-        </div>
-      )}
-
+      
+      {/* HEADER SECTION */}
       <div className="bg-gradient-to-br from-indigo-900/40 via-cyber-800 to-fuchsia-900/30 p-6 rounded-[2.5rem] border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-4 right-8 flex items-center gap-2">
            <div className={`h-1.5 w-1.5 rounded-full ${useBridge && bridgeUrl ? 'bg-blue-400 animate-pulse' : 'bg-gray-600'}`}></div>
@@ -89,16 +121,36 @@ export const AiAnalyst: React.FC = () => {
           </div>
         </div>
 
-        <div className="relative mt-6">
+        {/* PROBE UI */}
+        <div className="mb-4">
+           {scanning ? (
+              <div className="bg-black/40 p-4 rounded-2xl border border-cyber-700 flex flex-col items-center justify-center h-24">
+                 <Activity className="text-cyber-accent animate-pulse mb-2" size={24} />
+                 <span className="text-[10px] text-cyber-accent font-black uppercase tracking-widest animate-pulse">SCANNING NETWORK... {Math.round(scanProgress)}%</span>
+              </div>
+           ) : probeData ? (
+              <DiagnosticSummary data={probeData} />
+           ) : (
+              <button 
+                onClick={runDiagnostics}
+                className="w-full py-3 bg-cyber-900/50 hover:bg-cyber-900 border border-cyber-600 border-dashed rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-gray-400 hover:text-cyber-accent transition-all group"
+              >
+                 <Activity size={16} className="group-hover:rotate-180 transition-transform duration-700"/>
+                 RUN SYSTEM DIAGNOSTICS (NETPROBE)
+              </button>
+           )}
+        </div>
+
+        <div className="relative">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={t('ai_placeholder')}
-            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all min-h-[130px] resize-none font-medium placeholder-gray-600"
+            className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all min-h-[100px] resize-none font-medium placeholder-gray-600"
           />
           <button
             onClick={() => analyze(language)}
-            disabled={loading}
+            disabled={loading || scanning}
             className={`mt-4 w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
               loading ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white shadow-xl hover:shadow-indigo-500/20 active:scale-[0.98]'
             }`}
