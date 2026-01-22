@@ -12,8 +12,8 @@
  */
 
 export const PROJECT_CANON = {
-  version: "1.0",
-  role: "AI-First Research System",
+  version: "v0.1-clean",
+  role: "Fact-Based Core",
   historicalAnchor: "2026-01-10",
   mode: "analysis-first",
   

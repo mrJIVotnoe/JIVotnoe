@@ -10,6 +10,7 @@
  * 4. Outcome Generation
  *
  * Implements: PROJECT_WHITEPAPER.md → Section 4: DECISION MODEL
+ * Verified by: WP-04
  */
 
 import { DecisionInput, DecisionResult } from '../domain/types';
@@ -24,9 +25,11 @@ import { generateExplanation } from './explain';
  */
 export function decideStrategy(input: DecisionInput): DecisionResult {
   // 1. Analyze Context
+  // @trace WP-04-2 Context Analysis
   const analysis = analyzeContext(input);
   
   // 2. Match Rules
+  // @trace WP-04-3 Rule Matching
   const matchedRule = DecisionRules.find(rule => rule.match(input));
   
   // 3. Resolve Strategy
@@ -34,6 +37,7 @@ export function decideStrategy(input: DecisionInput): DecisionResult {
   const strategy = StrategyCatalog[strategyId] || StrategyCatalog['unsupported'];
   
   // 4. Construct Result
+  // @trace WP-04-4 Outcome Generation
   const explanationRaw = matchedRule ? matchedRule.reason : 'No matching rule found for this context.';
   
   const result: DecisionResult = {
