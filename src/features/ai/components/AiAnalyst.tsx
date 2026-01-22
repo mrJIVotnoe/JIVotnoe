@@ -20,7 +20,7 @@ export const AiAnalyst: React.FC = () => {
   } = useAiStore();
 
   const [showBridgeSettings, setShowBridgeSettings] = useState(false);
-  const [is scanning, setIsScanning] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   
   const resultRef = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ export const AiAnalyst: React.FC = () => {
   };
 
   const runDiagnostics = async () => {
-    setIsScanning(true);
+    setScanning(true);
     setScanProgress(0);
     setProbeData([]); // Clear previous
     
@@ -56,7 +56,7 @@ export const AiAnalyst: React.FC = () => {
     } catch (e) {
       console.error("Probe failed", e);
     } finally {
-      setIsScanning(false);
+      setScanning(false);
     }
   };
 
