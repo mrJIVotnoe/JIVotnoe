@@ -6,7 +6,6 @@
  * and the deterministic logic (Core).
  *
  * Implements: PROJECT_WHITEPAPER.md → Section 4.1: Input Normalization
- * Verified by: WP-04-1
  */
 
 import { NetworkSymptom, AppTarget, RestrictionClass } from './enums';
@@ -19,7 +18,7 @@ export type Platform = 'android' | 'windows' | 'linux' | 'ios' | 'browser';
  * The normalized representation of the user's environment.
  * The AI or UI must map raw text/forms into this rigid structure.
  *
- * @trace WP-04-1 Input Normalization
+ * Defined in PROJECT_WHITEPAPER.md → Section 4.1
  */
 export interface DecisionInput {
   platform: Platform;
@@ -42,7 +41,7 @@ export interface StrategyDescriptor {
  * The deterministic output of the decision engine.
  * Contains the strategy intent, confidence score, and diagnostic explanation.
  *
- * @trace WP-04-4 Outcome Generation
+ * Defined in PROJECT_WHITEPAPER.md → Section 4.4
  */
 export interface DecisionResult {
   strategyId: string;

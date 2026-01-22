@@ -7,7 +7,6 @@
  * Triggers "Analysis Mode" instead of "Execution Mode".
  *
  * Implements: PROJECT_WHITEPAPER.md → Section 6: ENVIRONMENT SHIFT 2026
- * Verified by: WP-06
  */
 
 import { DecisionInput, AnalysisResult } from '../domain/types'
@@ -18,13 +17,10 @@ export function analyzeEnvironment(input: DecisionInput): AnalysisResult {
   let restrictionClass: RestrictionClass = RestrictionClass.NONE;
   const evidence: string[] = [];
   const explanation: string[] = [
-    `Environment shift detected (${PROJECT_CANON.historicalAnchor})`, // @trace WP-06-A
+    `Environment shift detected (${PROJECT_CANON.historicalAnchor})`,
     "Known execution strategies are no longer reliable",
     "Analysis-only mode enabled"
   ];
-
-  // @trace WP-06-C Execution disabled in Analysis Mode
-  const executionSupported = false; 
 
   if (input.platform === 'browser') {
     restrictionClass = RestrictionClass.PLATFORM_RESTRICTION;
@@ -43,7 +39,7 @@ export function analyzeEnvironment(input: DecisionInput): AnalysisResult {
     restrictionClass,
     confidence: 0.95,
     evidence,
-    executionSupported,
+    executionSupported: false,
     explanation
   };
 }
