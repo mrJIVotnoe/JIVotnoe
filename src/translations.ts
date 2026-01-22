@@ -36,6 +36,20 @@ const en = {
     qs_mobile_prompt: "I have an Android phone, YouTube app is not working.",
     qs_tv_prompt: "I have an Android TV, YouTube is buffering.",
     
+    // Feedback System
+    feedback_title: "Observation Lab",
+    feedback_desc: "Help the Core learn. Report facts, not opinions.",
+    feedback_placeholder: "Any additional context...",
+    feedback_copy_btn: "COPY DATA JSON",
+    feedback_channel_tg: "SEND TO BOT",
+    feedback_channel_gh: "GITHUB",
+    feedback_copied: "DATA COPIED",
+    feedback_report_issue: "Report Observation",
+    feedback_send_to_bot: "SEND TO COMMUNITY BOT",
+    feedback_rate_title: "Was this helpful?",
+    feedback_thanks: "Feedback received.",
+
+    // ... (rest of the translations remain the same) ...
     // Linux
     linux_title: "Linux: Orchestrating Freedom",
     linux_desc: "From Ubuntu to Arch. Tunnel configuration for system conductors.",
@@ -113,19 +127,6 @@ const en = {
     select_strategy: "Select Strategy",
     too_hard: "Connection issues?",
     too_hard_desc: "If internet is unstable, try simplified SNI.",
-    
-    // Feedback System
-    feedback_title: "Comms Center",
-    feedback_desc: "Found a glitch? Need reinforcements? Choose your channel.",
-    feedback_placeholder: "Describe the bug, your ISP, and device...",
-    feedback_copy_btn: "COPY DIAGNOSTICS",
-    feedback_channel_tg: "COMMUNITY CHAT",
-    feedback_channel_gh: "GITHUB ISSUES",
-    feedback_copied: "COPIED TO CLIPBOARD",
-    feedback_report_issue: "Report Issue",
-    feedback_send_to_bot: "Contact Support",
-    feedback_rate_title: "Was this helpful?",
-    feedback_thanks: "Feedback received.",
     
     // VPN & Region
     vpn_intro_title: "Region Change (ByeDPI + VPN)",
@@ -264,10 +265,18 @@ export const translations: Record<string, Record<string, string>> = {
   ru: {
     ...en, // Наследуем английские ключи как фоллбэк
     
-    // Переопределения для Русского
+    // Feedback
+    feedback_title: "Лаборатория Наблюдений",
+    feedback_desc: "Помогите Ядру обучаться. Сообщайте факты, а не мнения.",
+    feedback_copy_btn: "СКОПИРОВАТЬ JSON ДАННЫХ",
+    feedback_send_to_bot: "ОТПРАВИТЬ БОТУ СООБЩЕСТВА",
+    feedback_copied: "ДАННЫЕ СКОПИРОВАНЫ",
+    
+    // Переопределения для Русского (старые ключи)
     app_title: "ByeDPI Mate",
     subtitle: "v1.7.0 • Neural Sentinel • 2025",
     
+    // ... (rest is preserved from existing file logic) ...
     tab_android: "Android / TV",
     tab_windows: "Windows",
     tab_linux: "Linux",
@@ -370,19 +379,6 @@ export const translations: Record<string, Record<string, string>> = {
     too_hard: "Проблемы со связью?",
     too_hard_desc: "Если интернет работает нестабильно, попробуйте упрощенный SNI.",
     
-    // Feedback System
-    feedback_title: "Центр Связи",
-    feedback_desc: "Нашли баг? Нужна помощь сообщества? Выберите канал связи.",
-    feedback_placeholder: "Опишите баг, провайдера и устройство...",
-    feedback_copy_btn: "СКОПИРОВАТЬ ДИАГНОСТИКУ",
-    feedback_channel_tg: "ЧАТ СООБЩЕСТВА",
-    feedback_channel_gh: "GITHUB ISSUES",
-    feedback_copied: "СКОПИРОВАНО В БУФЕР",
-    feedback_report_issue: "Сообщить об ошибке",
-    feedback_send_to_bot: "НАПИСАТЬ В ПОДДЕРЖКУ",
-    feedback_rate_title: "Это было полезно?",
-    feedback_thanks: "Спасибо! Мы учтем ваш отзыв.",
-
     vpn_intro_title: "Смена региона (ByeDPI + VPN)",
     vpn_intro_desc: "ByeDPI не меняет ваш IP. Для Spotify и ChatGPT используйте комбинацию с VPN.",
     vpn_method_1: "Способ 1: Расширения",

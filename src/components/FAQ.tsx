@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { HelpCircle, AlertTriangle, ShieldAlert, Smartphone, Zap, Search, LifeBuoy, WifiOff, VolumeX } from 'lucide-react';
-import { useLanguage } from '../features/localization/LanguageContext';
+import { useLanguage } from '../LanguageContext';
 import { FeedbackSystem } from './FeedbackSystem';
 import { Collapsible } from '../shared/ui/Collapsible';
 
@@ -30,7 +31,7 @@ export const FAQ: React.FC = () => {
     },
     {
       id: 'mobile',
-      title: t('faq_cat_security'), // Mapping Mobile to Security/Other for now as per translations
+      title: t('faq_cat_security'), 
       items: [
         { q: t('faq_q_mobile'), a: t('faq_a_mobile'), icon: <Smartphone className="text-green-400" /> },
       ]
@@ -107,6 +108,7 @@ export const FAQ: React.FC = () => {
         )}
       </div>
 
+      {/* Integrated Feedback System */}
       <div className="mt-12">
         <FeedbackSystem />
       </div>

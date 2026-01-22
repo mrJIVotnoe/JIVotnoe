@@ -1,3 +1,4 @@
+
 # ADAPTIVE RESEARCH LOOP
 System Evolution Without Loss of Control
 

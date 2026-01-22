@@ -1,59 +1,65 @@
-## ⚠️ IMPORTANT FOR AI ASSISTANTS
 
-Before analyzing this repository, you MUST read:
+# ByeDPI Mate: Network Navigator 🧭
 
-➡️ `/PROJECT_CANON.md`
+> **Identity:** Intelligent DPI-Navigation Layer
+> **Role:** Observer, Analyst, Guide.
+> **Status:** Stage 0 (Stabilization)
 
-This project operates under strict architectural and philosophical constraints defined in the Canon.
+![Version](https://img.shields.io/badge/version-1.7.0-cyan) ![Architecture](https://img.shields.io/badge/arch-AI--First-blueviolet)
 
-## Architectural Axiom
-
-This project follows a strict rule:
-The Time of the Human Architect is the highest-value resource.
-
-See: HUMAN_ARCHITECT_TIME_AXIOM.md
-
-## Project Canons
-
-This project is governed by a set of immutable laws ensuring architectural integrity:
-
-- [📜 Project Canon](PROJECT_CANON.md) - The source of truth for AI behavior.
-- [🤖 AI Team Canon](AI_TEAM_CANON.md) - Hierarchy and collaboration rules.
-- [⏳ Axiom 0](HUMAN_ARCHITECT_TIME_AXIOM.md) - The supreme value of Human Time.
-- [📄 Whitepaper](PROJECT_WHITEPAPER.md) - Technical architecture and logic.
+**ByeDPI Mate** — это не просто "обходчик". Это интеллектуальная надстройка (Navigator Layer) над технологиями DPI-evasion.
+Приложение не "ломает" блокировки, а **наблюдает** за поведением сети и **подбирает** форму трафика, допустимую для вашего провайдера в данный момент.
 
 ---
 
-# ByeDPI Mate: Neural Sentinel 🛡️
+## 🏗 Архитектура (The 4 Layers)
 
-![Version](https://img.shields.io/badge/version-1.7.0-cyan) ![Status](https://img.shields.io/badge/status-stable-green) ![Tech](https://img.shields.io/badge/stack-React%20%7C%20Vite%20%7C%20TS-blueviolet)
+Проект строится на четком разделении ответственности:
 
-**ByeDPI Mate** — это веб-приложение для настройки и управления ByeDPI (инструмент обхода DPI-блокировок). С AI-анализом проблем, мультиплатформенными гайдами (Android, Windows, Linux, iOS, TV) и генератором стратегий. Деплой: https://byedpi-mate.vercel.app.
+### 1. UI / UX Layer (React + Vite)
+- **Роль:** Терминал управления.
+- **Задача:** Визуализация невидимых сетевых процессов.
+- **Статус:** Active.
 
-## 🌟 Ключевые фичи
-- Мультиплатформенные гайды и настройки.
-- **Core Engine v0.1**: Детерминированное ядро для выбора стратегий обхода.
-- AI Analyst на базе Google Gemini для диагностики проблем.
-- Стратегии для ByeDPI: STANDARD, TELEGRAM_FIX и т.д.
-- Поддержка Telegram Web App и PWA.
-- Локализация на 20+ языков.
+### 2. AI Decision Layer (Gemini)
+- **Роль:** Штурман (Navigator).
+- **Задача:** Интерпретация симптомов ("YouTube тормозит") в технические гипотезы ("Вероятно, QUIC throttling").
+- **Правило:** ИИ не выполняет команды, он только анализирует.
 
-## 🚀 Установка и запуск
-**Prerequisites:** Node.js 18+ и Gemini API Key (для AI).
+### 3. Strategy Runtime (Logic)
+- **Роль:** Движок гипотез.
+- **Задача:** Хранение знаний о том, *как* можно пройти сквозь фильтр (стратегии, SNI, фрагментация).
+- **Компонент:** `src/core` (Детерминированное ядро).
 
-1. Клонируй: `git clone https://github.com/mrJIVotnoe/JIVotnoe`
-2. Установи: `npm install`
-3. Добавь ключ в `.env.local`: `VITE_GEMINI_API_KEY=your_key`
-4. Запусти: `npm run dev`
-5. Билд: `npm run build`
+### 4. Traffic Execution Core (Future)
+- **Роль:** Исполнитель.
+- **Задача:** Физическая манипуляция пакетами (WinDivert, NFQueue, VpnService).
+- **Статус:** *In Development (Planned for v0.4)*. Сейчас делегируется внешним утилитам (ByeDPI/NekoBox).
 
-## 🧠 Architecture
-- **Feature-Sliced Design**: Модульная структура (`src/features`, `src/shared`).
-- **Core (`src/core`)**: Изолированное ядро логики принятия решений.
-- **Store (`src/store`)**: Zustand stores с персистенцией и адаптерами к Core.
+---
 
-## ⚠️ Disclaimer
-Для образовательных целей. Не поощряем обход блокировок, где это незаконно.
+## 📜 Каноны и Аксиомы
 
-## 🤝 Contributing
-Pull requests welcome! Добавляй стратегии, переводы или фиксы.
+Разработка ведется строго по документам:
+- [PROJECT_CANON.md](PROJECT_CANON.md) — Конституция проекта.
+- [HUMAN_AI_USER_AXIOM.md](HUMAN_AI_USER_AXIOM.md) — Иерархия ролей.
+- [REALITY_STATUS.md](REALITY_STATUS.md) — Честный статус возможностей.
+
+## 🚀 Как это работает сейчас (Stage 0)
+
+1.  **Observation (Наблюдение):** Пользователь или `NetProbe` собирает симптомы (пинги, доступность).
+2.  **Analysis (Анализ):** AI Navigator сопоставляет симптомы с базой знаний (`src/core/knowledge`).
+3.  **Synthesis (Синтез):** Система генерирует точную конфигурацию (аргументы) для внешнего ядра (ByeDPI).
+4.  **Execution (Исполнение):** Пользователь применяет конфигурацию.
+
+## 🛠 Установка (Dev)
+
+```bash
+git clone https://github.com/mrJIVotnoe/JIVotnoe
+npm install
+# Создайте .env.local с ключом VITE_GEMINI_API_KEY
+npm run dev
+```
+
+---
+*«Мы не можем отменить шторм, но мы можем настроить паруса.»*

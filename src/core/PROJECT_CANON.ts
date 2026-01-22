@@ -1,3 +1,4 @@
+
 /**
  * ⚠️ PROJECT CANON — READ BEFORE ANY MODIFICATION
  *
@@ -12,30 +13,35 @@
  */
 
 export const PROJECT_CANON = {
-  version: "1.0",
-  role: "AI-First Research System",
+  version: "1.2.0",
+  role: "Network Navigator", 
   historicalAnchor: "2026-01-10",
-  mode: "analysis-first",
+  mode: "navigator-first",
   
   // Axioms that must be respected by the logic engine
   axioms: [
     "System > Tricks",
     "Adaptation > Repetition",
     "Analysis > Execution",
-    "Safety > Novelty"
+    "Safety > Novelty",
+    "Core Decides > Loop Observes" // New Axiom
   ],
 
   // Rules for AI decision making
   rules: {
     noStaticBypass: true,
     noHallucinations: true,
-    contextRequired: true
+    contextRequired: true,
+    navigatorMindset: true,
+    researchLoopRestricted: true // New Rule: AI cannot self-promote hypotheses to rules
   },
 
   // Forbidden patterns in code or suggestions
   forbiddenPatterns: [
     "magic_arguments_without_reason",
     "guaranteed_bypass_claims",
-    "ignoring_environment_shift"
+    "ignoring_environment_shift",
+    "claiming_execution_capabilities_in_browser",
+    "direct_feedback_to_core_injection" // New Prohibition
   ]
 } as const;

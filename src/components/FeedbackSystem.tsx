@@ -1,26 +1,41 @@
+
 import React, { useState } from 'react';
-import { MessageSquare, ExternalLink, ShieldCheck, Heart, Copy, Check, Mail, Github, Send } from 'lucide-react';
-import { useLanguage } from '../features/localization/LanguageContext';
-import { useTelegram } from '../features/telegram/TelegramContext';
+import { MessageSquare, ExternalLink, ShieldCheck, Heart, Copy, Check, Send, AlertTriangle, Wifi, Globe, Smartphone, Monitor } from 'lucide-react';
+import { useLanguage } from '../LanguageContext';
+import { useTelegram } from '../TelegramContext';
+import { Observation, ObservationResult } from '../core/domain/types';
 
 export const FeedbackSystem: React.FC = () => {
   const { t } = useLanguage();
   const { webApp } = useTelegram();
-  const [reportText, setReportText] = useState('');
   const [copied, setCopied] = useState(false);
+  
+  // Structured State
+  const [result, setResult] = useState<ObservationResult | null>(null);
+  const [platform, setPlatform] = useState<'mobile' | 'desktop'>('mobile');
+  const [network, setNetwork] = useState<'wifi' | 'mobile'>('wifi');
+  const [comment, setComment] = useState('');
 
-  const getSystemInfo = () => {
-    const userAgent = navigator.userAgent;
-    const platform = navigator.platform;
-    const lang = navigator.language;
-    const screenRes = `${window.screen.width}x${window.screen.height}`;
-    return `\n\n--- Tech Info ---\nUA: ${userAgent}\nPlatform: ${platform}\nLang: ${lang}\nRes: ${screenRes}\nApp: v1.1.0 Maestro`;
+  const generateReport = () => {
+    // This is the JSON payload for the Observation Pool
+    const payload = {
+        type: "OBSERVATION_V1",
+        timestamp: new Date().toISOString(),
+        context: {
+            platform: platform,
+            network: network,
+            app_version: "1.7.0"
+        },
+        result: result,
+        user_comment: comment || undefined
+    };
+    return JSON.stringify(payload, null, 2);
   };
 
   const handleCopy = async () => {
-    const finalReport = `Bug Report:\n${reportText || 'No description provided'}${getSystemInfo()}`;
+    const report = generateReport();
     try {
-      await navigator.clipboard.writeText(finalReport);
+      await navigator.clipboard.writeText(report);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -28,42 +43,66 @@ export const FeedbackSystem: React.FC = () => {
     }
   };
 
-  const openLink = (url: string) => {
-     if (webApp) {
-         webApp.openLink(url);
-     } else {
-         window.open(url, '_blank');
-     }
+  const openSupport = () => {
+    const url = 'https://t.me/ByeDPI_Mate_Support';
+    if (webApp) webApp.openTelegramLink(url);
+    else window.open(url, '_blank');
   };
 
   return (
-    <div className="bg-cyber-800 p-8 rounded-[2.5rem] border border-cyber-700 shadow-xl overflow-hidden relative group">
-      {/* Decorative Background */}
+    <div className="bg-cyber-800 p-6 rounded-[2.5rem] border border-cyber-700 shadow-xl overflow-hidden relative group mt-8">
       <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 opacity-30"></div>
-      <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-        <MessageSquare size={200} className="text-cyber-accent" />
-      </div>
       
       <div className="relative z-10">
         <div className="flex items-center gap-4 mb-6">
             <div className="bg-gradient-to-br from-cyber-700 to-cyber-600 p-3 rounded-2xl shadow-inner">
-            <MessageSquare className="text-white" size={24} />
+               <MessageSquare className="text-white" size={24} />
             </div>
             <div>
-            <h3 className="text-xl font-black text-white tracking-tight">{t('feedback_title')}</h3>
-            <p className="text-xs text-gray-400">{t('feedback_desc')}</p>
+               <h3 className="text-xl font-black text-white tracking-tight">{t('feedback_title')}</h3>
+               <p className="text-xs text-gray-400">{t('feedback_desc')}</p>
             </div>
         </div>
 
-        {/* Diagnostic Input */}
-        <div className="bg-black/30 p-1 rounded-2xl border border-cyber-700 mb-6 focus-within:border-cyber-500 transition-colors">
-            <textarea
-            value={reportText}
-            onChange={(e) => setReportText(e.target.value)}
-            placeholder={t('feedback_placeholder')}
-            className="w-full bg-transparent border-none rounded-xl p-4 text-xs text-white focus:outline-none min-h-[100px] resize-none font-mono placeholder-gray-600"
-            />
-            <div className="px-1 pb-1">
+        {/* Structured Inputs */}
+        <div className="bg-black/30 p-4 rounded-2xl border border-cyber-700 mb-6 space-y-4">
+            
+            {/* 1. Result */}
+            <div>
+                <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">Connection Status</label>
+                <div className="flex gap-2">
+                    <button onClick={() => setResult('SUCCESS')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${result === 'SUCCESS' ? 'bg-green-600 text-white' : 'bg-cyber-900 text-gray-400 border border-cyber-700'}`}>
+                        Stable
+                    </button>
+                    <button onClick={() => setResult('UNSTABLE')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${result === 'UNSTABLE' ? 'bg-yellow-600 text-white' : 'bg-cyber-900 text-gray-400 border border-cyber-700'}`}>
+                        Unstable
+                    </button>
+                    <button onClick={() => setResult('FAIL')} className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${result === 'FAIL' ? 'bg-red-600 text-white' : 'bg-cyber-900 text-gray-400 border border-cyber-700'}`}>
+                        Failed
+                    </button>
+                </div>
+            </div>
+
+            {/* 2. Context */}
+            <div className="flex gap-4">
+                <div className="flex-1">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">Network</label>
+                    <div className="flex gap-2">
+                        <button onClick={() => setNetwork('wifi')} className={`p-2 rounded-lg flex-1 flex justify-center ${network === 'wifi' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Wifi size={16}/></button>
+                        <button onClick={() => setNetwork('mobile')} className={`p-2 rounded-lg flex-1 flex justify-center ${network === 'mobile' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Globe size={16}/></button>
+                    </div>
+                </div>
+                <div className="flex-1">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">Device</label>
+                    <div className="flex gap-2">
+                        <button onClick={() => setPlatform('mobile')} className={`p-2 rounded-lg flex-1 flex justify-center ${platform === 'mobile' ? 'bg-purple-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Smartphone size={16}/></button>
+                        <button onClick={() => setPlatform('desktop')} className={`p-2 rounded-lg flex-1 flex justify-center ${platform === 'desktop' ? 'bg-purple-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Monitor size={16}/></button>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. Output */}
+            <div className="pt-2">
                 <button 
                     onClick={handleCopy}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
@@ -78,35 +117,18 @@ export const FeedbackSystem: React.FC = () => {
             </div>
         </div>
 
-        {/* Action Channels */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button 
-                onClick={() => openLink('https://t.me/ntc_party')}
-                className="flex items-center justify-between px-5 py-4 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 hover:border-blue-500/40 rounded-2xl group transition-all"
-            >
-                <div className="flex items-center gap-3">
-                    <Send size={18} className="text-blue-400 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
-                    <span className="text-xs font-black text-blue-100">{t('feedback_channel_tg')}</span>
-                </div>
-                <ExternalLink size={14} className="text-blue-500 opacity-50" />
-            </button>
+        <button 
+            onClick={openSupport}
+            className="w-full flex items-center justify-center gap-3 bg-blue-600/10 text-blue-400 border border-blue-500/20 py-3 rounded-xl font-bold text-xs hover:bg-blue-600/20 transition-all"
+        >
+            <Send size={14} />
+            {t('feedback_send_to_bot')}
+        </button>
 
-            <button 
-                onClick={() => openLink('https://github.com/hufrea/byedpi/issues')}
-                className="flex items-center justify-between px-5 py-4 bg-gray-700/20 hover:bg-gray-700/30 border border-gray-500/20 hover:border-gray-500/40 rounded-2xl group transition-all"
-            >
-                <div className="flex items-center gap-3">
-                    <Github size={18} className="text-gray-300" />
-                    <span className="text-xs font-black text-gray-200">{t('feedback_channel_gh')}</span>
-                </div>
-                <ExternalLink size={14} className="text-gray-500 opacity-50" />
-            </button>
-        </div>
-
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 flex justify-center">
             <div className="flex items-center gap-1 text-[10px] text-gray-600 font-mono">
                 <ShieldCheck size={12} />
-                MAESTRO EDITION 2025
+                RESEARCH LOOP v0.1
             </div>
         </div>
       </div>

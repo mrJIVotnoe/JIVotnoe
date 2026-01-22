@@ -1,0 +1,44 @@
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Observation",
+  "type": "object",
+  "required": ["id", "signals", "result", "timestamp"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "signals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "result": {
+      "type": "string",
+      "enum": ["SUCCESS", "FAIL", "UNSTABLE"]
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "network_type": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}
