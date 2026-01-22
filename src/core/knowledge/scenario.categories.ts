@@ -32,5 +32,11 @@ export const SCENARIO_CATEGORIES: Record<ScenarioCategory, CategoryDescriptor> =
     label: 'Entropy Injection',
     intent: 'Increase randomness to prevent signature matching.',
     philosophicalAlign: 'Order allows control; disorder allows freedom.'
+  },
+  STATE: {
+    id: 'STATE',
+    label: 'State Manipulation',
+    intent: 'Desynchronize the middlebox TCP state from the endpoint state (Geneva Class).',
+    philosophicalAlign: 'The map is not the territory; the censor\'s state is not the connection.'
   }
 };

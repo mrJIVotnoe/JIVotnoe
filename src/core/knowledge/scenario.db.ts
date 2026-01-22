@@ -9,6 +9,47 @@
 import { Scenario } from './scenario.types';
 
 export const STATIC_SCENARIOS: Scenario[] = [
+  // --- GENEVA SPECIES (Scientific Classification) ---
+  {
+    id: 'geneva_tcb_teardown',
+    name: 'TCB Teardown',
+    category: 'STATE',
+    trustSurface: 'LOW',
+    description: 'Injects packets (RST/FIN) to trick the censor into deleting its Transmission Control Block (TCB), stopping inspection while the connection persists.',
+    technicalNotes: [
+      'Geneva Species 2.',
+      'Exploits the censor\'s optimization to stop tracking closed connections.',
+      'Often requires TTL manipulation so the RST hits the censor but misses the server.'
+    ],
+    historicalEffectiveness: 0.95
+  },
+  {
+    id: 'geneva_tcb_desync',
+    name: 'TCB Desynchronization',
+    category: 'STATE',
+    trustSurface: 'MEDIUM',
+    description: 'Sends data packets with invalid checksums or flags that the censor accepts (advancing its window) but the server rejects.',
+    technicalNotes: [
+      'Geneva Species 1.',
+      'Moves the censor\'s TCP window out of sync with the real connection.',
+      'Subsequent legitimate packets are ignored by the censor as "out of window".'
+    ],
+    historicalEffectiveness: 0.98
+  },
+  {
+    id: 'geneva_hybrid_invalid',
+    name: 'Hybrid Flag Injection',
+    category: 'STATE',
+    trustSurface: 'ZERO',
+    description: 'Injects packets with nonsensical TCP flag combinations (e.g. FRAPUN - FIN+RST+ACK+PSH+URG+NULL).',
+    technicalNotes: [
+      'Geneva Species 4 / Strategy 5.',
+      'Exploits implementation bugs in specific DPI stacks (e.g. GFW).',
+      'Extremely distinct signature; high risk of future detection.'
+    ],
+    historicalEffectiveness: 0.6
+  },
+
   // --- MASKING SCENARIOS ---
   {
     id: 'sni_mimicry_basic',
@@ -39,14 +80,14 @@ export const STATIC_SCENARIOS: Scenario[] = [
   // --- ENTROPY SCENARIOS ---
   {
     id: 'tcp_fragment_basic',
-    name: 'TCP Fragmentation',
+    name: 'TCP Segmentation',
     category: 'ENTROPY',
     trustSurface: 'HIGH',
     description: 'Splits the TLS ClientHello handshake into multiple TCP segments causing the DPI to see incomplete signatures.',
     technicalNotes: [
+      'Geneva Species 3.',
       'Forces DPI to perform stateful reassembly, increasing processing cost.',
-      'Bypasses DPI systems with limited reassembly buffers or stateless filters.',
-      'Standard "ByeDPI" technique.'
+      'Can be achieved purely client-side without raw sockets.'
     ],
     historicalEffectiveness: 0.8
   },

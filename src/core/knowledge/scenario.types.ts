@@ -15,7 +15,8 @@ export type TrustSurface =
 export type ScenarioCategory = 
   | 'MASKING'  // Hiding the true destination
   | 'PRESSURE' // Stressing the inspector's resources
-  | 'ENTROPY'; // Increasing randomness/chaos
+  | 'ENTROPY'  // Increasing randomness/chaos
+  | 'STATE';   // Geneva: Manipulating the censor's TCP State Machine
 
 export interface Scenario {
   id: string;
