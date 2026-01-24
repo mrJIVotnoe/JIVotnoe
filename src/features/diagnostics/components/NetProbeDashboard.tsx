@@ -1,11 +1,14 @@
+
 import React from 'react';
 import { Activity, Play, Clock, ShieldCheck, ShieldAlert, Wifi, AlertTriangle, RotateCcw, BarChart3 } from 'lucide-react';
 import { useDiagnosticsStore, DiagnosticSession } from '../../../store/diagnostics.store';
 import { DIAGNOSTIC_TARGETS } from '../../../core/knowledge/diagnosis.targets';
+import { useLanguage } from '../../localization/LanguageContext';
 
 const MAX_HISTORY_LENGTH = 10;
 
 export const NetProbeDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const { history, isScanning, progress, runScan, lastScan, clearHistory } = useDiagnosticsStore();
   
   const latestSession = history[0];
@@ -42,15 +45,15 @@ export const NetProbeDashboard: React.FC = () => {
           </div>
           <div>
             <h3 className="font-black text-white text-lg tracking-tight flex items-center gap-2">
-              NETPROBE <span className="text-[10px] bg-cyber-800 px-1.5 py-0.5 rounded text-gray-400 font-mono">v1.2</span>
+              {t('netprobe_title')} <span className="text-[10px] bg-cyber-800 px-1.5 py-0.5 rounded text-gray-400 font-mono">v1.2</span>
             </h3>
             <div className="flex items-center gap-2 text-[10px] text-gray-500 font-mono uppercase tracking-widest">
               {isScanning ? (
-                <span className="text-cyber-accent">SCANNING SECTOR {Math.round(progress)}%</span>
+                <span className="text-cyber-accent">{t('netprobe_scanning')} {Math.round(progress)}%</span>
               ) : (
                 <>
-                  <span>LAST: {lastScan ? new Date(lastScan).toLocaleTimeString() : 'NEVER'}</span>
-                  {history.length > 0 && <span className="text-gray-600">• {history.length} SAMPLES</span>}
+                  <span>{t('netprobe_last')}: {lastScan ? new Date(lastScan).toLocaleTimeString() : '---'}</span>
+                  {history.length > 0 && <span className="text-gray-600">• {history.length} {t('netprobe_samples')}</span>}
                 </>
               )}
             </div>
@@ -76,7 +79,7 @@ export const NetProbeDashboard: React.FC = () => {
                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95'
              }`}
            >
-             {isScanning ? 'PROBING...' : 'RUN SCAN'}
+             {isScanning ? t('netprobe_probing') : t('netprobe_run')}
              {!isScanning && <Play size={14} fill="currentColor" />}
            </button>
         </div>
@@ -95,20 +98,20 @@ export const NetProbeDashboard: React.FC = () => {
           const result = latestSession?.results.find(r => r.target.id === target.id);
           const statusHistory = getTargetHistory(target.id);
           
-          let statusText = "WAITING";
+          let statusText = t('netprobe_status_waiting');
           let latency = 0;
           let colorClass = "text-gray-500";
           
           if (result) {
             if (result.status === 'AVAILABLE') {
-              statusText = "ONLINE";
+              statusText = t('netprobe_status_online');
               colorClass = "text-green-400";
               latency = result.latency;
             } else if (result.status === 'TIMEOUT') {
-              statusText = "TIMEOUT";
+              statusText = t('netprobe_status_timeout');
               colorClass = "text-yellow-400";
             } else {
-              statusText = "BLOCKED";
+              statusText = t('netprobe_status_blocked');
               colorClass = "text-red-400";
             }
           }
@@ -117,8 +120,8 @@ export const NetProbeDashboard: React.FC = () => {
             <div key={target.id} className="bg-black/20 border border-cyber-700/50 rounded-xl p-3 flex flex-col justify-between hover:border-cyber-600 transition-colors">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  {statusText === 'ONLINE' ? <ShieldCheck size={14} className="text-green-500"/> : 
-                   statusText === 'BLOCKED' ? <ShieldAlert size={14} className="text-red-500"/> :
+                  {statusText === t('netprobe_status_online') ? <ShieldCheck size={14} className="text-green-500"/> : 
+                   statusText === t('netprobe_status_blocked') ? <ShieldAlert size={14} className="text-red-500"/> :
                    <Wifi size={14} className="text-gray-500"/>}
                   <span className="font-bold text-xs text-gray-200">{target.name}</span>
                 </div>
@@ -162,9 +165,9 @@ export const NetProbeDashboard: React.FC = () => {
       {latestSession && (
         <div className="mt-6 pt-4 border-t border-cyber-700 flex justify-between items-center text-[10px] text-gray-500 font-mono">
            <div className="flex gap-3">
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-green-500 rounded-sm"></div> OK</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-yellow-500 rounded-sm"></div> LAG</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-sm"></div> ERR</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-green-500 rounded-sm"></div> {t('netprobe_legend_ok')}</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-yellow-500 rounded-sm"></div> {t('netprobe_legend_lag')}</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-sm"></div> {t('netprobe_legend_err')}</span>
            </div>
            <div className="flex items-center gap-2">
               <BarChart3 size={12} />

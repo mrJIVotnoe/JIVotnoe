@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { HelpCircle, AlertTriangle, ShieldAlert, Smartphone, Zap, Search, LifeBuoy, WifiOff, VolumeX } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
@@ -30,7 +31,7 @@ export const FAQ: React.FC = () => {
     },
     {
       id: 'mobile',
-      title: t('faq_cat_security'), // Mapping Mobile to Security/Other for now as per translations
+      title: t('faq_cat_security'), 
       items: [
         { q: t('faq_q_mobile'), a: t('faq_a_mobile'), icon: <Smartphone className="text-green-400" /> },
       ]
@@ -86,12 +87,12 @@ export const FAQ: React.FC = () => {
                     title={
                       <div className="flex items-center gap-3">
                         <div className="p-1.5 bg-black/30 rounded-lg shrink-0 border border-white/5">{item.icon}</div>
-                        <span className="font-bold text-gray-200">{item.q}</span>
+                        <span className="font-bold text-gray-200 leading-snug">{item.q}</span>
                       </div>
                     }
                     className="border-cyber-700 hover:border-cyber-500 transition-colors bg-cyber-800/50"
                   >
-                    <div className="text-sm text-gray-400 leading-relaxed p-2 pl-12">
+                    <div className="text-sm text-gray-400 leading-relaxed p-2 pl-12 whitespace-pre-line">
                        {item.a}
                     </div>
                   </Collapsible>
@@ -107,6 +108,7 @@ export const FAQ: React.FC = () => {
         )}
       </div>
 
+      {/* Integrated Feedback System */}
       <div className="mt-12">
         <FeedbackSystem />
       </div>

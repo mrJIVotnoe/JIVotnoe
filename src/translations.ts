@@ -36,10 +36,25 @@ const en = {
     qs_mobile_prompt: "I have an Android phone, YouTube app is not working.",
     qs_tv_prompt: "I have an Android TV, YouTube is buffering.",
     
+    // NetProbe Dashboard
+    netprobe_title: "NETPROBE",
+    netprobe_scanning: "SCANNING SECTOR",
+    netprobe_run: "RUN SCAN",
+    netprobe_probing: "PROBING...",
+    netprobe_samples: "SAMPLES",
+    netprobe_last: "LAST",
+    netprobe_status_online: "ONLINE",
+    netprobe_status_blocked: "BLOCKED",
+    netprobe_status_timeout: "TIMEOUT",
+    netprobe_status_waiting: "WAITING",
+    netprobe_legend_ok: "OK",
+    netprobe_legend_lag: "LAG",
+    netprobe_legend_err: "ERR",
+    
     // Feedback System
     feedback_title: "Observation Lab",
     feedback_desc: "Help the Core learn. Report facts, not opinions.",
-    feedback_placeholder: "Any additional context...",
+    feedback_placeholder: "Describe specific symptoms...",
     feedback_copy_btn: "COPY DATA JSON",
     feedback_channel_tg: "SEND TO BOT",
     feedback_channel_gh: "GITHUB",
@@ -48,8 +63,13 @@ const en = {
     feedback_send_to_bot: "SEND TO COMMUNITY BOT",
     feedback_rate_title: "Was this helpful?",
     feedback_thanks: "Feedback received.",
+    feedback_status_label: "Connection Status",
+    feedback_context_network: "Network",
+    feedback_context_device: "Device",
+    feedback_status_stable: "Stable",
+    feedback_status_unstable: "Unstable",
+    feedback_status_fail: "Failed",
 
-    // ... (rest of the translations remain the same) ...
     // Linux
     linux_title: "Linux: Orchestrating Freedom",
     linux_desc: "From Ubuntu to Arch. Tunnel configuration for system conductors.",
@@ -265,18 +285,11 @@ export const translations: Record<string, Record<string, string>> = {
   ru: {
     ...en, // Наследуем английские ключи как фоллбэк
     
-    // Feedback
-    feedback_title: "Лаборатория Наблюдений",
-    feedback_desc: "Помогите Ядру обучаться. Сообщайте факты, а не мнения.",
-    feedback_copy_btn: "СКОПИРОВАТЬ JSON ДАННЫХ",
-    feedback_send_to_bot: "ОТПРАВИТЬ БОТУ СООБЩЕСТВА",
-    feedback_copied: "ДАННЫЕ СКОПИРОВАНЫ",
-    
-    // Переопределения для Русского (старые ключи)
+    // --- ПЕРЕВОД РУССКИЙ ---
     app_title: "ByeDPI Mate",
     subtitle: "v1.7.0 • Neural Sentinel • 2025",
     
-    // ... (rest is preserved from existing file logic) ...
+    // Вкладки
     tab_android: "Android / TV",
     tab_windows: "Windows",
     tab_linux: "Linux",
@@ -287,6 +300,7 @@ export const translations: Record<string, Record<string, string>> = {
     tab_faq: "База Знаний",
     tab_ai: "AI Аналитик",
     
+    // AI Section
     ai_title: "Маэстро Нейро-Аналитики",
     ai_desc: "Опишите устройство и проблему. Я подберу симфонию обхода блокировок.",
     ai_placeholder: "Например: Xiaomi TV, YouTube тормозит... или iPhone, не открывается Google...",
@@ -296,7 +310,6 @@ export const translations: Record<string, Record<string, string>> = {
     ai_no_input: "Маэстро ждет описания вашей проблемы.",
     ai_error: "Диссонанс в сети. Проверьте Neural Bridge.",
     ai_powered_by: "Работает на базе Google Gemini",
-    
     qs_title: "Быстрый старт",
     qs_desc: "Выберите платформу",
     qs_pc: "ПК / Ноутбук",
@@ -306,6 +319,62 @@ export const translations: Record<string, Record<string, string>> = {
     qs_mobile_prompt: "У меня Android телефон, приложение YouTube не работает.",
     qs_tv_prompt: "У меня Android TV, YouTube буферизируется.",
 
+    // NetProbe Dashboard
+    netprobe_title: "NETPROBE: Зонд Сети",
+    netprobe_scanning: "СКАНИРОВАНИЕ СЕКТОРА",
+    netprobe_run: "ЗАПУСТИТЬ ТЕСТ",
+    netprobe_probing: "ДИАГНОСТИКА...",
+    netprobe_samples: "ЗАМЕРОВ",
+    netprobe_last: "ПОСЛЕДНИЙ",
+    netprobe_status_online: "ДОСТУПЕН",
+    netprobe_status_blocked: "БЛОКИРОВКА",
+    netprobe_status_timeout: "ТАЙМАУТ",
+    netprobe_status_waiting: "ОЖИДАНИЕ",
+    netprobe_legend_ok: "ОК",
+    netprobe_legend_lag: "ЛАГ",
+    netprobe_legend_err: "СБОЙ",
+
+    // Feedback System
+    feedback_title: "Лаборатория Наблюдений",
+    feedback_desc: "Помогите Ядру обучаться. Сообщайте факты, а не мнения.",
+    feedback_placeholder: "Опишите симптомы (например: 'Ozon SNI перестал работать на МТС')...",
+    feedback_copy_btn: "СКОПИРОВАТЬ JSON ДАННЫХ",
+    feedback_channel_tg: "ОТПРАВИТЬ БОТУ",
+    feedback_channel_gh: "GITHUB",
+    feedback_copied: "ДАННЫЕ СКОПИРОВАНЫ",
+    feedback_report_issue: "Сообщить о проблеме",
+    feedback_send_to_bot: "ОТПРАВИТЬ БОТУ СООБЩЕСТВА",
+    feedback_rate_title: "Это было полезно?",
+    feedback_thanks: "Спасибо! Мы учтем ваш отзыв.",
+    feedback_status_label: "Статус соединения",
+    feedback_context_network: "Сеть",
+    feedback_context_device: "Устройство",
+    feedback_status_stable: "Стабильно",
+    feedback_status_unstable: "Нестабильно",
+    feedback_status_fail: "Не работает",
+
+    // FAQ REWORK
+    faq_title: "База Знаний и Протоколы",
+    faq_search: "Поиск по базе...",
+    faq_cat_basics: "Основы и Механика",
+    faq_cat_trouble: "Диагностика Проблем",
+    faq_cat_security: "Безопасность",
+    faq_q_yt: "Почему YouTube все еще тормозит?",
+    faq_a_yt: "YouTube использует протокол QUIC (UDP), который сложнее фильтровать. ByeDPI лучше работает с TCP. Решение: Отключите QUIC в браузере (chrome://flags -> Experimental QUIC protocol -> Disabled), чтобы заставить YouTube использовать TCP.",
+    faq_q_av: "Антивирус удаляет 'ciadpi.exe'!",
+    faq_a_av: "Это ложное срабатывание (False Positive). Программа перехватывает трафик (как локальный Man-in-the-Middle) для его модификации. Антивирусы помечают любое такое поведение как 'RiskTool'. Добавьте папку в исключения.",
+    faq_q_vpn: "Это VPN? Скрывает ли он меня?",
+    faq_a_vpn: "НЕТ. Это модификатор пакетов. Ваш IP-адрес виден сайтам. Ваш провайдер видит, КУДА вы идете (IP сервера), но не может заблокировать контент из-за фрагментации пакетов. Это инструмент Доступа, а не Анонимности.",
+    faq_q_mobile: "Почему на телефоне сложнее?",
+    faq_a_mobile: "На ПК у программ есть прямой доступ к сети. Android/iOS изолируют приложения. Мобильным утилитам приходится притворяться 'Локальным VPN', чтобы перехватить трафик, что тратит батарею и имеет ограничения ОС.",
+    faq_q_sni: "Что такое SNI и зачем его менять?",
+    faq_a_sni: "SNI (Server Name Indication) — это 'наклейка на конверте', говорящая провайдеру, куда вы идете. Использование '-n ozon.ru' меняет наклейку на разрешенную, сбивая с толку цензуру.",
+    faq_q_discord: "Не работает голос в Discord!",
+    faq_a_discord: "Голос использует UDP. ByeDPI работает с TCP. Для голосовой связи лучше подходит Zapret (на роутере/Linux) или полноценный VPN (Amnezia/VLESS).",
+    faq_q_blocked: "Провайдер заблокировал всё!",
+    faq_a_blocked: "Если заблокирован сам IP-адрес сервера (а не домен), DPI обход не поможет. В этом случае нужен прокси или VPN с зарубежным IP.",
+
+    // Linux
     linux_title: "Linux: Оркестрация Свободы",
     linux_desc: "От Ubuntu до Arch. Настройка туннеля для настоящих дирижеров системы.",
     linux_mode_desktop: "Desktop (GUI)",
@@ -322,12 +391,12 @@ export const translations: Record<string, Record<string, string>> = {
     linux_socks_port: "Порт",
     linux_binary_run: "Бинарный запуск",
 
+    // macOS & iOS
     macos_desc: "macOS — сертифицированная UNIX-система. ByeDPI работает нативно через Terminal.",
     macos_arch_select: "Выберите архитектуру",
     macos_terminal_control: "Управление через Терминал",
     macos_gatekeeper: "Если macOS блокирует запуск, выполните эту команду:",
     macos_gatekeeper_title: "Предупреждение Gatekeeper",
-
     ios_title: "iOS: Закрытый Сад",
     ios_subtitle: "Apple блокирует прямое управление пакетами. Используйте VLESS/V2Ray.",
     ios_key_inspector: "Инспектор Ключей",
@@ -344,9 +413,10 @@ export const translations: Record<string, Record<string, string>> = {
     ios_step_1_desc: "Лучшее бесплатное решение в AppStore.",
     ios_step_2: "Скопируйте ключ",
     ios_step_2_desc: "Используйте ключ, проверенный в инспекторе выше.",
-    ios_step_3: "Import from Clipboard",
+    ios_step_3: "Импорт из буфера",
     ios_step_3_desc: "V2Box автоматически определит настройки.",
-    
+
+    // General & UI
     maestro_welcome: "Добро пожаловать в мир, где вы дирижер своего трафика.",
     local_sni_example: "www.ozon.ru",
     research_footer: "GLOBAL NETWORK NEUTRALITY // BYEDPI MATE PROJECT 2025",
@@ -442,27 +512,6 @@ export const translations: Record<string, Record<string, string>> = {
     tv_direct_step_1_desc: "Поставьте 'Send Files to TV' на телефон и ТВ.",
     tv_direct_step_2: "Передача",
     tv_direct_step_2_desc: "Отправьте APK с телефона на ТВ напрямую.",
-
-    // FAQ REWORK
-    faq_title: "База Знаний и Протоколы",
-    faq_search: "Поиск по базе...",
-    faq_cat_basics: "Основы и Механика",
-    faq_cat_trouble: "Диагностика Проблем",
-    faq_cat_security: "Безопасность",
-    faq_q_yt: "Почему YouTube все еще тормозит?",
-    faq_a_yt: "YouTube использует протокол QUIC (UDP), который сложнее фильтровать. ByeDPI лучше работает с TCP. Решение: Отключите QUIC в браузере (chrome://flags -> Experimental QUIC protocol -> Disabled), чтобы заставить YouTube использовать TCP.",
-    faq_q_av: "Антивирус удаляет 'ciadpi.exe'!",
-    faq_a_av: "Это ложное срабатывание (False Positive). Программа перехватывает трафик (как локальный Man-in-the-Middle) для его модификации. Антивирусы помечают любое такое поведение как 'RiskTool'. Добавьте папку в исключения.",
-    faq_q_vpn: "Это VPN? Скрывает ли он меня?",
-    faq_a_vpn: "НЕТ. Это модификатор пакетов. Ваш IP-адрес виден сайтам. Ваш провайдер видит, КУДА вы идете (IP сервера), но не может заблокировать контент из-за фрагментации пакетов. Это инструмент Доступа, а не Анонимности.",
-    faq_q_mobile: "Почему на телефоне сложнее?",
-    faq_a_mobile: "На ПК у программ есть прямой доступ к сети. Android/iOS изолируют приложения. Мобильным утилитам приходится притворяться 'Локальным VPN', чтобы перехватить трафик, что тратит батарею и имеет ограничения ОС.",
-    faq_q_sni: "Что такое SNI и зачем его менять?",
-    faq_a_sni: "SNI (Server Name Indication) — это 'наклейка на конверте', говорящая провайдеру, куда вы идете. Использование '-n ozon.ru' меняет наклейку на разрешенную, сбивая с толку цензуру.",
-    faq_q_discord: "Не работает голос в Discord!",
-    faq_a_discord: "Голос использует UDP. ByeDPI работает с TCP. Для голосовой связи лучше подходит Zapret (на роутере/Linux) или полноценный VPN (Amnezia/VLESS).",
-    faq_q_blocked: "Провайдер заблокировал всё!",
-    faq_a_blocked: "Если заблокирован сам IP-адрес сервера (а не домен), DPI обход не поможет. В этом случае нужен прокси или VPN с зарубежным IP.",
 
     bridge_toggle: "Neural Bridge",
     bridge_status_active: "ТУННЕЛЬ АКТИВЕН",
