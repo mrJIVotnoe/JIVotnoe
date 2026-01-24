@@ -49,7 +49,7 @@ declare global {
     setHeaderColor: (color: string) => void;
     setBackgroundColor: (color: string) => void;
     openTelegramLink: (url: string) => void;
-    openLink(url: string) => void;
+    openLink: (url: string) => void;
   }
 
   interface Window {
