@@ -1,15 +1,21 @@
 
-import React from 'react';
-import { Activity, Play, Clock, ShieldCheck, ShieldAlert, Wifi, AlertTriangle, RotateCcw, BarChart3 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Activity, Play, Clock, ShieldCheck, ShieldAlert, Wifi, AlertTriangle, RotateCcw, BarChart3, Network, Server, Gamepad2, MessageCircle, Video, Search, Brain, FileText, Check } from 'lucide-react';
 import { useDiagnosticsStore, DiagnosticSession } from '../../../store/diagnostics.store';
-import { DIAGNOSTIC_TARGETS } from '../../../core/knowledge/diagnosis.targets';
+import { DIAGNOSTIC_TARGETS, DiagnosticTarget } from '../../../core/knowledge/diagnosis.targets';
 import { useLanguage } from '../../localization/LanguageContext';
+import { useStrategiesStore } from '../../../store/strategies.store';
+import { useTelegram } from '../../telegram/TelegramContext';
+import { APP_VERSION } from '../../../config/constants';
 
 const MAX_HISTORY_LENGTH = 10;
 
 export const NetProbeDashboard: React.FC = () => {
   const { t } = useLanguage();
   const { history, isScanning, progress, runScan, lastScan, clearHistory } = useDiagnosticsStore();
+  const { selectedStrategyId, customSni } = useStrategiesStore();
+  const { platform } = useTelegram();
+  const [copied, setCopied] = useState(false);
   
   const latestSession = history[0];
 
@@ -30,6 +36,45 @@ export const NetProbeDashboard: React.FC = () => {
     }
   };
 
+  const getCategoryIcon = (category: DiagnosticTarget['category']) => {
+    switch (category) {
+      case 'VIDEO': return <Video size={14} className="text-gray-400" />;
+      case 'SOCIAL': return <Network size={14} className="text-gray-400" />;
+      case 'MESSAGING': return <MessageCircle size={14} className="text-gray-400" />;
+      case 'GAMING': return <Gamepad2 size={14} className="text-gray-400" />;
+      case 'AI': return <Brain size={14} className="text-gray-400" />;
+      case 'SEARCH': return <Search size={14} className="text-gray-400" />;
+      case 'INFRASTRUCTURE': return <Server size={14} className="text-blue-400" />;
+      default: return <Activity size={14} className="text-gray-400" />;
+    }
+  };
+
+  const handleExport = () => {
+    const report = {
+      meta: {
+        timestamp: new Date().toISOString(),
+        version: APP_VERSION,
+        platform: platform,
+        strategy: selectedStrategyId,
+        sni: customSni || 'default'
+      },
+      diagnostics: latestSession ? {
+        health: latestSession.overallHealth,
+        results: latestSession.results.map(r => ({
+          target: r.target.name,
+          status: r.status,
+          latency: r.latency
+        }))
+      } : 'No scan data'
+    };
+
+    const text = JSON.stringify(report, null, 2);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="bg-cyber-900 border border-cyber-700 rounded-[2rem] p-6 shadow-xl relative overflow-hidden group">
       {/* Background Decor */}
@@ -45,7 +90,7 @@ export const NetProbeDashboard: React.FC = () => {
           </div>
           <div>
             <h3 className="font-black text-white text-lg tracking-tight flex items-center gap-2">
-              {t('netprobe_title')} <span className="text-[10px] bg-cyber-800 px-1.5 py-0.5 rounded text-gray-400 font-mono">v1.2</span>
+              {t('netprobe_title')} <span className="text-[10px] bg-cyber-800 px-1.5 py-0.5 rounded text-gray-400 font-mono">v1.3</span>
             </h3>
             <div className="flex items-center gap-2 text-[10px] text-gray-500 font-mono uppercase tracking-widest">
               {isScanning ? (
@@ -61,6 +106,19 @@ export const NetProbeDashboard: React.FC = () => {
         </div>
 
         <div className="flex gap-2">
+           {latestSession && !isScanning && (
+             <button
+               onClick={handleExport}
+               className={`p-3 rounded-xl transition-colors border ${
+                 copied 
+                   ? 'bg-green-900/20 text-green-400 border-green-900/30' 
+                   : 'bg-cyber-800 text-gray-500 hover:text-blue-400 border-transparent hover:border-blue-900/30'
+               }`}
+               title="Export Technical Dossier"
+             >
+               {copied ? <Check size={18} /> : <FileText size={18} />}
+             </button>
+           )}
            {history.length > 0 && !isScanning && (
              <button 
                onClick={clearHistory}
@@ -101,12 +159,14 @@ export const NetProbeDashboard: React.FC = () => {
           let statusText = t('netprobe_status_waiting');
           let latency = 0;
           let colorClass = "text-gray-500";
+          let borderClass = "border-cyber-700/50";
           
           if (result) {
             if (result.status === 'AVAILABLE') {
               statusText = t('netprobe_status_online');
               colorClass = "text-green-400";
               latency = result.latency;
+              if (target.category === 'INFRASTRUCTURE') borderClass = "border-blue-500/30";
             } else if (result.status === 'TIMEOUT') {
               statusText = t('netprobe_status_timeout');
               colorClass = "text-yellow-400";
@@ -117,13 +177,13 @@ export const NetProbeDashboard: React.FC = () => {
           }
 
           return (
-            <div key={target.id} className="bg-black/20 border border-cyber-700/50 rounded-xl p-3 flex flex-col justify-between hover:border-cyber-600 transition-colors">
+            <div key={target.id} className={`bg-black/20 border ${borderClass} rounded-xl p-3 flex flex-col justify-between hover:border-cyber-600 transition-colors`}>
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  {statusText === t('netprobe_status_online') ? <ShieldCheck size={14} className="text-green-500"/> : 
-                   statusText === t('netprobe_status_blocked') ? <ShieldAlert size={14} className="text-red-500"/> :
-                   <Wifi size={14} className="text-gray-500"/>}
-                  <span className="font-bold text-xs text-gray-200">{target.name}</span>
+                  {getCategoryIcon(target.category)}
+                  <span className={`font-bold text-xs ${target.category === 'INFRASTRUCTURE' ? 'text-blue-200' : 'text-gray-200'}`}>
+                    {target.name}
+                  </span>
                 </div>
                 <div className={`text-[10px] font-black ${colorClass} bg-cyber-900/80 px-2 py-0.5 rounded border border-cyber-700/50`}>
                   {result ? `${latency}ms` : '---'}

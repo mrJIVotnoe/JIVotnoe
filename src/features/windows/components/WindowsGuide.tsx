@@ -1,8 +1,10 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { StrategySelector } from '../../strategies/components/StrategySelector';
+import { VisualBuilder } from '../../strategies/components/VisualBuilder';
 import { STRATEGIES } from '../../../data';
 import { CopyButton } from '../../../shared/ui/CopyButton';
-import { Download, Command, AlertTriangle, RotateCcw, FileDown } from 'lucide-react';
+import { Download, Command, AlertTriangle, RotateCcw, FileDown, Wrench, Play } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { Collapsible } from '../../../shared/ui/Collapsible';
 import { SniScanner } from '../../strategies/components/SniScanner';
@@ -10,6 +12,7 @@ import { useStrategiesStore } from '../../../store/strategies.store';
 
 export const WindowsGuide: React.FC = () => {
   const { t, language } = useLanguage();
+  const [mode, setMode] = useState<'standard' | 'builder'>('standard');
   
   // Use Store instead of local state
   const { selectedStrategyId, customSni, setCustomSni } = useStrategiesStore();
@@ -17,14 +20,6 @@ export const WindowsGuide: React.FC = () => {
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
   
-  // Robust command generation
-  let localizedCommand = currentStrategy.command;
-  if (localizedCommand.includes('{{SNI}}')) {
-    localizedCommand = localizedCommand.replace('{{SNI}}', effectiveSni);
-  } else {
-    localizedCommand = localizedCommand.replace(/-n [^\s]+/, `-n ${effectiveSni}`);
-  }
-
   const isRu = ['ru', 'uk', 'be', 'kk'].includes(language);
   
   const batchFileContent = `@echo off
@@ -46,7 +41,7 @@ echo.
 echo  ${t('win_keep_open')}
 echo.
 
-ciadpi.exe --ip 127.0.0.1 --port 1080 ${localizedCommand}
+ciadpi.exe --ip 127.0.0.1 --port 1080 {{ARGS}}
 
 echo.
 echo =======================================================
@@ -60,9 +55,10 @@ reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" 
 echo Proxy disabled.
 pause`;
 
-  const downloadBatchFile = () => {
+  const downloadBatchFile = (args: string) => {
+    const content = batchFileContent.replace('{{ARGS}}', args);
     const element = document.createElement("a");
-    const file = new Blob([batchFileContent], {type: 'text/plain'});
+    const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = "run.cmd";
     document.body.appendChild(element); 
@@ -101,15 +97,37 @@ pause`;
       </div>
 
       <div className="space-y-4">
-         <div className="flex items-center gap-3 mb-2">
-           <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">2</div>
-           <h3 className="text-xl font-bold text-white">{t('win_step_2')}</h3>
-        </div>
+         <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+                <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">2</div>
+                <h3 className="text-xl font-bold text-white">{t('win_step_2')}</h3>
+            </div>
+            
+            {/* Mode Switcher */}
+            <div className="flex bg-cyber-800 p-1 rounded-lg border border-cyber-700">
+                <button 
+                    onClick={() => setMode('standard')}
+                    className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${mode === 'standard' ? 'bg-cyber-600 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <Play size={12} /> Standard
+                </button>
+                <button 
+                    onClick={() => setMode('builder')}
+                    className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${mode === 'builder' ? 'bg-indigo-600 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <Wrench size={12} /> Builder
+                </button>
+            </div>
+         </div>
         
         {/* SNI Scanner Integration */}
         <SniScanner onSelect={setCustomSni} />
         
-        <StrategySelector showCommandPreview={false} />
+        {mode === 'standard' ? (
+            <StrategySelector showCommandPreview={true} />
+        ) : (
+            <VisualBuilder baseSni={effectiveSni} />
+        )}
       </div>
 
       <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700 relative overflow-hidden">
@@ -130,19 +148,19 @@ pause`;
               <Command size={16} className="text-green-400" />
               <span>run.cmd (Auto-Config Script)</span>
             </div>
-          } defaultOpen={true}>
+          } defaultOpen={false}>
             <div className="bg-black/80 rounded-lg border border-cyber-700 overflow-hidden relative group shadow-lg">
               <div className="absolute top-2 right-2 z-10">
-                <CopyButton text={batchFileContent} />
+                <CopyButton text={batchFileContent.replace('{{ARGS}}', currentStrategy.command)} />
               </div>
               <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar leading-relaxed">
-                {batchFileContent}
+                {batchFileContent.replace('{{ARGS}}', currentStrategy.command)}
               </pre>
               
               {/* Download Button */}
               <div className="bg-cyber-900 border-t border-cyber-700 p-3 flex justify-end">
                 <button 
-                  onClick={downloadBatchFile}
+                  onClick={() => downloadBatchFile(currentStrategy.command)}
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg active:scale-95"
                 >
                   <FileDown size={16} />

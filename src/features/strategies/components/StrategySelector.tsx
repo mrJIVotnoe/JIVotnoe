@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { STRATEGIES } from '../data';
 import { StrategyType } from '../../../types';
@@ -7,6 +8,7 @@ import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useLanguage } from '../../localization/LanguageContext';
 import { Tooltip } from '../../../shared/ui/Tooltip';
 import { useStrategiesStore } from '../../../store/strategies.store';
+import { CrowdWisdomButton } from './CrowdWisdomButton';
 
 interface StrategySelectorProps {
   showCommandPreview?: boolean;
@@ -190,6 +192,9 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
             <Cpu size={12} />
             <span>{t('command_tooltip_hint')}</span>
           </div>
+          
+          {/* CROWDSOURCED WISDOM BUTTON */}
+          <CrowdWisdomButton command={currentCommand} />
           
           <p className="mt-4 text-sm text-gray-400">
             <span className="text-cyber-accent font-bold">{t('analyst_tip')}</span> {t('analyst_tip_text')}

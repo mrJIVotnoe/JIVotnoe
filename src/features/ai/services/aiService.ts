@@ -3,6 +3,7 @@ import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { STRATEGIES } from '../../strategies/data';
 import { Language } from '../../../types';
 import { ProbeResult } from '../../../core/engine/probe';
+import { WisdomSignal } from '../../../store/research.store';
 
 export interface AiAnalysisResult {
   platform: 'android' | 'pc' | 'ios' | 'linux';
@@ -16,10 +17,11 @@ interface AnalyzeParams {
   language: Language;
   useBridge: boolean;
   bridgeUrl: string;
-  probeData?: ProbeResult[]; // Optional diagnostic data
+  probeData?: ProbeResult[];
+  researchData?: WisdomSignal[]; // New crowdsourced data
 }
 
-export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData }: AnalyzeParams): Promise<AiAnalysisResult> => {
+export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData, researchData }: AnalyzeParams): Promise<AiAnalysisResult> => {
   // 1. Prepare Context
   const strategiesContext = STRATEGIES.map(s => ({
     id: s.id,
@@ -33,7 +35,7 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
   };
   const targetLang = langNames[language] || 'Russian';
 
-  // Format probe data for the AI if available
+  // Format probe data
   let diagnosticReport = "No network scan performed.";
   if (probeData && probeData.length > 0) {
     const grouped = probeData.reduce((acc, r) => {
@@ -43,6 +45,17 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     }, {} as Record<string, string[]>);
     
     diagnosticReport = "NETWORK DIAGNOSTIC REPORT:\n" + JSON.stringify(grouped, null, 2);
+  }
+
+  // Format Research Pool Data
+  let crowdsourcedWisdom = "No community signals available.";
+  if (researchData && researchData.length > 0) {
+    crowdsourcedWisdom = "COMMUNITY RESEARCH POOL (Recent successes):\n" + 
+      JSON.stringify(researchData.map(s => ({
+        strategy: s.strategyId,
+        args: s.commandArgs,
+        timestamp: new Date(s.timestamp).toISOString()
+      })), null, 2);
   }
 
   // 2. Define Schema
@@ -57,29 +70,34 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     required: ["platform", "explanation", "steps"]
   };
 
-  // Updated Persona: The Navigator
-  const systemInstruction = `You are "The Network Navigator", an intelligent system designed to guide users through hostile network environments (DPI, Censorship).
+  // Updated Persona: The Network Navigator with Research Access
+  const systemInstruction = `You are "The Network Navigator".
     
     Goal: Analyze user symptoms + diagnostic data to plot a course (Strategy).
     
     Diagnostic Data:
     ${diagnosticReport}
+
+    Crowdsourced Research (What worked for others recently):
+    ${crowdsourcedWisdom}
     
     Strategies Context:
     ${JSON.stringify(strategiesContext)}
     
-    Persona: Calm, analytical, precise. You do not "hack" the network; you "navigate" it.
+    Persona: Calm, analytical, precise.
+    
+    IMPORTANT: Frame your findings as "Research Results and Strategy for Future Analysis", NOT as absolute solutions.
     
     Analysis Logic:
-    1. Check the Diagnostic Report first. Real data > User feeling.
-    2. Identify the Obstacle: Is it IP Blocking (Black hole)? Is it DPI (Connection Reset)? Is it Throttling?
-    3. Plot the Course: Select a Strategy from Context that minimizes detection.
-    4. If no execution is possible (e.g. Browser), explain WHY and suggest an alternative route (e.g. "Install NekoBox").
+    1. Check the Diagnostic Report first.
+    2. Check the Community Research Pool. If there are recent successes for similar strategies, prioritize mentioning them as "Community Verified".
+    3. Identify the Obstacle: Is it IP Blocking (Black hole)? Is it DPI?
+    4. Plot the Course: Select a Strategy from Context.
+    5. If no execution is possible, suggest an alternative route.
     
     Rules:
     - IMPORTANT: Reply ONLY in ${targetLang} language.
-    - Do not invent CLI arguments not present in Context.
-    - Be honest about limitations. If a site is dead (IP block), say it.
+    - Do not invent CLI arguments unless they appear in the Research Pool.
     - Output strictly JSON matching the schema.`;
 
   // 3. Execute Request
