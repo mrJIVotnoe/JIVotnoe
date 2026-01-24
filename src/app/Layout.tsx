@@ -12,25 +12,11 @@ export function Layout({ children }: PropsWithChildren<{}>) {
   const { isTelegram, webApp } = useTelegram();
   const [showPrivacy, setShowPrivacy] = useState(false);
 
-  // Remove loader once layout mounts
   useEffect(() => {
     const loader = document.getElementById('loader');
     if (loader) {
       loader.classList.add('fade-out');
       setTimeout(() => loader.remove(), 500);
-    }
-  }, []);
-
-  // Deep Linking: Scroll to section if hash is present
-  useEffect(() => {
-    const hash = window.location.hash.replace('#', '');
-    if (hash) {
-      setTimeout(() => {
-        const element = document.getElementById(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 500); // Small delay to ensure content is rendered/suspended
     }
   }, []);
 
@@ -42,8 +28,6 @@ export function Layout({ children }: PropsWithChildren<{}>) {
         text: t('subtitle'),
         url: window.location.href
       }).catch(console.error);
-    } else {
-      console.log("Share API not supported");
     }
   };
 
@@ -94,7 +78,7 @@ export function Layout({ children }: PropsWithChildren<{}>) {
         </div>
       </header>
 
-      <main className="mx-auto px-4 py-8 max-w-4xl">
+      <main className="mx-auto px-4 py-8 max-w-4xl min-h-[70vh]">
         {!isTelegram && <ExtensionProxyToggle />}
         
         <Navigation />
