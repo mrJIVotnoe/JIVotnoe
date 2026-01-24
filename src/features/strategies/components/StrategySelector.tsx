@@ -113,7 +113,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
           <div className="space-y-4">
             <div className="bg-black/40 p-4 rounded-xl border border-amber-500/20">
               <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Diagnosis</div>
-              <div className="text-lg font-black text-amber-100">{currentAnalysis.restrictionClass}</div>
+              <div className="text-lg font-black text-amber-100">{String(currentAnalysis.restrictionClass)}</div>
               <div className="text-xs text-amber-300/80 font-mono mt-1">Confidence: {(currentAnalysis.confidence * 100).toFixed(0)}%</div>
             </div>
 
@@ -123,7 +123,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
                 {currentAnalysis.explanation.map((exp, i) => (
                   <li key={i} className="flex gap-3 text-xs text-gray-300">
                     <span className="text-amber-500 font-bold">::</span>
-                    {exp}
+                    {typeof exp === 'string' ? exp : JSON.stringify(exp)}
                   </li>
                 ))}
               </ul>
