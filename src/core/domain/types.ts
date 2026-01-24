@@ -81,9 +81,18 @@ export interface AdversaryProfile {
   description: string;
 }
 
-// --- KNOWLEDGE SYSTEM TYPES (v1) ---
+// --- KNOWLEDGE SYSTEM TYPES (v2 - Weighted Trust) ---
 
 export type ObservationResult = 'SUCCESS' | 'FAIL' | 'UNSTABLE';
+
+export type VerificationSource = 'ARCHITECT' | 'VERIFIED_USER' | 'ANONYMOUS' | 'AI_INFERENCE';
+
+export interface EnvironmentContext {
+  vpnActive: boolean;
+  regionMatch: boolean; // Does user region match target region?
+  osVersion?: string;
+  networkType: 'wifi' | 'mobile' | 'wired' | 'unknown';
+}
 
 /**
  * Observation
@@ -98,11 +107,10 @@ export interface Observation {
   result: ObservationResult; // The outcome
   signals: string[]; // Specific technical signals (e.g. "timeout_after_hello")
   
-  // Physical Context (Added for Aggregation Engine v0.1)
-  networkContext?: {
-    type: 'wifi' | 'mobile' | 'wired' | 'unknown';
-    protocol?: string;
-  };
+  // V2: Trust & Physical Context
+  verification: VerificationSource;
+  trustWeight: number; // 0.0 to 1.0 (Architect=1.0, VerifiedUser=0.99, Anon=0.5)
+  envContext: EnvironmentContext;
 }
 
 /**

@@ -2,7 +2,7 @@
 # PROJECT WHITE PAPER
 ## System Architecture & Logic Documentation
 
-**Version:** 1.7.2 (Diagnosis Edition)
+**Version:** 1.8.0 (Cybernetic Loop Edition)
 **Scope:** Core Logic & Decision Engine
 **Status:** ACTIVE
 
@@ -29,6 +29,7 @@ It is a **Research & Diagnostic Instrument**. Its primary function is to classif
 1.  **Core Decision Engine:** Deterministic logic mapping inputs to strategies.
 2.  **NetProbe (New):** Active diagnostic module for empirical verification of reachability via `no-cors` heuristics.
 3.  **AI Analyst:** Natural language interface for interpreting probe data.
+4.  **Feedback Loop:** Weighted aggregation system for user observations.
 
 ### 2. WHAT THIS SYSTEM IS NOT
 
@@ -97,6 +98,23 @@ The system logic hardcodes a reaction to the "2026 Shift" — a transition from 
 
 *   **User Role:** The observer (as per HUMAN-AI-USER AXIOM). The user provides the symptoms, triggers NetProbe, and describes the environment.
 *   **System Role:** The analyst. The system maps those symptoms to the underlying network architecture (DPI, TSPU, Firewall) and determines the theoretical limits of circumvention for that specific case.
+
+### 8. THE CYBERNETIC LOOP (NEW v1.8)
+
+We introduce a mechanism for **Verified Knowledge Acquisition**.
+The system collects User Observations into a Signed Payload to be aggregated in a future SQL storage (Cloudflare D1).
+
+**Trust Weight Hierarchy:**
+1.  **ARCHITECT (1.0):** Absolute Truth. Can override any data.
+2.  **VERIFIED USER (0.99):** High Trust. Requires Human Verification (Captcha/Checkbox) + Environment Context (VPN status checked).
+3.  **ANONYMOUS (0.5):** Low Trust. Requires mass volume to influence confidence.
+4.  **AI (0.0):** No authority. AI reasoning is never used as input for the Knowledge Base.
+
+**Payload Structure:**
+The system generates a specific JSON structure (`OBSERVATION_PACKET_V2`) containing:
+*   `verification`: Source and Trust Weight.
+*   `context`: VPN status, OS version, Region match.
+*   `result`: Success/Fail boolean.
 
 ---
 *Generated based on src/core/ logic analysis.*

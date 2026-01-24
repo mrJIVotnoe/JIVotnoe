@@ -18,20 +18,22 @@ export function aggregateObservations(observations: Observation[]): Hypothesis[]
   
   // 1. Map Domain -> Engine
   const engineInput = observations.map(obs => {
-    const aggObs: AggregationObservation & { strategyId: string } = {
+    // Construct object matching WeightedObservation interface required by aggregateInternal
+    return {
         id: obs.id,
         timestamp: obs.timestamp,
         result: obs.result,
         signals: obs.signals,
         strategyId: obs.strategyId,
+        trustWeight: obs.trustWeight,
+        isArchitect: obs.verification === 'ARCHITECT',
         context: {
             platform: obs.input.platform,
             target: obs.input.targetApp,
-            network_type: obs.networkContext?.type || 'unknown',
-            protocol: obs.networkContext?.protocol || 'tcp'
+            network_type: obs.envContext?.networkType || 'unknown',
+            protocol: 'tcp' // Protocol is currently inferred/defaulted
         }
     };
-    return aggObs;
   });
 
   // 2. Run Engine

@@ -4,38 +4,52 @@
 import { ConfidenceExplanation } from "./types";
 
 /**
- * Calculates a confidence score with detailed explanation.
+ * Calculates a weighted confidence score.
  * 
- * Philosophy:
- * - High volume increases base confidence.
- * - Contradictions (negatives) heavily penalize confidence.
- * - Neutrals dilute confidence slightly.
+ * Trust Hierarchy:
+ * 1. Architect (1.0 weight) -> Overrides everything.
+ * 2. Verified User (0.99 weight) -> Extremely high influence.
+ * 3. Anonymous (0.5 weight) -> Requires volume to matter.
  */
-export function calculateConfidenceWithExplanation(
-  positive: number,
-  negative: number,
-  neutral: number
+export function calculateWeightedConfidence(
+  positiveWeight: number,
+  negativeWeight: number,
+  neutralWeight: number,
+  hasArchitectOverride: boolean = false
 ): ConfidenceExplanation {
 
-  const total = positive + negative + neutral;
-  if (total === 0) {
+  const totalWeight = positiveWeight + negativeWeight + neutralWeight;
+
+  // ARCHITECT OVERRIDE: If the Architect says it works, it works (1.0). 
+  // If Architect says it fails, it fails (0.0).
+  if (hasArchitectOverride) {
+     const isPositive = positiveWeight > negativeWeight;
+     return {
+       positive_ratio: isPositive ? 1 : 0,
+       contradiction_penalty: 1,
+       neutral_ratio: 0,
+       final_confidence: isPositive ? 1.0 : 0.0,
+       notes: ["ARCHITECT OVERRIDE: Axiomatic Truth"]
+     };
+  }
+
+  if (totalWeight === 0) {
     return {
       positive_ratio: 0,
       contradiction_penalty: 0,
       neutral_ratio: 0,
       final_confidence: 0,
-      notes: ["No observations available"]
+      notes: ["Insufficient data"]
     };
   }
 
-  const positiveRatio = positive / total;
-  const neutralRatio = neutral / total;
+  const positiveRatio = positiveWeight / totalWeight;
+  const neutralRatio = neutralWeight / totalWeight;
 
   // Contradiction Penalty
-  // If we have ANY negatives, we reduce confidence.
-  // We use a linear penalty relative to the negative ratio.
-  const contradictionPenalty = negative > 0
-    ? Math.max(0, 1 - (negative / total))
+  // High trust negatives penalize heavily.
+  const contradictionPenalty = negativeWeight > 0
+    ? Math.max(0, 1 - (negativeWeight / totalWeight))
     : 1;
 
   // Final Score Calculation
@@ -46,20 +60,12 @@ export function calculateConfidenceWithExplanation(
   // Generate Notes
   const notes: string[] = [];
 
-  if (negative > 0) {
-    notes.push("Confidence reduced due to contradictory observations");
-  }
-
-  if (neutralRatio > 0.3) {
-    notes.push("High number of neutral observations lowers certainty");
-  }
-
-  if (positiveRatio > 0.8 && contradictionPenalty === 1 && total > 5) {
-    notes.push("Strong positive consistency across observations");
+  if (positiveWeight > 5 && negativeWeight === 0) {
+    notes.push("Strong consensus among verified users");
   }
   
-  if (total < 5) {
-    notes.push("Low sample size");
+  if (negativeWeight > 0.5) { // Even half a verified user point matters
+    notes.push("Conflict detected: Some trusted sources report failure");
   }
 
   return {
@@ -71,13 +77,11 @@ export function calculateConfidenceWithExplanation(
   };
 }
 
-/**
- * Legacy wrapper for backward compatibility if needed
- */
+// Deprecated legacy wrapper
 export function calculateConfidence(
   positive: number,
   negative: number,
   neutral: number
 ): number {
-  return calculateConfidenceWithExplanation(positive, negative, neutral).final_confidence;
+  return calculateWeightedConfidence(positive, negative, neutral).final_confidence;
 }

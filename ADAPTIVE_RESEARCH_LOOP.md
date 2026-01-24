@@ -2,9 +2,9 @@
 # ADAPTIVE RESEARCH LOOP
 System Evolution Without Loss of Control
 
-Version: 0.1
-Status: CONCEPTUAL — ACTIVE
-Scope: Core-adjacent (Non-Executable)
+Version: 0.2 (Verified Loop Edition)
+Status: ACTIVE IMPLEMENTATION
+Scope: Core-adjacent (Data Ingestion)
 
 1. PURPOSE
 Adaptive Research Loop is a controlled mechanism for system evolution under changing network conditions, designed to operate without compromising the determinism, safety, or authority of the Core Decision Engine.
@@ -21,179 +21,102 @@ The Core decides.
 The Loop observes.
 
 Adaptive Research Loop:
-
-does not decide
-
-does not execute
-
-does not optimize outcomes
+- does not decide
+- does not execute
+- does not optimize outcomes
 
 It must never influence Core logic directly.
 
-3. ARCHITECTURAL POSITION
-css
-Копировать код
-[ Core Decision Engine ]        ← Deterministic, Authoritative
-        ↓
-[ Explanation Layer ]           ← Human-readable interpretation
-        ↓
-[ Adaptive Research Loop ]      ← Observation & hypothesis
-        ↓
-[ Knowledge Base (Read-Only) ]  ← Facts, not rules
-The Loop is downstream-only.
-Information may flow out of the Core, but never into it.
+3. TRUST HIERARCHY (WEIGHTED AGGREGATION)
+Data entering the loop is strictly weighted by source authority.
 
-4. LOOP COMPONENTS (CONCEPTUAL)
-4.1 Observation Capture
-The system records signals such as:
+**Level 1: ARCHITECT (Weight: 1.0)**
+- Immutable truth.
+- Entered directly via source code or signed admin key.
+- Overrides all other signals.
 
-user-reported symptoms
+**Level 2: VERIFIED USER (Weight: 0.99)**
+- High trust.
+- Requires:
+  1. Human Verification (Captcha/Intent Check).
+  2. Context Declaration (VPN Status, Region).
+- Can shift confidence scores significantly.
 
-failed or degraded connections
+**Level 3: ANONYMOUS (Weight: 0.5)**
+- Low trust.
+- Requires massive consensus to form a hypothesis.
+- Vulnerable to noise/spam.
 
-recurring edge cases
+**Level 4: AI INFERENCE (Weight: 0.0)**
+- Zero trust.
+- AI hallucinations are never stored as observations.
 
-regional or platform-specific anomalies
+4. LOOP COMPONENTS
+4.1 Observation Capture (Implemented)
+The system records signals via `FeedbackSystem.tsx`:
+- Result (Success/Fail)
+- Context (VPN, Region, OS)
+- Verification (Human Check)
 
-Observations are:
-
-descriptive
-
-timestamped
-
-non-actionable
-
-⚠️ No conclusions. No recommendations.
+Output: `OBSERVATION_PACKET_V2` (JSON Payload).
 
 4.2 Pattern Detection
-Using non-deterministic analysis, the Loop may:
-
-cluster similar observations
-
-detect repetition across environments
-
-identify potential shifts in blocking behavior
-
-Outputs are hypotheses, never rules.
-
-⚠️ Pattern ≠ Truth.
+Using deterministic aggregation (`engine.ts`), the Loop:
+- Groups observations by Strategy + Platform + Target.
+- Calculates Weighted Confidence.
+- Generates "Candidates" for knowledge promotion.
 
 4.3 Hypothesis Ledger
 All hypotheses are stored explicitly with:
-
-description
-
-origin (what was observed)
-
-confidence level
-
-creation date
+- description
+- origin (what was observed)
+- confidence level (Weighted)
+- creation date
 
 Examples:
-
-“Possible expansion of protocol whitelisting in region X”
-
-“Static fragmentation appears intermittently effective on platform Y”
-
-Hypotheses cannot affect system behavior.
+“High Confidence (0.95): Strategy X works on Android/MTS (Source: 5 Verified Users)”
 
 4.4 Human Review Gate (Mandatory)
 Every hypothesis requires explicit Human Architect review.
 
 Possible outcomes:
-
-Accepted for further research
-
-Rejected
-
-Archived without action
+- Accepted for further research
+- Rejected
+- Archived without action
 
 ⚠️ Without human review, the Loop is inert.
 
-4.5 Canon & Core Update (Rare, Controlled)
-Only after review may a hypothesis:
-
-influence documentation
-
-become a warning
-
-evolve into a formal rule
-
-This process requires:
-
-Canon update
-
-White Paper update
-
-explicit versioning
-
-There is no automatic promotion path.
-
 5. PROHIBITIONS (HARD CONSTRAINTS)
 Adaptive Research Loop is strictly forbidden from:
-
-importing into decide.ts
-
-altering confidence scores
-
-suggesting execution strategies
-
-operating in real time
-
-optimizing for “success rate”
+- importing into decide.ts
+- altering confidence scores automatically
+- suggesting execution strategies dynamically
+- operating in real time
+- optimizing for “success rate”
 
 If any of the above occurs, the architecture is considered compromised.
 
 6. ROLES AND AUTHORITY
 Human Architect
-Sole authority over evolution
-
-Validator of hypotheses
-
-Guardian of system integrity
+- Sole authority over evolution
+- Validator of hypotheses
+- Guardian of system integrity
 
 AI Systems
-Observers
-
-Analysts
-
-Documenters
-
-They do not own the system.
+- Observers
+- Analysts
+- Documenters
+- They do not own the system.
 
 Users
-Sources of signals
+- Sources of signals (Weighted 0.99 if verified)
+- Subjects of observation
+- Users are partners in observation, but not architects.
 
-Subjects of observation
-
-Users are not co-authors of architecture.
-
-7. PHILOSOPHICAL STATUS
-Adaptive Research Loop is:
-
-not a feature
-
-not a module
-
-not a service
-
-It is a philosophy of controlled learning.
-
-8. FAILURE CONDITION
-If the Loop ever gains the ability to modify Core behavior directly,
-the project has failed architecturally.
-
-9. RELATION TO OTHER DOCUMENTS
-This document is complementary to:
-
-PROJECT_CANON.md
-
-PROJECT_WHITEPAPER.md
-
-HUMAN_ARCHITECT_TIME_AXIOM.md
-
-HUMAN–AI–USER AXIOM.md
-
-It must never override them.
+7. DATA STORAGE
+Current implementation uses **Signed Payload Generation**.
+The client generates the JSON.
+Ideally, this is sent to a Cloudflare D1 instance via a "Neural Bridge".
+In the absence of a backend, the payload is manually transmitted via Telegram Bot.
 
 End of document.
