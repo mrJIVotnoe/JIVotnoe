@@ -6,16 +6,9 @@
  * Implements the "Anti-Corruption Layer" pattern to keep core domains pure.
  */
 
-import { Observation, Hypothesis, SourceAuthority } from '../domain/types';
+import { Observation, Hypothesis } from '../domain/types';
 import { aggregateInternal } from './aggregation/engine';
 import { AggregationObservation } from './aggregation/types';
-
-const AUTHORITY_WEIGHTS: Record<SourceAuthority, number> = {
-  [SourceAuthority.ARCHITECT]: 1.0,
-  [SourceAuthority.VERIFIED_USER]: 0.99,
-  [SourceAuthority.CONDITIONAL_USER]: 0.5,
-  [SourceAuthority.AI_REASONING]: 0.1
-};
 
 /**
  * Main entry point for aggregation.
@@ -25,31 +18,17 @@ export function aggregateObservations(observations: Observation[]): Hypothesis[]
   
   // 1. Map Domain -> Engine
   const engineInput = observations.map(obs => {
-    // Calculate effective weight based on Authority + Human Verification
-    let weight = AUTHORITY_WEIGHTS[obs.authority];
-    
-    // Penalty for unverified humans in a Verified User slot (sanity check)
-    if (obs.authority === SourceAuthority.VERIFIED_USER && !obs.context.isHumanVerified) {
-        weight = AUTHORITY_WEIGHTS.CONDITIONAL_USER;
-    }
-
-    // Penalty for VPN active (distorts DPI results)
-    if (obs.context.vpnActive) {
-        weight *= 0.5;
-    }
-
-    const aggObs: AggregationObservation & { strategyId: string, weight: number } = {
+    const aggObs: AggregationObservation & { strategyId: string } = {
         id: obs.id,
         timestamp: obs.timestamp,
         result: obs.result,
         signals: obs.signals,
         strategyId: obs.strategyId,
-        weight: weight,
         context: {
             platform: obs.input.platform,
             target: obs.input.targetApp,
-            network_type: obs.context.networkType,
-            protocol: 'tcp' // Default for now
+            network_type: obs.networkContext?.type || 'unknown',
+            protocol: obs.networkContext?.protocol || 'tcp'
         }
     };
     return aggObs;
@@ -64,18 +43,18 @@ export function aggregateObservations(observations: Observation[]): Hypothesis[]
 
   return validCandidates.map(c => {
     const { positive, total } = c.metrics;
-    const weightedSuccessRate = Math.round((positive / total) * 100); // Internal engine handles weighting now
+    const successRate = Math.round((positive / total) * 100);
     const platform = c.context.platform;
     const target = c.context.target;
     
     // Generate human-readable statement
     let statement = "";
-    if (c.metrics.confidence > 0.8) {
-        statement = `High Confidence (Verified): Strategy effectively bypasses ${target} on ${platform}.`;
-    } else if (c.metrics.confidence < 0.2 && c.metrics.total > 5) {
+    if (c.metrics.confidence > 0.7) {
+        statement = `High Confidence: Strategy effectively bypasses ${target} on ${platform} (${successRate}% success).`;
+    } else if (c.metrics.confidence < 0.3 && c.metrics.total > 5) {
         statement = `Confirmed Failure: Strategy ineffective for ${target} on ${platform}.`;
     } else {
-        statement = `Research Result: Strategy shows mixed results (${weightedSuccessRate}%) for ${target} on ${platform}.`;
+        statement = `Unstable: Strategy shows mixed results (${successRate}%) for ${target} on ${platform}.`;
     }
 
     return {

@@ -1,21 +1,15 @@
 
-import React, { useState } from 'react';
-import { Activity, Play, Clock, ShieldCheck, ShieldAlert, Wifi, AlertTriangle, RotateCcw, BarChart3, Network, Server, Gamepad2, MessageCircle, Video, Search, Brain, FileText, Check } from 'lucide-react';
+import React from 'react';
+import { Activity, Play, Clock, ShieldCheck, ShieldAlert, Wifi, AlertTriangle, RotateCcw, BarChart3, Network, Server, Gamepad2, MessageCircle, Video, Search, Brain } from 'lucide-react';
 import { useDiagnosticsStore, DiagnosticSession } from '../../../store/diagnostics.store';
 import { DIAGNOSTIC_TARGETS, DiagnosticTarget } from '../../../core/knowledge/diagnosis.targets';
 import { useLanguage } from '../../localization/LanguageContext';
-import { useStrategiesStore } from '../../../store/strategies.store';
-import { useTelegram } from '../../telegram/TelegramContext';
-import { APP_VERSION } from '../../../config/constants';
 
 const MAX_HISTORY_LENGTH = 10;
 
 export const NetProbeDashboard: React.FC = () => {
   const { t } = useLanguage();
   const { history, isScanning, progress, runScan, lastScan, clearHistory } = useDiagnosticsStore();
-  const { selectedStrategyId, customSni } = useStrategiesStore();
-  const { platform } = useTelegram();
-  const [copied, setCopied] = useState(false);
   
   const latestSession = history[0];
 
@@ -49,32 +43,6 @@ export const NetProbeDashboard: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
-    const report = {
-      meta: {
-        timestamp: new Date().toISOString(),
-        version: APP_VERSION,
-        platform: platform,
-        strategy: selectedStrategyId,
-        sni: customSni || 'default'
-      },
-      diagnostics: latestSession ? {
-        health: latestSession.overallHealth,
-        results: latestSession.results.map(r => ({
-          target: r.target.name,
-          status: r.status,
-          latency: r.latency
-        }))
-      } : 'No scan data'
-    };
-
-    const text = JSON.stringify(report, null, 2);
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   return (
     <div className="bg-cyber-900 border border-cyber-700 rounded-[2rem] p-6 shadow-xl relative overflow-hidden group">
       {/* Background Decor */}
@@ -106,19 +74,6 @@ export const NetProbeDashboard: React.FC = () => {
         </div>
 
         <div className="flex gap-2">
-           {latestSession && !isScanning && (
-             <button
-               onClick={handleExport}
-               className={`p-3 rounded-xl transition-colors border ${
-                 copied 
-                   ? 'bg-green-900/20 text-green-400 border-green-900/30' 
-                   : 'bg-cyber-800 text-gray-500 hover:text-blue-400 border-transparent hover:border-blue-900/30'
-               }`}
-               title="Export Technical Dossier"
-             >
-               {copied ? <Check size={18} /> : <FileText size={18} />}
-             </button>
-           )}
            {history.length > 0 && !isScanning && (
              <button 
                onClick={clearHistory}

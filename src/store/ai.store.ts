@@ -4,7 +4,6 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { analyzeIssue, AiAnalysisResult } from '../features/ai/services/aiService';
 import { Language } from '../types';
 import { ProbeResult } from '../core/engine/probe';
-import { WisdomSignal } from './research.store';
 import { DEFAULT_BRIDGE_URL } from '../config/constants';
 
 interface AiState {
@@ -15,7 +14,6 @@ interface AiState {
   error: string | null;
   rated: 'up' | 'down' | null;
   probeData: ProbeResult[] | null;
-  researchData: WisdomSignal[] | null;
   
   // Settings (Persisted)
   useBridge: boolean;
@@ -25,7 +23,6 @@ interface AiState {
   setInput: (text: string) => void;
   setBridgeSettings: (useBridge: boolean, url: string) => void;
   setProbeData: (data: ProbeResult[]) => void;
-  setResearchData: (data: WisdomSignal[]) => void;
   analyze: (language: Language, overrideInput?: string) => Promise<void>;
   rate: (direction: 'up' | 'down') => void;
   reset: () => void;
@@ -40,8 +37,7 @@ export const useAiStore = create<AiState>()(
       error: null,
       rated: null,
       probeData: null,
-      researchData: null,
-      useBridge: true,
+      useBridge: true, // Enabled by default for better UX with the provided worker
       bridgeUrl: DEFAULT_BRIDGE_URL,
 
       setInput: (input) => set({ input }),
@@ -49,13 +45,12 @@ export const useAiStore = create<AiState>()(
       setBridgeSettings: (useBridge, bridgeUrl) => set({ useBridge, bridgeUrl }),
 
       setProbeData: (data) => set({ probeData: data }),
-      
-      setResearchData: (data) => set({ researchData: data }),
 
       analyze: async (language, overrideInput) => {
-        const { input, useBridge, bridgeUrl, probeData, researchData } = get();
+        const { input, useBridge, bridgeUrl, probeData } = get();
         const finalInput = overrideInput || input;
 
+        // Allow empty input if we have probe data (implied "Analyze this report")
         if (!finalInput.trim() && !probeData) {
           set({ error: 'Input required or run Diagnostics first' });
           return;
@@ -71,8 +66,7 @@ export const useAiStore = create<AiState>()(
             language,
             useBridge,
             bridgeUrl,
-            probeData: probeData || undefined,
-            researchData: researchData || undefined
+            probeData: probeData || undefined
           });
           set({ result: data });
         } catch (err: any) {
@@ -85,7 +79,7 @@ export const useAiStore = create<AiState>()(
 
       rate: (direction) => set({ rated: direction }),
       
-      reset: () => set({ result: null, error: null, input: '', probeData: null, researchData: null })
+      reset: () => set({ result: null, error: null, input: '', probeData: null })
     }),
     {
       name: 'byedpi-ai-settings',

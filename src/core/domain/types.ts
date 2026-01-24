@@ -14,17 +14,6 @@ import { NetworkSymptom, AppTarget, RestrictionClass } from './enums';
 export type Platform = 'android' | 'windows' | 'linux' | 'ios' | 'browser';
 
 /**
- * Source Authority Hierarchy
- * Defines the weight of truth for a piece of knowledge.
- */
-export enum SourceAuthority {
-  ARCHITECT = 'ARCHITECT',       // Weight: 1.00 (Absolute Truth)
-  VERIFIED_USER = 'VERIFIED_USER', // Weight: 0.99 (Empirical Reality)
-  CONDITIONAL_USER = 'CONDITIONAL_USER', // Weight: 0.50 (Unverified/Bad Context)
-  AI_REASONING = 'AI_REASONING'  // Weight: 0.10 (Hypothesis)
-}
-
-/**
  * DecisionInput
  *
  * The normalized representation of the user's environment.
@@ -92,22 +81,9 @@ export interface AdversaryProfile {
   description: string;
 }
 
-// --- KNOWLEDGE SYSTEM TYPES (v2 - User Knowledge Base) ---
+// --- KNOWLEDGE SYSTEM TYPES (v1) ---
 
 export type ObservationResult = 'SUCCESS' | 'FAIL' | 'UNSTABLE';
-
-/**
- * Detailed User Context
- * Required for "Reality Expertise" verification.
- */
-export interface ObservationContext {
-  platform: Platform;
-  networkType: 'wifi' | 'mobile' | 'wired' | 'unknown';
-  vpnActive: boolean;
-  locationRegion: string; // e.g., "RU-MOW"
-  isHumanVerified: boolean; // Captcha/PoW pass
-  appVersion: string;
-}
 
 /**
  * Observation
@@ -117,12 +93,16 @@ export interface ObservationContext {
 export interface Observation {
   id: string;
   timestamp: string; // ISO
-  authority: SourceAuthority; // Hierarchy level
   input: DecisionInput; // The logical context (Platform, Target)
   strategyId: string; // The action taken
   result: ObservationResult; // The outcome
-  context: ObservationContext; // The physical reality
-  signals: string[]; // Specific technical signals
+  signals: string[]; // Specific technical signals (e.g. "timeout_after_hello")
+  
+  // Physical Context (Added for Aggregation Engine v0.1)
+  networkContext?: {
+    type: 'wifi' | 'mobile' | 'wired' | 'unknown';
+    protocol?: string;
+  };
 }
 
 /**

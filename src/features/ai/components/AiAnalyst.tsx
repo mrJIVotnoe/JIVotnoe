@@ -6,9 +6,8 @@ import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useTelegram } from '../../telegram/TelegramContext';
 import { WORKER_CODE_TEMPLATE } from '../../../config/constants';
 import { useAiStore } from '../../../store/ai.store';
-import { useDiagnosticsStore } from '../../../store/diagnostics.store';
-import { useResearchStore } from '../../../store/research.store'; // Import Research Store
-import { NetProbeDashboard } from '../../diagnostics/components/NetProbeDashboard';
+import { useDiagnosticsStore } from '../../../store/diagnostics.store'; // Import diagnostics store
+import { NetProbeDashboard } from '../../diagnostics/components/NetProbeDashboard'; // Import new Dashboard
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
@@ -21,8 +20,8 @@ export const AiAnalyst: React.FC = () => {
     analyze, rate 
   } = useAiStore();
 
+  // Use Diagnostics Store to get data for AI
   const { history } = useDiagnosticsStore();
-  const { pool } = useResearchStore(); // Get local crowdsourced pool
 
   const [showBridgeSettings, setShowBridgeSettings] = useState(false);
   
@@ -42,35 +41,23 @@ export const AiAnalyst: React.FC = () => {
   };
 
   const handleAnalyze = () => {
-    // 1. Inject Probe Data
+    // Inject probe data from history if available
     let latestProbeResults = undefined;
     if (history.length > 0) {
         latestProbeResults = history[0].results;
-        useAiStore.getState().setProbeData(latestProbeResults);
     }
     
-    // 2. Inject Research Pool Data (Crowdsourced Wisdom)
-    // We send the entire local pool (assuming recent relevance)
-    // The store action 'analyze' in AiStore needs to be updated to accept this, 
-    // BUT since we can't easily change the store signature without modifying aiService too,
-    // we will pass it as a temporary property or modify the analyze call in the store.
-    // NOTE: For this specific request, I updated `aiService.ts` to accept `researchData`.
-    // Now I need to make sure the store passes it.
-    // Since I cannot change `src/store/ai.store.ts` in this specific block without rewriting it entirely,
-    // I will assume `useAiStore` has been updated or I will bypass the store wrapper for the `researchData` param
-    // if the store implementation allows.
-    // WAITING: The previous turn didn't update `ai.store.ts`. 
-    // I will implement a direct call to `analyzeIssue` logic inside the store, OR update the store.
-    // Best practice: Update the store to hold researchData.
+    // We need to update the analyze signature in store/service to accept probeData directly
+    // Or we rely on the store having it. 
+    // For now, let's assume the store handles passing it if we set it in the store.
+    // Actually, purely cleaner to pass it here if the store supports it.
+    // Checking previous implementation: setProbeData(results) was used.
+    // Let's manually sync diagnostics store latest result to ai store before analyzing.
     
-    // Trigger analysis with language context
-    // NOTE: The `analyze` function in the store calls `analyzeIssue`. 
-    // We need to pass researchData to it. 
-    // Since I am only editing this file, I will rely on the store update in the next file change 
-    // or modify this component to pass it if the store supports arguments.
-    
-    // HACK for compatibility: We will rely on the store update below.
-    useAiStore.getState().setResearchData(pool);
+    if (latestProbeResults) {
+        useAiStore.getState().setProbeData(latestProbeResults);
+    }
+
     analyze(language);
   };
 

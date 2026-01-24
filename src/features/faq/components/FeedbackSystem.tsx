@@ -1,53 +1,33 @@
 
-import React, { useState, useEffect } from 'react';
-import { MessageSquare, ExternalLink, ShieldCheck, Heart, Copy, Check, Send, AlertTriangle, Wifi, Globe, Smartphone, Monitor, MapPin, UserCheck, Lock } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageSquare, ExternalLink, ShieldCheck, Heart, Copy, Check, Send, AlertTriangle, Wifi, Globe, Smartphone, Monitor } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { useTelegram } from '../../telegram/TelegramContext';
-import { ObservationResult, SourceAuthority, ObservationContext, Platform } from '../../../core/domain/types';
-import { APP_VERSION } from '../../../config/constants';
+import { ObservationResult } from '../../../core/domain/types';
 
 export const FeedbackSystem: React.FC = () => {
   const { t } = useLanguage();
-  const { webApp, isTelegram, platform: tgPlatform } = useTelegram();
+  const { webApp } = useTelegram();
   const [copied, setCopied] = useState(false);
   
-  // Structured State for Reality Expertise
+  // Structured State
   const [result, setResult] = useState<ObservationResult | null>(null);
-  const [platform, setPlatform] = useState<Platform>('android');
+  const [platform, setPlatform] = useState<'mobile' | 'desktop'>('mobile');
   const [network, setNetwork] = useState<'wifi' | 'mobile'>('wifi');
-  const [vpnActive, setVpnActive] = useState(false);
-  const [region, setRegion] = useState('');
   const [comment, setComment] = useState('');
-  const [isHumanVerified, setIsHumanVerified] = useState(false);
-
-  // Auto-detect platform from Telegram
-  useEffect(() => {
-    if (tgPlatform === 'ios') setPlatform('ios');
-    else if (tgPlatform === 'android') setPlatform('android');
-    else if (tgPlatform === 'tdesktop') setPlatform('windows'); // Approximate
-  }, [tgPlatform]);
 
   const generateReport = () => {
-    const context: ObservationContext = {
-        platform: platform,
-        networkType: network,
-        vpnActive: vpnActive,
-        locationRegion: region || "UNKNOWN",
-        isHumanVerified: isHumanVerified,
-        appVersion: APP_VERSION
-    };
-
-    const authority = isHumanVerified ? SourceAuthority.VERIFIED_USER : SourceAuthority.CONDITIONAL_USER;
-
-    // This is the JSON payload for the User Knowledge Base
+    // This is the JSON payload for the Observation Pool
     const payload = {
-        type: "UKB_OBSERVATION_V2",
-        authority: authority,
+        type: "OBSERVATION_V1",
         timestamp: new Date().toISOString(),
-        context: context,
+        context: {
+            platform: platform,
+            network: network,
+            app_version: "1.7.0"
+        },
         result: result,
-        user_comment: comment || undefined,
-        _signature: isHumanVerified ? `HUMAN_SIG_${Date.now().toString(36)}` : null
+        user_comment: comment || undefined
     };
     return JSON.stringify(payload, null, 2);
   };
@@ -57,6 +37,8 @@ export const FeedbackSystem: React.FC = () => {
     try {
       await navigator.clipboard.writeText(report);
       setCopied(true);
+      // Give time for user to see success, but don't auto-hide too fast so they know what happened
+      // Reset is handled manually or on re-click logic if needed, but 2s timeout is fine for UX
       setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       console.error('Failed to copy', err);
@@ -80,7 +62,7 @@ export const FeedbackSystem: React.FC = () => {
             </div>
             <div>
                <h3 className="text-xl font-black text-white tracking-tight">{t('feedback_title')}</h3>
-               <p className="text-xs text-gray-400">User Knowledge Base Contribution</p>
+               <p className="text-xs text-gray-400">{t('feedback_desc')}</p>
             </div>
         </div>
 
@@ -103,83 +85,41 @@ export const FeedbackSystem: React.FC = () => {
                 </div>
             </div>
 
-            {/* 2. Reality Context (The Filter) */}
-            <div className="grid grid-cols-2 gap-4">
-                <div>
+            {/* 2. Context */}
+            <div className="flex gap-4">
+                <div className="flex-1">
                     <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">{t('feedback_context_network')}</label>
                     <div className="flex gap-2">
-                        <button onClick={() => setNetwork('wifi')} className={`p-2 rounded-lg flex-1 flex justify-center items-center ${network === 'wifi' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Wifi size={14}/></button>
-                        <button onClick={() => setNetwork('mobile')} className={`p-2 rounded-lg flex-1 flex justify-center items-center ${network === 'mobile' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Globe size={14}/></button>
+                        <button onClick={() => setNetwork('wifi')} className={`p-2 rounded-lg flex-1 flex justify-center ${network === 'wifi' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Wifi size={16}/></button>
+                        <button onClick={() => setNetwork('mobile')} className={`p-2 rounded-lg flex-1 flex justify-center ${network === 'mobile' ? 'bg-blue-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Globe size={16}/></button>
                     </div>
                 </div>
-                <div>
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">Extra Layers</label>
-                    <button 
-                        onClick={() => setVpnActive(!vpnActive)} 
-                        className={`w-full p-2 rounded-lg flex items-center justify-center gap-2 text-xs font-bold ${vpnActive ? 'bg-orange-600 text-white' : 'bg-cyber-900 text-gray-500'}`}
-                    >
-                        <Lock size={14} />
-                        VPN {vpnActive ? 'ON' : 'OFF'}
-                    </button>
+                <div className="flex-1">
+                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">{t('feedback_context_device')}</label>
+                    <div className="flex gap-2">
+                        <button onClick={() => setPlatform('mobile')} className={`p-2 rounded-lg flex-1 flex justify-center ${platform === 'mobile' ? 'bg-purple-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Smartphone size={16}/></button>
+                        <button onClick={() => setPlatform('desktop')} className={`p-2 rounded-lg flex-1 flex justify-center ${platform === 'desktop' ? 'bg-purple-600 text-white' : 'bg-cyber-900 text-gray-500'}`}><Monitor size={16}/></button>
+                    </div>
                 </div>
             </div>
 
-            {/* 3. Location & Verification */}
-            <div className="flex gap-4">
-                 <div className="flex-1">
-                    <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2 block">Region (Optional)</label>
-                    <div className="relative">
-                        <MapPin size={14} className="absolute left-3 top-2.5 text-gray-500" />
-                        <input 
-                            type="text" 
-                            value={region} 
-                            onChange={(e) => setRegion(e.target.value)} 
-                            placeholder="RU-MOW" 
-                            className="w-full bg-cyber-900 border border-cyber-700 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-cyber-500"
-                        />
-                    </div>
-                 </div>
-            </div>
-
-            {/* 4. Human Verification Gate */}
-            <div 
-                onClick={() => setIsHumanVerified(!isHumanVerified)}
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                    isHumanVerified 
-                    ? 'bg-green-900/20 border-green-500/50' 
-                    : 'bg-cyber-900/50 border-cyber-700 hover:bg-cyber-900'
-                }`}
-            >
-                <div className={`w-5 h-5 rounded flex items-center justify-center border ${isHumanVerified ? 'bg-green-500 border-green-500' : 'border-gray-500'}`}>
-                    {isHumanVerified && <Check size={14} className="text-black" />}
-                </div>
-                <div>
-                    <div className="text-xs font-bold text-gray-200 flex items-center gap-1">
-                        <UserCheck size={12} className={isHumanVerified ? 'text-green-400' : 'text-gray-500'} />
-                        I am a Human
-                    </div>
-                    <div className="text-[10px] text-gray-500">Verifies data as "Empirical Reality"</div>
-                </div>
-            </div>
-
-            {/* 5. Output */}
+            {/* 3. Output */}
             <div className="pt-2">
                 <button 
                     onClick={handleCopy}
-                    disabled={!result}
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
                         copied 
                         ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        : !result ? 'bg-cyber-800 text-gray-600 cursor-not-allowed' : 'bg-cyber-700 hover:bg-cyber-600 text-gray-300'
+                        : 'bg-cyber-700 hover:bg-cyber-600 text-gray-300'
                     }`}
                 >
                     {copied ? <Check size={14} /> : <Copy size={14} />}
-                    {copied ? t('feedback_copied') : "1. " + t('feedback_copy_btn')}
+                    {copied ? t('feedback_copied') : t('feedback_copy_btn')}
                 </button>
             </div>
         </div>
 
-        {/* Send to Bot */}
+        {/* Visual cue: Highlight "Send to Bot" when copied */}
         <button 
             onClick={openSupport}
             className={`w-full flex items-center justify-center gap-3 py-3 rounded-xl font-bold text-xs transition-all border ${
@@ -189,13 +129,13 @@ export const FeedbackSystem: React.FC = () => {
             }`}
         >
             <Send size={14} />
-            2. {t('feedback_send_to_bot')}
+            {t('feedback_send_to_bot')}
         </button>
 
         <div className="mt-6 flex justify-center">
             <div className="flex items-center gap-1 text-[10px] text-gray-600 font-mono">
                 <ShieldCheck size={12} />
-                UKB LINKED
+                RESEARCH LOOP v0.1
             </div>
         </div>
       </div>

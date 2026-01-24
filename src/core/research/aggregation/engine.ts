@@ -9,7 +9,7 @@ import { buildAggregationKey, normalizeSignals } from "./normalize";
 import { calculateConfidenceWithExplanation } from "./confidence";
 
 export function aggregateInternal(
-  observations: Array<AggregationObservation & { strategyId: string, weight: number }>
+  observations: Array<AggregationObservation & { strategyId: string }>
 ): CuratedKnowledgeCandidate[] {
 
   const buckets = new Map<string, CuratedKnowledgeCandidate>();
@@ -36,14 +36,11 @@ export function aggregateInternal(
 
     const bucket = buckets.get(key)!;
 
-    // Apply Weighting Logic
-    // Instead of incrementing by 1, we increment by the authority weight
-    if (obs.result === "SUCCESS") bucket.metrics.positive += obs.weight;
-    else if (obs.result === "FAIL") bucket.metrics.negative += obs.weight;
-    else bucket.metrics.neutral += obs.weight;
+    if (obs.result === "SUCCESS") bucket.metrics.positive++;
+    else if (obs.result === "FAIL") bucket.metrics.negative++;
+    else bucket.metrics.neutral++;
 
-    bucket.metrics.total += obs.weight;
-    
+    bucket.metrics.total++;
     // Keep the latest timestamp
     if (new Date(obs.timestamp) > new Date(bucket.last_seen)) {
         bucket.last_seen = obs.timestamp;
