@@ -160,7 +160,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
               )}
               <span className="font-bold text-gray-100">{strategy.name[language] || strategy.name['en']}</span>
             </div>
-            <p className="text-sm text-gray-400 mb-3 leisure-snug">{strategy.description[language] || strategy.description['en']}</p>
+            <p className="text-sm text-gray-400 mb-3 leading-snug">{strategy.description[language] || strategy.description['en']}</p>
             <div className="mt-auto flex gap-2 flex-wrap">
               {strategy.tags.map(tag => (
                 <span key={tag} className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyber-700 text-gray-300 border border-cyber-600">
