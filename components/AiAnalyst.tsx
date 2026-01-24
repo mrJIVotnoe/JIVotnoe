@@ -5,7 +5,8 @@ import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { useLanguage } from '../LanguageContext';
 import { STRATEGIES } from '../data';
 import { CopyButton } from './CopyButton';
-import { useTelegram } from '../TelegramContext';
+// Fix: point to new TelegramContext location in src/features/telegram
+import { useTelegram } from '../src/features/telegram/TelegramContext';
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();

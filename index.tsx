@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { App } from './app/App';
 import { LanguageProvider } from './LanguageContext';
-import { TelegramProvider } from './TelegramContext';
+// Fix: point to new TelegramContext location in src/features/telegram
+import { TelegramProvider } from './src/features/telegram/TelegramContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -15,7 +15,8 @@ import { AndroidGuide } from './components/AndroidGuide';
 import { AiAnalyst } from './components/AiAnalyst';
 import { StrategyType, Language } from './types';
 import { LanguageProvider, useLanguage } from './LanguageContext';
-import { TelegramProvider, useTelegram } from './TelegramContext';
+// Fix: point to new TelegramContext location in src/features/telegram
+import { TelegramProvider, useTelegram } from './src/features/telegram/TelegramContext';
 
 declare const chrome: any;
 

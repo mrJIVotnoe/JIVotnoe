@@ -2,7 +2,8 @@
 import React from 'react';
 import { MessageSquare, ExternalLink, ShieldCheck, Heart } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
-import { useTelegram } from '../TelegramContext';
+// Fix: point to new TelegramContext location in src/features/telegram
+import { useTelegram } from '../src/features/telegram/TelegramContext';
 
 export const FeedbackSystem: React.FC = () => {
   const { t } = useLanguage();
