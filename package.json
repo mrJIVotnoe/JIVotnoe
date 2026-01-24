@@ -12,7 +12,7 @@
     "lucide-react": "^0.460.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@google/genai": "^0.1.0",
+    "@google/genai": "*",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
