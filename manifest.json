@@ -1,3 +1,4 @@
+
 {
   "manifest_version": 3,
   "name": "ByeDPI Mate",
@@ -13,7 +14,8 @@
     "storage"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "https://silent-base-fce1.newjiv.workers.dev/*"
   ],
   "icons": {
     "16": "icon.png",

@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { analyzeIssue, AiAnalysisResult } from '../features/ai/services/aiService';
 import { Language } from '../types';
 import { ProbeResult } from '../core/engine/probe';
+import { DEFAULT_BRIDGE_URL } from '../config/constants';
 
 interface AiState {
   // State
@@ -36,8 +37,8 @@ export const useAiStore = create<AiState>()(
       error: null,
       rated: null,
       probeData: null,
-      useBridge: false,
-      bridgeUrl: '',
+      useBridge: true, // Enabled by default for better UX with the provided worker
+      bridgeUrl: DEFAULT_BRIDGE_URL,
 
       setInput: (input) => set({ input }),
       

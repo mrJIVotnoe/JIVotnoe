@@ -1,6 +1,9 @@
+
 import { Language } from '../types';
 
 export const APP_VERSION = "1.7.0";
+
+export const DEFAULT_BRIDGE_URL = "https://silent-base-fce1.newjiv.workers.dev";
 
 export const AVAILABLE_LANGUAGES: {code: Language, label: string}[] = [
   {code: 'ru', label: '🇷🇺 Русский'}, 

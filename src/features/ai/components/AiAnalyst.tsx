@@ -1,12 +1,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info, Activity, ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info, Activity } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useTelegram } from '../../telegram/TelegramContext';
 import { WORKER_CODE_TEMPLATE } from '../../../config/constants';
 import { useAiStore } from '../../../store/ai.store';
-import { runNetworkDiagnostics, ProbeResult } from '../../../core/engine/probe';
+import { useDiagnosticsStore } from '../../../store/diagnostics.store'; // Import diagnostics store
+import { NetProbeDashboard } from '../../diagnostics/components/NetProbeDashboard'; // Import new Dashboard
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
@@ -14,14 +15,15 @@ export const AiAnalyst: React.FC = () => {
   
   const { 
     input, setInput, 
-    loading, result, error, rated, probeData,
-    useBridge, bridgeUrl, setBridgeSettings, setProbeData,
+    loading, result, error, rated,
+    useBridge, bridgeUrl, setBridgeSettings,
     analyze, rate 
   } = useAiStore();
 
+  // Use Diagnostics Store to get data for AI
+  const { history } = useDiagnosticsStore();
+
   const [showBridgeSettings, setShowBridgeSettings] = useState(false);
-  const [scanning, setScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
   
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -38,62 +40,25 @@ export const AiAnalyst: React.FC = () => {
     }
   };
 
-  const runDiagnostics = async () => {
-    setScanning(true);
-    setScanProgress(0);
-    setProbeData([]); // Clear previous
-    
-    try {
-      const results = await runNetworkDiagnostics((completed, total) => {
-        setScanProgress((completed / total) * 100);
-      });
-      setProbeData(results);
-      
-      // Auto-analyze after scan if no input
-      if (!input) {
-         analyze(language, "Analyze my network diagnostic results.");
-      }
-    } catch (e) {
-      console.error("Probe failed", e);
-    } finally {
-      setScanning(false);
+  const handleAnalyze = () => {
+    // Inject probe data from history if available
+    let latestProbeResults = undefined;
+    if (history.length > 0) {
+        latestProbeResults = history[0].results;
     }
-  };
-
-  const DiagnosticSummary = ({ data }: { data: ProbeResult[] }) => {
-    const blocked = data.filter(d => d.status === 'BLOCKED' || d.status === 'TIMEOUT').length;
-    const available = data.filter(d => d.status === 'AVAILABLE').length;
-    const health = Math.round((available / data.length) * 100);
     
-    let healthColor = 'text-green-400';
-    if (health < 70) healthColor = 'text-yellow-400';
-    if (health < 40) healthColor = 'text-red-400';
+    // We need to update the analyze signature in store/service to accept probeData directly
+    // Or we rely on the store having it. 
+    // For now, let's assume the store handles passing it if we set it in the store.
+    // Actually, purely cleaner to pass it here if the store supports it.
+    // Checking previous implementation: setProbeData(results) was used.
+    // Let's manually sync diagnostics store latest result to ai store before analyzing.
+    
+    if (latestProbeResults) {
+        useAiStore.getState().setProbeData(latestProbeResults);
+    }
 
-    return (
-      <div className="bg-black/30 p-4 rounded-xl border border-cyber-700 mb-4 animate-in fade-in">
-         <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">NetProbe Status</span>
-            <span className={`text-sm font-black ${healthColor}`}>{health}% HEALTH</span>
-         </div>
-         <div className="flex gap-2 mb-3">
-            <div className="h-1 bg-cyber-700 flex-1 rounded-full overflow-hidden">
-               <div className={`h-full ${healthColor}`} style={{ width: `${health}%` }}></div>
-            </div>
-         </div>
-         <div className="grid grid-cols-2 gap-2">
-            {data.map(item => (
-               <div key={item.target.id} className="flex items-center justify-between text-[10px] bg-cyber-900/50 p-2 rounded border border-cyber-700/50">
-                  <span className="text-gray-300 truncate pr-2">{item.target.name}</span>
-                  {item.status === 'AVAILABLE' ? (
-                     <span className="text-green-400 font-bold flex items-center gap-1"><ShieldCheck size={10}/> OK</span>
-                  ) : (
-                     <span className="text-red-400 font-bold flex items-center gap-1"><ShieldAlert size={10}/> {item.status === 'TIMEOUT' ? 'T/O' : 'BLK'}</span>
-                  )}
-               </div>
-            ))}
-         </div>
-      </div>
-    );
+    analyze(language);
   };
 
   return (
@@ -121,24 +86,9 @@ export const AiAnalyst: React.FC = () => {
           </div>
         </div>
 
-        {/* PROBE UI */}
-        <div className="mb-4">
-           {scanning ? (
-              <div className="bg-black/40 p-4 rounded-2xl border border-cyber-700 flex flex-col items-center justify-center h-24">
-                 <Activity className="text-cyber-accent animate-pulse mb-2" size={24} />
-                 <span className="text-[10px] text-cyber-accent font-black uppercase tracking-widest animate-pulse">SCANNING NETWORK... {Math.round(scanProgress)}%</span>
-              </div>
-           ) : probeData ? (
-              <DiagnosticSummary data={probeData} />
-           ) : (
-              <button 
-                onClick={runDiagnostics}
-                className="w-full py-3 bg-cyber-900/50 hover:bg-cyber-900 border border-cyber-600 border-dashed rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-gray-400 hover:text-cyber-accent transition-all group"
-              >
-                 <Activity size={16} className="group-hover:rotate-180 transition-transform duration-700"/>
-                 RUN SYSTEM DIAGNOSTICS (NETPROBE)
-              </button>
-           )}
+        {/* NETPROBE DASHBOARD INTEGRATION */}
+        <div className="mb-6">
+           <NetProbeDashboard />
         </div>
 
         <div className="relative">
@@ -149,8 +99,8 @@ export const AiAnalyst: React.FC = () => {
             className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all min-h-[100px] resize-none font-medium placeholder-gray-600"
           />
           <button
-            onClick={() => analyze(language)}
-            disabled={loading || scanning}
+            onClick={handleAnalyze}
+            disabled={loading}
             className={`mt-4 w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
               loading ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white shadow-xl hover:shadow-indigo-500/20 active:scale-[0.98]'
             }`}
