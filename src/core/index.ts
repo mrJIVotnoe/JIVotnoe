@@ -12,6 +12,7 @@
 import { decideStrategy } from './engine/decide';
 import { generateExplanation } from './engine/explain';
 import { consultKnowledge } from './engine/consult';
+import { checkSniReputation } from './engine/reputation';
 import { StrategyCatalog } from './knowledge/strategies';
 import { DecisionInput, DecisionResult } from './domain/types';
 import { analyzeEnvironment } from './engine/analyzeEnvironment';
@@ -26,6 +27,7 @@ export { PROJECT_CANON } from './PROJECT_CANON';
 export { decideStrategy as decide } from './engine/decide';
 export { analyzeEnvironment } from './engine/analyzeEnvironment';
 export { consultKnowledge } from './engine/consult';
+export { checkSniReputation } from './engine/reputation';
 
 /**
  * Main entry point for the Core Decision Engine.
@@ -55,6 +57,10 @@ export const Core = {
   // Extended Explanation Layer (Read-Only Knowledge Integration)
   explainDetailed: (decision: DecisionResult, input: DecisionInput) => {
     return generateDetailedExplanation(decision, input);
+  },
+
+  checkSni: (domain: string) => {
+    return checkSniReputation(domain);
   },
 
   analyzeEnvironment,

@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { STRATEGIES } from '../data';
 import { StrategyType } from '../../../types';
 import { AppTarget } from '../../../core/domain/enums';
-import { Shield, CheckCircle, AlertTriangle, Info, Split, EyeOff, ShieldAlert, Cpu, Activity, Lock } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, Info, Split, EyeOff, ShieldAlert, Cpu, Activity, Lock, Edit3 } from 'lucide-react';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useLanguage } from '../../localization/LanguageContext';
 import { Tooltip } from '../../../shared/ui/Tooltip';
 import { useStrategiesStore } from '../../../store/strategies.store';
+import { Core } from '../../../core';
+import { SniReputationCard } from './SniReputationCard';
 
 interface StrategySelectorProps {
   showCommandPreview?: boolean;
@@ -18,17 +21,26 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   const { t, language } = useLanguage();
   
   // Use Global Store
-  const { selectedStrategyId, customSni, setStrategyId, runAnalysis, analysisMode, currentAnalysis } = useStrategiesStore();
+  const { selectedStrategyId, customSni, setStrategyId, setCustomSni, runAnalysis, analysisMode, currentAnalysis } = useStrategiesStore();
+  
+  // Local state for reputation
+  const [reputation, setReputation] = useState(Core.checkSni(customSni || ''));
 
-  // Trigger analysis on mount to check environment
+  // Trigger analysis on mount
   useEffect(() => {
-    // Detect environment (Browser is implied here)
     runAnalysis({ 
       platform: 'browser', 
       symptoms: [], 
       targetApp: AppTarget.UNKNOWN 
     });
   }, [runAnalysis]);
+
+  // Update reputation when SNI changes
+  useEffect(() => {
+    if (customSni) {
+      setReputation(Core.checkSni(customSni));
+    }
+  }, [customSni]);
 
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
@@ -136,6 +148,25 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
 
   return (
     <div className="space-y-6">
+      
+      {/* SNI Input & Reputation System */}
+      <div className="bg-black/20 p-4 rounded-2xl border border-cyber-700/50">
+         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+            <Edit3 size={12} />
+            Target Domain (SNI)
+         </label>
+         <div className="relative">
+            <input 
+              type="text" 
+              value={customSni}
+              onChange={(e) => setCustomSni(e.target.value)}
+              placeholder={t('local_sni_example')}
+              className="w-full bg-cyber-900 border border-cyber-600 rounded-xl py-2 pl-3 pr-3 text-sm text-green-300 font-mono focus:outline-none focus:border-green-500 transition-all placeholder-gray-600"
+            />
+         </div>
+         {customSni && <SniReputationCard reputation={reputation} />}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {STRATEGIES.map((strategy) => (
           <button
