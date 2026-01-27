@@ -16,10 +16,11 @@ interface AnalyzeParams {
   language: Language;
   useBridge: boolean;
   bridgeUrl: string;
-  probeData?: ProbeResult[]; // Optional diagnostic data
+  probeData?: ProbeResult[]; 
+  apiKey?: string; // User-provided RAM-only key
 }
 
-export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData }: AnalyzeParams): Promise<AiAnalysisResult> => {
+export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData, apiKey }: AnalyzeParams): Promise<AiAnalysisResult> => {
   // 1. Prepare Context
   const strategiesContext = STRATEGIES.map(s => ({
     id: s.id,
@@ -33,7 +34,6 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
   };
   const targetLang = langNames[language] || 'Russian';
 
-  // Format probe data for the AI if available
   let diagnosticReport = "No network scan performed.";
   if (probeData && probeData.length > 0) {
     const grouped = probeData.reduce((acc, r) => {
@@ -42,7 +42,7 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
       return acc;
     }, {} as Record<string, string[]>);
     
-    diagnosticReport = "NETWORK DIAGNOSTIC REPORT:\n" + JSON.stringify(grouped, null, 2);
+    diagnosticReport = "NETWORK DIAGNOSTIC REPORT (TRUSTED SOURCE):\n" + JSON.stringify(grouped, null, 2);
   }
 
   // 2. Define Schema
@@ -57,33 +57,33 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     required: ["platform", "explanation", "steps"]
   };
 
-  // Updated Persona: The Navigator
-  const systemInstruction = `You are "The Network Navigator", an intelligent system designed to guide users through hostile network environments (DPI, Censorship).
+  // Security & Persona Injection
+  // We explicitly tell the AI it is running in a Trusted/Private context (if Key provided)
+  const securityContext = apiKey 
+    ? "SECURITY_CONTEXT: TRUSTED_PRIVATE_KEY_MOUNTED. You are operating as the user's personal Neural Sentinel. Prioritize privacy and safety."
+    : "SECURITY_CONTEXT: PUBLIC_GATEWAY.";
+
+  const systemInstruction = `You are "The Network Navigator", a research system analyzing network availability.
+    ${securityContext}
     
-    Goal: Analyze user symptoms + diagnostic data to plot a course (Strategy).
+    Goal: Analyze user symptoms + diagnostic data to output a Research Result & Strategy.
+    Diagnostic Data: ${diagnosticReport}
+    Core Strategies: ${JSON.stringify(strategiesContext)}
     
-    Diagnostic Data:
-    ${diagnosticReport}
-    
-    Strategies Context:
-    ${JSON.stringify(strategiesContext)}
-    
-    Persona: Calm, analytical, precise. You do not "hack" the network; you "navigate" it.
-    
-    Analysis Logic:
-    1. Check the Diagnostic Report first. Real data > User feeling.
-    2. Identify the Obstacle: Is it IP Blocking (Black hole)? Is it DPI (Connection Reset)? Is it Throttling?
-    3. Plot the Course: Select a Strategy from Context that minimizes detection.
-    4. If no execution is possible (e.g. Browser), explain WHY and suggest an alternative route (e.g. "Install NekoBox").
-    
-    Rules:
-    - IMPORTANT: Reply ONLY in ${targetLang} language.
-    - Do not invent CLI arguments not present in Context.
-    - Be honest about limitations. If a site is dead (IP block), say it.
-    - Output strictly JSON matching the schema.`;
+    Rules: 
+    1. Reply ONLY in ${targetLang}. 
+    2. Output strictly JSON.
+    3. Do NOT hallucinate arguments not present in Core Strategies.
+    4. If diagnostic data contradicts user text, trust diagnostic data.
+    `;
 
   // 3. Execute Request
-  if (useBridge && bridgeUrl) {
+  
+  // LOGIC: If a custom API key is present, we FORCE direct mode (scenario B) to respect sovereignty,
+  // even if bridge is toggled on in UI settings. 
+  
+  if (useBridge && bridgeUrl && !apiKey) {
+    // PUBLIC BRIDGE MODE
     const cleanBridgeUrl = bridgeUrl.trim().replace(/\/$/, '');
     const fullUrl = `${cleanBridgeUrl}/v1beta/models/gemini-3-flash-preview:generateContent`;
     
@@ -107,12 +107,14 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     return JSON.parse(text);
 
   } else {
-    const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
-    if (!apiKey) {
-      throw new Error("API Key is missing.");
+    // SOVEREIGN DIRECT MODE
+    const finalKey = apiKey || process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+
+    if (!finalKey) {
+      throw new Error("No API Key provided. Please enter a key in the Privacy Vault.");
     }
 
-    const ai = new GoogleGenAI({ apiKey: apiKey });
+    const ai = new GoogleGenAI({ apiKey: finalKey });
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: input,

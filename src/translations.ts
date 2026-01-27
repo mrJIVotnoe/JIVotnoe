@@ -268,6 +268,12 @@ const en = {
     close_btn: "I Understand",
     bridge_url_placeholder: "Enter Cloudflare Worker URL",
 
+    // Zero-Disk Protocol
+    zd_title: "Zero-Disk Protocol",
+    zd_mounted: "RAM: SESSION MOUNTED",
+    zd_clean: "RAM: CLEAN (ZERO-DISK)",
+    zd_warning: "Key incinerated on reload. Re-mount in Vault.",
+
     // Command Args Tooltips
     cmd_desc_o: "Disorder (Split)",
     cmd_desc_r: "Split Position",
@@ -549,6 +555,15 @@ export const translations: Record<string, Record<string, string>> = {
     cmd_desc_f: "Тип фейка",
     cmd_desc_At: "Авто-подстройка TTL",
     cmd_desc_generic: "Параметр",
-    bridge_url_placeholder: "URL воркера Cloudflare"
+    bridge_url_placeholder: "URL воркера Cloudflare",
+
+    // Zero-Disk Protocol
+    zd_title: "Протокол Zero-Disk",
+    zd_mounted: "RAM: СЕССИЯ АКТИВНА",
+    zd_clean: "RAM: ЧИСТО (ZERO-DISK)",
+    zd_warning: "Ключ уничтожен при перезагрузке. Смонтируйте снова в Vault.",
+    
+    // Vault (Bitcoin Style)
+    vault_custody_warning: "Not your keys, not your intelligence."
   }
 };

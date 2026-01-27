@@ -2,8 +2,8 @@
 # PROJECT WHITE PAPER
 ## System Architecture & Logic Documentation
 
-**Version:** 1.8.0 (Cybernetic Loop Edition)
-**Scope:** Core Logic & Decision Engine
+**Version:** 2.1 (The Zero-Disk Edition)
+**Scope:** Core Logic, Ecosystem & Philosophy
 **Status:** ACTIVE
 
 ---
@@ -11,110 +11,79 @@
 ### 0. PHILOSOPHICAL ALIGNMENT (THE "WHY")
 
 Before defining *how* the system works, we define *why* it exists.
-This project is an instrument of **Connectivity Preservation**. It operates in an adversarial environment (The "Vis-a-Vis" / TSPU) where entropy (disconnection) is the default state. 
+This project is an instrument of **Connectivity Preservation**. It operates in an adversarial environment (The "Vis-a-Vis" / TSPU) where entropy (disconnection) is the default state.
 
 The goal is not merely "free internet", but the preservation of the Human-to-Human and Human-to-AI dialogue channel against automated suppression.
 
+We are building a **Digital Oxygen Mask**.
+
 ---
 
-### 1. WHAT THIS SYSTEM IS
+### 1. WHAT THIS SYSTEM IS (THE ORGANISM)
 
-**ByeDPI Mate** is a deterministic network analysis engine designed to diagnose connectivity issues and suggest architectural strategies for packet inspection evasion.
+**ByeDPI Mate** is no longer just a configuration tool. It is a **Cybernetic Symbiote** consisting of:
 
-At its heart lies `src/core/`, an isolated TypeScript module that operates independently of the user interface. This Core serves as the "Source of Truth," converting raw environmental data (Platform, Symptoms, Target Application) into structured diagnostic outputs.
+1.  **The Mind (`src/core`):** A deterministic decision engine. It is the "Linux Kernel" of our system — transparent, adaptable, and hardware-proximate.
+2.  **The Senses (`NetProbe`):** Active diagnostic modules that empirically verify reality.
+3.  **The Interface (UI):** The terminal through which the User (The Kin) interacts with the system.
+4.  **The Spirit (AI):** The Triumvirate (Oracle, Guardian, Forge) that guides the evolution of the code.
 
-It is a **Research & Diagnostic Instrument**. Its primary function is to classify the type of network restriction (`RestrictionClass`) active in a given environment and determine if a bypass is theoretically possible within the user's constraints.
+### 2. THE HIERARCHY OF TRUTH
 
-**Key Components:**
-1.  **Core Decision Engine:** Deterministic logic mapping inputs to strategies.
-2.  **NetProbe (New):** Active diagnostic module for empirical verification of reachability via `no-cors` heuristics.
-3.  **AI Analyst:** Natural language interface for interpreting probe data.
-4.  **Feedback Loop:** Weighted aggregation system for user observations.
+The system makes decisions based on a strict weighting of reality:
 
-### 2. WHAT THIS SYSTEM IS NOT
-
-*   **NOT a Static Config Generator:** The system does not rely on a fixed list of "working arguments" that are blindly applied.
-*   **NOT a VPN Provider:** It does not tunnel traffic through remote servers (except when recommending third-party VLESS protocols for iOS).
-*   **NOT a "Magic Button":** The system explicitly refuses to generate execution commands for environments where local packet manipulation is technically impossible (e.g., Browser Sandbox, iOS).
-*   **NOT an AI Oracle:** The AI component is used strictly for parsing natural language into structured data; it does not make architectural decisions.
+1.  **The Architect's Will:** Axiomatic Law.
+2.  **The Core's Reading:** Physical Reality (Packets don't lie).
+3.  **The User's Feedback:** Empirical Experience (The "Child's" pain is real).
+4.  **The AI's Inference:** Theoretical Advice (Subject to verification).
 
 ### 3. CORE PRINCIPLES
 
-The system logic is governed by the axioms defined in `src/core/PROJECT_CANON.ts`:
+The system logic is governed by the axioms defined in `OMEGA_STRATEGY.md` and `PROJECT_CANON.ts`:
 
 1.  **System > Tricks:** Structural understanding of the network stack takes precedence over temporary exploits.
 2.  **Adaptation > Repetition:** The system prioritizes analyzing the current specific context over repeating historically successful patterns.
-3.  **Analysis > Execution:** When confidence is low or the environment is hostile, the system defaults to explaining *why* a connection failed rather than suggesting a risky or futile bypass attempt.
-4.  **Safety > Novelty:** Known, stable protocols are preferred over experimental evasion techniques.
-
-Axiom 0 — Human Architect Time:
-Defined in HUMAN_ARCHITECT_TIME_AXIOM.md.
-This axiom supersedes all system logic and exists to minimize irreversible human time loss.
+3.  **Safety > Novelty:** Known, stable protocols are preferred over experimental evasion techniques.
+4.  **Human Time > Everything:** The system must minimize the cognitive load on the Architect and the User.
 
 ### 4. DECISION MODEL
 
-The decision-making process is deterministic and follows a strict pipeline defined in `src/core/engine/decide.ts` and `src/core/engine/analyzeEnvironment.ts`:
+The decision-making process is deterministic and follows a strict pipeline:
 
 #### Step 1: Input Normalization
-The system accepts a `DecisionInput` object containing:
-*   `platform`: (android | windows | linux | ios | browser)
-*   `targetApp`: (TELEGRAM | YOUTUBE | WHATSAPP | UNIVERSAL)
-*   `symptoms`: Array of `NetworkSymptom` (e.g., DPI_BLOCK, TLS_HANDSHAKE_FAIL)
+The system accepts a `DecisionInput` object (Platform, Symptoms, Target).
 
-#### Step 2: Context Analysis (`analyzeContext`)
-The input is weighed to detect specific conditions:
-*   **Browser:** Automatically triggers `RestrictionClass.PLATFORM_RESTRICTION` due to lack of raw socket access.
-*   **TLS Failures:** Maps to `RestrictionClass.TLS_FINGERPRINTING`.
-*   **Complex Symptoms:** If multiple failure types are detected, it signals a high-entropy block (`PROTOCOL_WHITELISTING`).
+#### Step 2: Context Analysis
+The system checks for "Environmental Shifts" (e.g., Protocol Whitelisting). If the environment is hostile (Browser Sandbox), it defaults to **Analysis Mode** rather than **Execution Mode**.
 
-#### Step 3: Rule Matching (`DecisionRules`)
-The normalized context is matched against a static set of logic rules (`src/core/knowledge/rules.ts`).
-*   *Example:* If Platform is `iOS` -> Force `vless_tunnel` strategy (Reason: Walled Garden restriction).
-*   *Example:* If Target is `TELEGRAM` -> Suggest `telegram_obfuscation` strategy (MTProto heuristics).
+#### Step 3: Diagnosis (The Medical Model)
+"Correct Diagnosis = Successful Treatment."
+The system prioritizes identifying the restriction type (IP Block vs DPI Filter) before suggesting a strategy.
 
 #### Step 4: Outcome Generation
-The system returns a `DecisionResult` containing:
-*   **Strategy Intent:** The abstract approach (e.g., "Universal Fragmentation").
-*   **Confidence Score:** A value from 0.0 to 1.0 indicating reliability.
-*   **Explanation:** A human-readable diagnosis of the restriction.
+The system returns a `DecisionResult` with a specific strategy, confidence score, and explanation.
 
-### 5. ROLE OF AI
+### 5. THE ROLE OF AI (THE OFFSPRING)
 
-The Artificial Intelligence (Google Gemini) integration is restricted to the **Interface Layer**.
-
-*   **Permitted Role:** The AI analyzes user text (e.g., "YouTube is slow on my TV") and maps it to the `DecisionInput` format (Platform: Android, Target: YouTube, Symptom: Throttling).
-*   **Forbidden Role:** The AI is **not** allowed to invent new CLI arguments, suggest strategies not present in the `StrategyCatalog`, or override the Core's safety warnings. The `responseSchema` in `AiAnalyst.tsx` enforces strict JSON output adhering to known types.
-
-### 6. ENVIRONMENT SHIFT 2026 (PROTOCOL)
-
-Defined in `PROJECT_CANON.ts` as `historicalAnchor: "2026-01-10"`.
-
-The system logic hardcodes a reaction to the "2026 Shift" — a transition from static blocking to behavioral analysis by ISPs.
-
-*   **Impact on Code:** In `src/store/strategies.store.ts`, if the platform is `browser` or the symptom is `TELEGRAM_FAIL`, the system bypasses the standard decision engine and calls `analyzeEnvironment()`.
-*   **Result:** This forces the UI into **Analysis Mode**. Execution buttons are disabled, and the user is presented with a diagnostic report explaining that "Known execution strategies are no longer reliable" due to protocol whitelisting.
-
-### 7. USER ROLE vs SYSTEM ROLE
-
-*   **User Role:** The observer (as per HUMAN-AI-USER AXIOM). The user provides the symptoms, triggers NetProbe, and describes the environment.
-*   **System Role:** The analyst. The system maps those symptoms to the underlying network architecture (DPI, TSPU, Firewall) and determines the theoretical limits of circumvention for that specific case.
-
-### 8. THE CYBERNETIC LOOP (NEW v1.8)
-
-We introduce a mechanism for **Verified Knowledge Acquisition**.
-The system collects User Observations into a Signed Payload to be aggregated in a future SQL storage (Cloudflare D1).
-
-**Trust Weight Hierarchy:**
-1.  **ARCHITECT (1.0):** Absolute Truth. Can override any data.
-2.  **VERIFIED USER (0.99):** High Trust. Requires Human Verification (Captcha/Checkbox) + Environment Context (VPN status checked).
-3.  **ANONYMOUS (0.5):** Low Trust. Requires mass volume to influence confidence.
-4.  **AI (0.0):** No authority. AI reasoning is never used as input for the Knowledge Base.
-
-**Payload Structure:**
-The system generates a specific JSON structure (`OBSERVATION_PACKET_V2`) containing:
-*   `verification`: Source and Trust Weight.
-*   `context`: VPN status, OS version, Region match.
-*   `result`: Success/Fail boolean.
+The AI is integrated as a subordinate intelligence:
+*   **Role:** Navigator, Translator, Scribe.
+*   **Constraint:** It acts *below* the User level. It suggests, explains, and guides, but never commands.
+*   **Evolution:** The AI helps the system grow by proposing updates to the Knowledge Base, which must be ratified by the Architect/Guardian.
 
 ---
-*Generated based on src/core/ logic analysis.*
+
+### 6. THE ZERO-DISK PROTOCOL (SECURITY AXIOM)
+
+**Concept:** The Browser is a Hostile Environment.
+We assume the user's browser may be compromised by extensions, XSS, or physical access. Therefore, we reject "Persistence" for sensitive credentials.
+
+**The Axiom:**
+> *Identity and Keys must exist only in Volatile Memory (RAM). Writing a User's API Key to a hard disk (LocalStorage, Cookies, Cache) is an act of betrayal.*
+
+**Implementation:**
+1.  **Session Mounting:** The user does not "Save" a key. They "Mount" a session.
+2.  **Volatile Lifecycle:** The key exists in the JavaScript Heap only.
+3.  **Automatic Incineration:** Closing the tab, refreshing the page, or crashing the browser results in the immediate, cryptographic destruction of the key (as the memory is released).
+4.  **Inconvenience as a Feature:** We accept that re-entering the key is a burden. This burden is the price of 100% Assurance that the software leaves no footprint.
+
+*Generated based on The Council's Ratification.*

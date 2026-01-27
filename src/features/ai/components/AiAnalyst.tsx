@@ -1,13 +1,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info, Activity } from 'lucide-react';
+import { Bot, Sparkles, Zap, Smartphone, Monitor, ThumbsUp, ThumbsDown, Settings, ChevronDown, ChevronUp, Code, Check, Music, Tv, Terminal, Info, Activity, ShieldAlert, Lock, AlertTriangle, Eye, FileJson } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useTelegram } from '../../telegram/TelegramContext';
 import { WORKER_CODE_TEMPLATE } from '../../../config/constants';
 import { useAiStore } from '../../../store/ai.store';
-import { useDiagnosticsStore } from '../../../store/diagnostics.store'; // Import diagnostics store
-import { NetProbeDashboard } from '../../diagnostics/components/NetProbeDashboard'; // Import new Dashboard
+import { useDiagnosticsStore } from '../../../store/diagnostics.store';
+import { NetProbeDashboard } from '../../diagnostics/components/NetProbeDashboard';
+import { PrivacyVault } from './PrivacyVault';
+import { STRATEGIES } from '../../strategies/data';
 
 export const AiAnalyst: React.FC = () => {
   const { t, language } = useLanguage();
@@ -16,15 +18,15 @@ export const AiAnalyst: React.FC = () => {
   const { 
     input, setInput, 
     loading, result, error, rated,
-    useBridge, bridgeUrl, setBridgeSettings,
-    analyze, rate 
+    useBridge, bridgeUrl, customApiKey,
+    analyze, rate, 
+    piiThreats, confirmPiiOverride, clearPii
   } = useAiStore();
 
-  // Use Diagnostics Store to get data for AI
   const { history } = useDiagnosticsStore();
-
+  const [showVault, setShowVault] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const [showBridgeSettings, setShowBridgeSettings] = useState(false);
-  
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,18 +43,10 @@ export const AiAnalyst: React.FC = () => {
   };
 
   const handleAnalyze = () => {
-    // Inject probe data from history if available
     let latestProbeResults = undefined;
     if (history.length > 0) {
         latestProbeResults = history[0].results;
     }
-    
-    // We need to update the analyze signature in store/service to accept probeData directly
-    // Or we rely on the store having it. 
-    // For now, let's assume the store handles passing it if we set it in the store.
-    // Actually, purely cleaner to pass it here if the store supports it.
-    // Checking previous implementation: setProbeData(results) was used.
-    // Let's manually sync diagnostics store latest result to ai store before analyzing.
     
     if (latestProbeResults) {
         useAiStore.getState().setProbeData(latestProbeResults);
@@ -61,16 +55,51 @@ export const AiAnalyst: React.FC = () => {
     analyze(language);
   };
 
+  // Generate Preview of the Payload for Transparency
+  const getPayloadPreview = () => {
+    const strategiesContext = STRATEGIES.map(s => ({
+        id: s.id,
+        name: s.name[language] || s.name['en'],
+        command: s.command
+    }));
+    
+    const sysInstructionShort = `You are "The Network Navigator"... Context: ${JSON.stringify(strategiesContext).substring(0, 50)}...`;
+
+    return JSON.stringify({
+        model: "gemini-3-flash-preview",
+        auth: customApiKey ? "YOUR_PRIVATE_KEY (Injected by SDK)" : "PUBLIC_POOL",
+        transport: useBridge ? "Cloudflare Bridge" : "Direct Uplink (Browser -> Google)",
+        payload: {
+            contents: [{ parts: [{ text: input || "User Input..." }] }],
+            config: {
+                systemInstruction: sysInstructionShort,
+                responseSchema: "{...}"
+            }
+        }
+    }, null, 2);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-10">
       
+      {showVault && <PrivacyVault onClose={() => setShowVault(false)} />}
+
       {/* HEADER SECTION */}
       <div className="bg-gradient-to-br from-indigo-900/40 via-cyber-800 to-fuchsia-900/30 p-6 rounded-[2.5rem] border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-4 right-8 flex items-center gap-2">
-           <div className={`h-1.5 w-1.5 rounded-full ${useBridge && bridgeUrl ? 'bg-blue-400 animate-pulse' : 'bg-gray-600'}`}></div>
-           <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
-             {useBridge && bridgeUrl ? t('bridge_status_active') : t('bridge_status_direct')}
-           </span>
+        
+        {/* Status Pills */}
+        <div className="absolute top-4 right-8 flex flex-col items-end gap-1">
+           <div className="flex items-center gap-2">
+              <div className={`h-1.5 w-1.5 rounded-full ${useBridge ? 'bg-blue-400 animate-pulse' : 'bg-green-400'}`}></div>
+              <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                {useBridge ? 'BRIDGE' : 'DIRECT'}
+              </span>
+           </div>
+           {customApiKey && (
+             <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500/70">
+               <Lock size={8} /> PRIVATE KEY
+             </div>
+           )}
         </div>
 
         <div className="relative flex items-center gap-4 mb-6">
@@ -91,6 +120,35 @@ export const AiAnalyst: React.FC = () => {
            <NetProbeDashboard />
         </div>
 
+        {/* PII GUARD WARNING */}
+        {piiThreats.length > 0 && (
+          <div className="mb-4 bg-red-900/20 border border-red-500/50 p-4 rounded-2xl animate-in slide-in-from-top-2">
+             <div className="flex items-center gap-2 mb-2 text-red-200 font-bold text-xs uppercase tracking-widest">
+               <ShieldAlert size={14} className="text-red-500" />
+               Privacy Guard Active
+             </div>
+             <p className="text-[11px] text-red-200/80 mb-3">
+               The system intercepted potential sensitive data in your request.
+             </p>
+             <div className="space-y-1 mb-4">
+                {piiThreats.map((t, idx) => (
+                  <div key={idx} className="bg-red-950/50 px-2 py-1 rounded text-[10px] font-mono text-red-300 flex justify-between">
+                     <span>{t.type}</span>
+                     <span className="opacity-50">*******</span> 
+                  </div>
+                ))}
+             </div>
+             <div className="flex gap-3">
+                <button onClick={clearPii} className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-xs font-bold text-gray-300 transition-colors">
+                  Edit Request
+                </button>
+                <button onClick={() => { confirmPiiOverride(); handleAnalyze(); }} className="flex-1 py-2 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-bold text-white transition-colors">
+                  Send Anyway
+                </button>
+             </div>
+          </div>
+        )}
+
         <div className="relative">
           <textarea
             value={input}
@@ -98,16 +156,29 @@ export const AiAnalyst: React.FC = () => {
             placeholder={t('ai_placeholder')}
             className="w-full bg-black/40 border border-cyber-700 rounded-2xl p-5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all min-h-[100px] resize-none font-medium placeholder-gray-600"
           />
-          <button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className={`mt-4 w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
-              loading ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white shadow-xl hover:shadow-indigo-500/20 active:scale-[0.98]'
-            }`}
-          >
-            {loading ? <Zap className="animate-spin" size={18} /> : <Zap size={18} />}
-            {loading ? t('ai_thinking') : t('ai_btn')}
-          </button>
+          
+          <div className="mt-4 flex gap-3">
+              <button
+                onClick={handleAnalyze}
+                disabled={loading}
+                className={`flex-1 py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
+                  loading ? 'bg-gray-800 text-gray-500' : 'bg-gradient-to-r from-indigo-600 to-fuchsia-600 text-white shadow-xl hover:shadow-indigo-500/20 active:scale-[0.98]'
+                }`}
+              >
+                {loading ? <Zap className="animate-spin" size={18} /> : <Zap size={18} />}
+                {loading ? t('ai_thinking') : t('ai_btn')}
+              </button>
+              
+              <button
+                onClick={() => setShowDebug(!showDebug)}
+                className={`w-14 rounded-2xl flex items-center justify-center border transition-all ${
+                    showDebug ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-black/20 border-cyber-700 text-gray-500 hover:text-gray-300'
+                }`}
+                title="Inspect Payload"
+              >
+                 <FileJson size={20} />
+              </button>
+          </div>
 
           <div className="flex justify-center mt-3">
              <div className="flex items-center gap-1.5 text-[9px] text-gray-500 uppercase tracking-widest bg-black/20 px-3 py-1 rounded-full border border-white/5">
@@ -117,21 +188,44 @@ export const AiAnalyst: React.FC = () => {
           </div>
         </div>
 
-        <button 
-          onClick={() => setShowBridgeSettings(!showBridgeSettings)}
-          className="mt-6 flex items-center gap-2 text-[10px] font-black text-indigo-300/40 hover:text-indigo-300 uppercase tracking-[0.2em]"
-        >
-          <Settings size={14} />
-          {t('bridge_toggle')}
-          {showBridgeSettings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
+        {/* PAYLOAD INSPECTOR (Transparency Mode) */}
+        {showDebug && (
+            <div className="mt-4 animate-in slide-in-from-top-2">
+                <div className="bg-black/80 rounded-2xl border border-indigo-500/30 p-4 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-transparent"></div>
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                            <Eye size={12} />
+                            PAYLOAD INSPECTOR (GLASS PIPELINE)
+                        </span>
+                        <CopyButton text={getPayloadPreview()} className="p-1 h-6 w-6" />
+                    </div>
+                    <pre className="text-[10px] font-mono text-green-300 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[200px] custom-scrollbar">
+                        {getPayloadPreview()}
+                    </pre>
+                    <div className="mt-2 text-[9px] text-gray-500 font-mono">
+                        * This JSON is exactly what leaves your browser. No hidden telemetry.
+                    </div>
+                </div>
+            </div>
+        )}
 
+        {/* SETTINGS / VAULT BUTTON */}
+        <button 
+          onClick={() => setShowVault(true)}
+          className="mt-6 flex items-center justify-center w-full gap-2 text-[10px] font-black text-indigo-300/40 hover:text-amber-400 uppercase tracking-[0.2em] transition-colors py-2 group"
+        >
+          <Lock size={12} className="group-hover:text-amber-400" />
+          OPEN PRIVACY VAULT
+        </button>
+        
+        {/* BRIDGE SETTINGS (Hidden by default, for advanced users) */}
         {showBridgeSettings && (
           <div className="mt-4 p-5 bg-black/60 rounded-3xl border border-indigo-500/20 animate-in slide-in-from-top-2">
             <input 
               type="text"
               value={bridgeUrl}
-              onChange={(e) => setBridgeSettings(useBridge, e.target.value)}
+              onChange={(e) => useAiStore.getState().setBridgeSettings(useBridge, e.target.value)}
               placeholder={t('bridge_url_placeholder')}
               className="w-full bg-cyber-900 border border-cyber-700 rounded-xl p-3 text-xs text-white mb-4 focus:outline-none focus:border-indigo-500"
             />
@@ -150,6 +244,14 @@ export const AiAnalyst: React.FC = () => {
             </div>
           </div>
         )}
+
+        <button 
+          onClick={() => setShowBridgeSettings(!showBridgeSettings)}
+          className="flex items-center gap-2 text-[10px] font-black text-indigo-300/20 hover:text-indigo-300 uppercase tracking-[0.2em] mx-auto mt-4"
+        >
+          <Settings size={10} />
+          {showBridgeSettings ? "HIDE CONFIG" : "BRIDGE CONFIG"}
+        </button>
         
         {error && (
           <div className="mt-4 p-3 bg-red-900/30 border border-red-500/30 rounded-xl text-xs text-red-200 text-center animate-in fade-in">

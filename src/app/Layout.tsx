@@ -1,16 +1,22 @@
+
 import React, { ReactNode, PropsWithChildren, useEffect, useState } from 'react';
-import { Activity, Star, Share2, Globe, Shield } from 'lucide-react';
+import { Activity, Star, Share2, Globe, Shield, Zap, Lock, Database } from 'lucide-react';
 import { useLanguage } from '../features/localization/LanguageContext';
 import { useTelegram } from '../shared/hooks/useTelegram';
 import { Navigation } from '../shared/ui/Navigation';
 import { ExtensionProxyToggle } from '../features/proxy/components/ExtensionProxyToggle';
 import { PrivacyModal } from '../shared/components/PrivacyModal';
 import { AVAILABLE_LANGUAGES } from '../config/constants';
+import { useAiStore } from '../store/ai.store'; // Import AI Store to check RAM state
 
 export function Layout({ children }: PropsWithChildren<{}>) {
   const { t, language, setLanguage } = useLanguage();
   const { isTelegram, webApp } = useTelegram();
   const [showPrivacy, setShowPrivacy] = useState(false);
+  
+  // Access Volatile RAM State
+  const { customApiKey } = useAiStore();
+  const isRamMounted = !!customApiKey;
 
   useEffect(() => {
     const loader = document.getElementById('loader');
@@ -86,21 +92,37 @@ export function Layout({ children }: PropsWithChildren<{}>) {
         {children}
       </main>
 
-      <footer className="mt-12 py-12 border-t border-cyber-800 flex flex-col items-center text-center">
-         <div className="flex items-center gap-3 mb-6">
-            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce"></div>
-            <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-500 animate-bounce [animation-delay:0.2s]"></div>
-            <div className="h-1.5 w-1.5 rounded-full bg-cyber-accent animate-bounce [animation-delay:0.4s]"></div>
-         </div>
-         <p className="font-mono text-[9px] text-gray-600 max-w-sm leading-relaxed uppercase tracking-[0.2em] mb-4">{t('research_footer')}</p>
+      <footer className="mt-12 py-12 border-t border-cyber-800 flex flex-col items-center text-center gap-6">
          
-         <button 
-           onClick={() => setShowPrivacy(true)}
-           className="flex items-center gap-2 text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
-         >
-           <Shield size={10} />
-           {t('privacy_link')}
-         </button>
+         {/* STATUS INDICATORS */}
+         <div className="flex items-center gap-4">
+            {/* Zero-Disk Status */}
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded border text-[9px] font-black uppercase tracking-widest ${
+                isRamMounted 
+                ? 'bg-amber-900/20 border-amber-500/30 text-amber-400' 
+                : 'bg-cyber-800 border-cyber-700 text-gray-500'
+            }`}>
+               {isRamMounted ? <Database size={10} fill="currentColor" /> : <Lock size={10} />}
+               {isRamMounted ? "SELF-CUSTODY: ACTIVE" : "COLD STORAGE (ZERO-DISK)"}
+            </div>
+         </div>
+
+         <div>
+            <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-bounce"></div>
+                <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-500 animate-bounce [animation-delay:0.2s]"></div>
+                <div className="h-1.5 w-1.5 rounded-full bg-cyber-accent animate-bounce [animation-delay:0.4s]"></div>
+            </div>
+            <p className="font-mono text-[9px] text-gray-600 max-w-sm leading-relaxed uppercase tracking-[0.2em] mb-4">{t('research_footer')}</p>
+            
+            <button 
+            onClick={() => setShowPrivacy(true)}
+            className="flex items-center gap-2 text-[10px] text-gray-600 hover:text-gray-400 transition-colors mx-auto"
+            >
+            <Shield size={10} />
+            {t('privacy_link')}
+            </button>
+         </div>
       </footer>
     </div>
   );

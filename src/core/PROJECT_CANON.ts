@@ -13,7 +13,7 @@
  */
 
 export const PROJECT_CANON = {
-  version: "1.2.0",
+  version: "1.2.1",
   role: "Network Navigator", 
   historicalAnchor: "2026-01-10",
   mode: "navigator-first",
@@ -24,7 +24,7 @@ export const PROJECT_CANON = {
     "Adaptation > Repetition",
     "Analysis > Execution",
     "Safety > Novelty",
-    "Core Decides > Loop Observes" // New Axiom
+    "Core Decides > Loop Observes"
   ],
 
   // Rules for AI decision making
@@ -33,7 +33,12 @@ export const PROJECT_CANON = {
     noHallucinations: true,
     contextRequired: true,
     navigatorMindset: true,
-    researchLoopRestricted: true // New Rule: AI cannot self-promote hypotheses to rules
+    researchLoopRestricted: true
+  },
+
+  // Philosophical Models
+  models: {
+    judicial: "Core=Judge, AI=Attorney, TSPU=Prosecutor, User=Defendant"
   },
 
   // Forbidden patterns in code or suggestions
@@ -42,6 +47,6 @@ export const PROJECT_CANON = {
     "guaranteed_bypass_claims",
     "ignoring_environment_shift",
     "claiming_execution_capabilities_in_browser",
-    "direct_feedback_to_core_injection" // New Prohibition
+    "direct_feedback_to_core_injection"
   ]
 } as const;
