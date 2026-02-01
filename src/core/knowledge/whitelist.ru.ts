@@ -12,6 +12,24 @@
 
 export const RU_WHITELIST_OBSERVATIONS = [
   {
+    domain: 'ads.x5.ru',
+    category: 'RETAIL_INFRASTRUCTURE',
+    observation: '«Железный Купол». Технический домен X5 Group (Пятерочка, Перекресток). Обеспечивает работу кассовых терминалов и логистики. Блокировка маловероятна из-за риска коллапса ритейла.',
+    trustLevel: 'HIGH'
+  },
+  {
+    domain: 'api-maps.yandex.ru',
+    category: 'MAPS_INFRASTRUCTURE',
+    observation: 'Критическая инфраструктура навигации. Используется в такси, доставке и логистике. Высокий уровень доверия на ТСПУ.',
+    trustLevel: 'HIGH'
+  },
+  {
+    domain: 'm.vk.ru',
+    category: 'SOCIAL_INFRASTRUCTURE',
+    observation: 'Мобильная версия ВКонтакте. Часто попадает в списки Zero-Rating (бесплатный трафик) у мобильных операторов, минуя глубокий DPI.',
+    trustLevel: 'HIGH'
+  },
+  {
     domain: 'st.ozone.ru',
     category: 'RETAIL_INFRASTRUCTURE',
     observation: 'Высокоэффективный SNI. Подтверждена работа на МТС, Мегафон, T2, Yota. Часто находится в "неприкасаемых" списках DPI для обеспечения работы e-commerce.',
@@ -34,6 +52,12 @@ export const RU_WHITELIST_OBSERVATIONS = [
     category: 'MEDIA_INFRASTRUCTURE',
     observation: 'Видео-CDN Rutube. Пропускается DPI на МТС, Мегафон и T2 для обеспечения потокового видео. Хороший кандидат для SNI.',
     trustLevel: 'MEDIUM'
+  },
+  {
+    domain: 'sso.passport.yandex.ru',
+    category: 'TECH_INFRASTRUCTURE',
+    observation: 'Единая система авторизации Яндекса. Блокировка сломает доступ к почте и диску для миллионов пользователей.',
+    trustLevel: 'HIGH'
   },
   {
     domain: 'alfabank.ru',

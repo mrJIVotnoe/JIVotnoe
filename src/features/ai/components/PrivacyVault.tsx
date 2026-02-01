@@ -1,22 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
-import { Lock, Key, Eye, EyeOff, ShieldCheck, Zap, Trash2, Cpu, Hash, Fingerprint, Server, XCircle, Globe } from 'lucide-react';
-import { useAiStore } from '../../../store/ai.store';
+import { Lock, Key, Eye, EyeOff, ShieldCheck, Zap, Trash2, Cpu, Hash, Fingerprint, Server, XCircle, Globe, ChevronDown, Check, Settings } from 'lucide-react';
+import { useAiStore, AiProviderType } from '../../../store/ai.store';
 
 export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { 
-    customApiKey, bridgeUrl, useBridge, 
-    setBridgeSettings, mountSessionKey, destroySession 
+    customApiKey, bridgeUrl, useBridge, provider, customBaseUrl, customModelName,
+    setBridgeSettings, setProviderSettings, mountSessionKey, destroySession 
   } = useAiStore();
 
   const [localKey, setLocalKey] = useState(customApiKey);
   const [localBridge, setLocalBridge] = useState(bridgeUrl);
   const [localUseBridge, setLocalUseBridge] = useState(useBridge);
+  const [localProvider, setLocalProvider] = useState<AiProviderType>(provider);
+  const [localBaseUrl, setLocalBaseUrl] = useState(customBaseUrl);
+  const [localModelName, setLocalModelName] = useState(customModelName);
+  
   const [showKey, setShowKey] = useState(false);
   const [isMounted, setIsMounted] = useState(!!customApiKey);
   const [sessionHash, setSessionHash] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Generate a fake session hash for visual confirmation of ephemeral state
+  // Generate session hash
   useEffect(() => {
     const array = new Uint8Array(8);
     window.crypto.getRandomValues(array);
@@ -28,19 +33,20 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     setIsMounted(!!customApiKey);
     if(customApiKey) {
         setLocalKey(customApiKey);
-        // Force Direct Mode when using Custom Key for sovereignty
-        setLocalUseBridge(false); 
+        setLocalUseBridge(false); // Force direct mode
     }
   }, [customApiKey]);
 
   const handleMount = () => {
-    // If user provides a key, we enforce DIRECT mode to ensure "No Middleman" safety
-    if (localKey) {
-        setLocalUseBridge(false);
-    }
     setBridgeSettings(localUseBridge, localBridge);
-    mountSessionKey(localKey);
-    setIsMounted(true);
+    setProviderSettings(localProvider, localBaseUrl, localModelName);
+    
+    // Only mount key if provided. If using Gemini Bridge (public), key might be empty.
+    // For other providers, key is mandatory for direct access.
+    if (localKey || (localProvider === 'gemini' && localUseBridge)) {
+        mountSessionKey(localKey);
+        setIsMounted(true);
+    }
   };
 
   const handlePurge = () => {
@@ -49,16 +55,21 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     setIsMounted(false);
   };
 
+  const PROVIDERS: {id: AiProviderType, label: string, icon: string}[] = [
+      { id: 'gemini', label: 'Google Gemini', icon: '✨' },
+      { id: 'deepseek', label: 'DeepSeek V3', icon: '🐋' },
+      { id: 'grok', label: 'Grok (xAI)', icon: '🌌' },
+      { id: 'openai', label: 'OpenAI (GPT)', icon: '🧠' },
+      { id: 'custom', label: 'Custom / Local', icon: '⚙️' }
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl animate-in fade-in duration-300 font-mono">
-      <div className="bg-[#111] border border-amber-500/20 p-8 rounded-[1rem] max-w-lg w-full relative shadow-[0_0_100px_rgba(245,158,11,0.05)] overflow-hidden">
+      <div className="bg-[#111] border border-amber-500/20 p-8 rounded-[1rem] max-w-lg w-full relative shadow-[0_0_100px_rgba(245,158,11,0.05)] overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar">
         
         {/* Deco Lines */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
-        <div className="absolute bottom-0 right-0 p-4 opacity-5">
-           <Fingerprint size={150} />
-        </div>
-
+        
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
            <div className="flex items-center gap-4">
@@ -79,59 +90,39 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
            <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">✕</button>
         </div>
 
-        {/* Topology Visualization (The "Proof" of Safety) */}
-        <div className="mb-6 bg-black/50 p-4 rounded-xl border border-gray-800 relative">
-            <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-3 text-center">Data Topology Map</p>
-            <div className="flex items-center justify-between px-2">
-                {/* User Node */}
-                <div className="flex flex-col items-center gap-2 z-10">
-                    <div className="w-10 h-10 rounded-full bg-blue-900/30 border border-blue-500 flex items-center justify-center text-blue-400">
-                        <Fingerprint size={20} />
-                    </div>
-                    <span className="text-[9px] text-blue-400 font-bold">YOU (RAM)</span>
-                </div>
-
-                {/* Connection Line */}
-                <div className="flex-1 h-px bg-gray-800 mx-2 relative flex items-center justify-center">
-                    {localKey ? (
-                        <>
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-green-500/50 to-blue-500/0 h-[1px]"></div>
-                            <span className="bg-[#111] px-2 text-[9px] text-green-500 font-bold border border-green-900 rounded">DIRECT UPLINK</span>
-                        </>
-                    ) : (
-                        <span className="bg-[#111] px-2 text-[9px] text-gray-600">WAITING FOR KEY</span>
-                    )}
-                </div>
-
-                {/* Google Node */}
-                <div className="flex flex-col items-center gap-2 z-10">
-                    <div className="w-10 h-10 rounded-full bg-green-900/30 border border-green-500 flex items-center justify-center text-green-400">
-                        <Globe size={20} />
-                    </div>
-                    <span className="text-[9px] text-green-400 font-bold">GEMINI API</span>
-                </div>
-            </div>
-
-            {/* Bypassed Server Node */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-8 flex flex-col items-center opacity-40">
-                <div className="w-8 h-8 rounded-full bg-red-900/20 border border-red-500 flex items-center justify-center text-red-500 relative">
-                    <Server size={14} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <XCircle size={36} className="text-red-600/50" />
-                    </div>
-                </div>
-                <span className="text-[8px] text-red-500 mt-1">OUR SERVER (BYPASSED)</span>
-            </div>
-        </div>
-
         {/* Content */}
         <div className="space-y-6 relative z-10">
            
+           {/* Provider Selector */}
+           <div>
+              <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">
+                 Intelligence Provider
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                 {PROVIDERS.map(p => (
+                     <button
+                        key={p.id}
+                        disabled={isMounted}
+                        onClick={() => setLocalProvider(p.id)}
+                        className={`flex items-center gap-3 p-3 rounded border text-left transition-all ${
+                            localProvider === p.id 
+                            ? 'bg-amber-900/20 border-amber-500/50 text-amber-100' 
+                            : 'bg-[#0a0a0a] border-gray-800 text-gray-500 hover:border-gray-600'
+                        } ${isMounted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                     >
+                        <span className="text-lg">{p.icon}</span>
+                        <span className="text-xs font-bold">{p.label}</span>
+                        {localProvider === p.id && <Check size={12} className="ml-auto text-amber-500" />}
+                     </button>
+                 ))}
+              </div>
+           </div>
+
            {/* Key Input */}
            <div>
               <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                  <Key size={10} />
-                 Private Key (Google Gemini)
+                 {localProvider === 'gemini' ? 'API Key (Optional for Bridge)' : 'API Key (Required)'}
               </label>
               
               <div className="relative group">
@@ -139,7 +130,7 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                    type={showKey ? "text" : "password"} 
                    value={localKey}
                    onChange={(e) => setLocalKey(e.target.value)}
-                   placeholder="sk-..."
+                   placeholder={localProvider === 'gemini' ? "Use Public Bridge or paste sk-..." : "sk-..."}
                    disabled={isMounted}
                    className={`w-full bg-[#0a0a0a] border rounded p-4 text-xs text-amber-50 transition-all font-mono tracking-wider ${
                      isMounted 
@@ -160,15 +151,43 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
               </p>
            </div>
 
-           {/* Network Settings (Auto-managed for Key owners) */}
-           {!localKey && (
+           {/* Advanced Settings (Custom URL/Model) */}
+           {(localProvider === 'custom' || showAdvanced) && (
+              <div className="space-y-4 bg-[#080808] p-4 rounded border border-gray-800 animate-in slide-in-from-top-2">
+                 <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold block mb-1">Base URL</label>
+                    <input 
+                        type="text" 
+                        value={localBaseUrl} 
+                        onChange={e => setLocalBaseUrl(e.target.value)}
+                        placeholder={localProvider === 'openai' ? 'https://api.openai.com/v1' : 'http://localhost:11434/v1'}
+                        disabled={isMounted}
+                        className="w-full bg-[#111] border border-gray-700 rounded p-2 text-xs text-gray-300 font-mono"
+                    />
+                 </div>
+                 <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold block mb-1">Model Name</label>
+                    <input 
+                        type="text" 
+                        value={localModelName} 
+                        onChange={e => setLocalModelName(e.target.value)}
+                        placeholder="gpt-4o"
+                        disabled={isMounted}
+                        className="w-full bg-[#111] border border-gray-700 rounded p-2 text-xs text-gray-300 font-mono"
+                    />
+                 </div>
+              </div>
+           )}
+
+           {/* Gemini Bridge Settings */}
+           {localProvider === 'gemini' && !localKey && (
                <div className="grid grid-cols-2 gap-4">
                   <div 
                     onClick={() => !isMounted && setLocalUseBridge(false)}
                     className={`p-3 rounded border cursor-pointer transition-all ${!localUseBridge ? 'bg-amber-900/20 border-amber-500 text-amber-100' : 'bg-transparent border-gray-800 text-gray-500 opacity-50'}`}
                   >
                      <div className="text-[10px] font-bold uppercase mb-1">Direct Mode</div>
-                     <div className="text-[9px]">Connect directly</div>
+                     <div className="text-[9px]">Require Key</div>
                   </div>
                   <div 
                     onClick={() => !isMounted && setLocalUseBridge(true)}
@@ -180,25 +199,15 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
                </div>
            )}
 
-           {localKey && (
-               <div className="p-3 bg-green-900/10 border border-green-500/30 rounded flex items-center gap-3">
-                   <ShieldCheck className="text-green-400" size={16} />
-                   <div className="text-[9px] text-green-300">
-                       <span className="font-bold block">SOVEREIGNTY MODE ACTIVE</span>
-                       Bridge disabled. Connection is purely Peer-to-Peer (You ↔ Google).
-                   </div>
-               </div>
-           )}
-
-           {localUseBridge && !localKey && (
-              <input 
-                type="text" 
-                value={localBridge}
-                onChange={(e) => setLocalBridge(e.target.value)}
-                placeholder="Bridge URL"
-                disabled={isMounted}
-                className="w-full bg-[#0a0a0a] border border-gray-800 rounded p-3 text-xs text-gray-300 focus:outline-none focus:border-indigo-500 font-mono"
-              />
+           {/* Advanced Toggle */}
+           {localProvider !== 'custom' && (
+               <button 
+                 onClick={() => setShowAdvanced(!showAdvanced)} 
+                 className="flex items-center gap-1 text-[9px] text-gray-600 hover:text-gray-400 mx-auto"
+               >
+                 <Settings size={10} />
+                 {showAdvanced ? 'Hide Advanced' : 'Advanced Configuration'}
+               </button>
            )}
 
            {/* Actions */}
@@ -206,8 +215,7 @@ export const PrivacyVault: React.FC<{ onClose: () => void }> = ({ onClose }) => 
               {!isMounted ? (
                 <button 
                   onClick={handleMount}
-                  disabled={!localKey}
-                  className="w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded font-bold text-xs uppercase tracking-widest shadow-lg shadow-amber-900/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded font-bold text-xs uppercase tracking-widest shadow-lg shadow-amber-900/20 flex items-center justify-center gap-3 transition-all"
                 >
                   <Zap size={16} />
                   Sign Session & Mount

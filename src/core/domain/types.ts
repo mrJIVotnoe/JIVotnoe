@@ -144,8 +144,8 @@ export interface Hypothesis {
 
 export interface CommunityStrategy {
   id: string;
-  name: Record<string, string>; // Localized
-  description: Record<string, string>; // Localized
+  name: Record<string, string> | string; // Localized or plain string
+  description: Record<string, string> | string; // Localized or plain string
   command: string;
   tags: string[];
   recommended?: boolean;

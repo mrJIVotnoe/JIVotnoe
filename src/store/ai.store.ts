@@ -7,9 +7,10 @@ import { ProbeResult } from '../core/engine/probe';
 import { DEFAULT_BRIDGE_URL } from '../config/constants';
 import { scanForPii, PiiThreat } from '../features/ai/utils/piiGuard';
 
+export type AiProviderType = 'gemini' | 'openai' | 'deepseek' | 'grok' | 'custom';
+
 interface AiState {
   // --- VOLATILE STATE (RAM ONLY) ---
-  // These values are NEVER saved to disk
   input: string;
   loading: boolean;
   result: AiAnalysisResult | null;
@@ -21,21 +22,24 @@ interface AiState {
   piiOverride: boolean;
 
   // --- PERSISTENT STATE (DISK) ---
-  // Safe settings that contain no secrets
   useBridge: boolean;
   bridgeUrl: string;
+  provider: AiProviderType; // User preference for model
+  customBaseUrl: string;    // For local LLMs or custom proxies
+  customModelName: string;  // Allow overriding model name (e.g. 'gpt-4-turbo')
   
   // Actions
   setInput: (text: string) => void;
   setBridgeSettings: (useBridge: boolean, url: string) => void;
-  mountSessionKey: (apiKey: string) => void; // "Mount" instead of "Save"
+  setProviderSettings: (provider: AiProviderType, baseUrl?: string, modelName?: string) => void;
+  mountSessionKey: (apiKey: string) => void;
   setProbeData: (data: ProbeResult[]) => void;
   analyze: (language: Language, overrideInput?: string) => Promise<void>;
   confirmPiiOverride: () => void;
   clearPii: () => void;
   rate: (direction: 'up' | 'down') => void;
   reset: () => void;
-  destroySession: () => void; // Wipe RAM
+  destroySession: () => void;
 }
 
 export const useAiStore = create<AiState>()(
@@ -55,12 +59,22 @@ export const useAiStore = create<AiState>()(
       // Init Persistent
       useBridge: true,
       bridgeUrl: DEFAULT_BRIDGE_URL,
+      provider: 'gemini',
+      customBaseUrl: '',
+      customModelName: '',
 
       setInput: (input) => {
         set({ input, piiThreats: [], piiOverride: false }); 
       },
       
       setBridgeSettings: (useBridge, bridgeUrl) => set({ useBridge, bridgeUrl }),
+
+      setProviderSettings: (provider, customBaseUrl, customModelName) => 
+        set({ 
+          provider, 
+          customBaseUrl: customBaseUrl ?? '', 
+          customModelName: customModelName ?? '' 
+        }),
 
       // CRITICAL: This puts the key into RAM, but the `partialize` below ensures it never hits disk
       mountSessionKey: (apiKey) => set({ customApiKey: apiKey }),
@@ -72,7 +86,7 @@ export const useAiStore = create<AiState>()(
       clearPii: () => set({ piiThreats: [], piiOverride: false }),
 
       analyze: async (language, overrideInput) => {
-        const { input, useBridge, bridgeUrl, probeData, customApiKey, piiOverride } = get();
+        const { input, useBridge, bridgeUrl, probeData, customApiKey, piiOverride, provider, customBaseUrl, customModelName } = get();
         const finalInput = overrideInput || input;
 
         // 1. PII Guard Check
@@ -100,7 +114,10 @@ export const useAiStore = create<AiState>()(
             useBridge,
             bridgeUrl,
             probeData: probeData || undefined,
-            apiKey: customApiKey // Passed from RAM
+            apiKey: customApiKey, // Passed from RAM
+            provider,
+            customBaseUrl,
+            customModelName
           });
           set({ result: data, piiThreats: [], piiOverride: false });
         } catch (err: any) {
@@ -130,10 +147,11 @@ export const useAiStore = create<AiState>()(
       partialize: (state) => ({ 
         useBridge: state.useBridge, 
         bridgeUrl: state.bridgeUrl,
-        // customApiKey is EXCLUDED intentionally
+        provider: state.provider,
+        customBaseUrl: state.customBaseUrl,
+        customModelName: state.customModelName
+        // customApiKey is EXCLUDED intentionally (Zero-Disk)
       }),
     }
   )
 );
-
-import { useAppStore } from './app.store';

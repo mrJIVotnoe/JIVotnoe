@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
-import { FlaskConical, Upload, Trash2, FileJson, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { FlaskConical, Upload, Trash2, FileJson, AlertTriangle, XCircle, Beaker, Search, ScanLine } from 'lucide-react';
 import { useStrategiesStore } from '../../../store/strategies.store';
 import { DriverManager } from '../../../core/drivers/driverManager';
-import { useLanguage } from '../../localization/LanguageContext';
 
 export const TheLab: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { activeDriver, importDriver, removeDriver } = useStrategiesStore();
-  const { t } = useLanguage();
   const [jsonInput, setJsonInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +44,7 @@ export const TheLab: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="flex items-center justify-between mb-6 relative z-10">
            <div className="flex items-center gap-4">
              <div className="p-3 rounded-2xl bg-amber-900/20 border border-amber-500/50 text-amber-500">
-               <FlaskConical size={24} />
+               <Beaker size={24} />
              </div>
              <div>
                <h2 className="text-2xl font-black text-white uppercase tracking-tight">The Lab</h2>
@@ -84,17 +82,20 @@ export const TheLab: React.FC<{ onClose: () => void }> = ({ onClose }) => {
            {/* Input Area */}
            <div>
               <div className="flex justify-between items-center mb-2">
-                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Driver Manifest (JSON)</label>
+                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <ScanLine size={12} />
+                    Source Input (JSON Driver or Raw VLESS Keys)
+                 </label>
                  <label className="cursor-pointer flex items-center gap-2 text-[10px] font-bold text-blue-400 hover:text-blue-300 transition-colors">
                     <Upload size={12} /> Load from File
-                    <input type="file" accept=".json" className="hidden" onChange={handleFileUpload} />
+                    <input type="file" accept=".json,.txt" className="hidden" onChange={handleFileUpload} />
                  </label>
               </div>
               <textarea 
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='{ "manifest_version": 1, "strategies": [...] }'
-                className="w-full h-48 bg-black/50 border border-cyber-700 rounded-xl p-4 text-xs font-mono text-green-300 focus:outline-none focus:border-amber-500 transition-all custom-scrollbar"
+                placeholder='Paste a JSON Driver OR a list of vless:// keys here. The Lab will scavenge usable SNIs automatically.'
+                className="w-full h-48 bg-black/50 border border-cyber-700 rounded-xl p-4 text-xs font-mono text-green-300 focus:outline-none focus:border-amber-500 transition-all custom-scrollbar placeholder-gray-700"
               />
            </div>
 
@@ -113,9 +114,16 @@ export const TheLab: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <button 
                 onClick={handleImport}
                 disabled={!jsonInput.trim()}
-                className="bg-amber-600 hover:bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-amber-600 hover:bg-amber-500 text-black px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                Inject Driver
+                {jsonInput.includes('vless://') ? (
+                    <>
+                        <Search size={14} />
+                        Scavenge & Inject
+                    </>
+                ) : (
+                    "Inject Driver"
+                )}
               </button>
            </div>
         </div>

@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { StrategyType } from '../types';
 import { decide, analyzeEnvironment, DecisionInput, DecisionResult, AnalysisResult, NetworkSymptom } from '../core';
-import { CommunityDriverManifest, CommunityStrategy } from '../core/domain/types';
+import { CommunityDriverManifest } from '../core/domain/types';
 import { STRATEGIES as STATIC_STRATEGIES } from '../features/strategies/data';
 
 // Strategy can be from Static ENUM or Custom String
@@ -64,14 +64,15 @@ export const useStrategiesStore = create<StrategiesState>()(
         // Map CommunityStrategy to StrategyConfig compatible shape
         const customStrategies = activeDriver.strategies.map(s => ({
             id: s.id,
-            name: s.name,
-            description: s.description,
+            name: typeof s.name === 'string' ? { en: s.name, ru: s.name } : s.name,
+            description: typeof s.description === 'string' ? { en: s.description, ru: s.description } : s.description,
             command: s.command,
             tags: [...s.tags, 'LAB'], // Add LAB tag
             recommended: s.recommended || false,
             source: 'COMMUNITY' // Flag for UI
         }));
 
+        // Put Custom strategies FIRST
         return [...customStrategies, ...STATIC_STRATEGIES];
       },
 

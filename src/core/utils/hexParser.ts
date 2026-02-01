@@ -5,7 +5,7 @@
  * Analyzes binary payloads (often used in --fake-data arguments)
  * and translates them into human-readable protocol descriptions.
  * 
- * Used for "The Lab" (Step C).
+ * Used for "The Lab" and Strategy Visualizer.
  */
 
 export interface ParsedHex {
@@ -15,14 +15,15 @@ export interface ParsedHex {
 }
 
 export function parseHexPayload(hexString: string): ParsedHex {
-  // Normalize: remove 0x, spaces, colons
-  const cleanHex = hexString.replace(/^(0x|\\x|:)/, '').replace(/[\s:]/g, '').toUpperCase();
+  // Normalize: remove 0x, spaces, colons, quotes
+  const cleanHex = hexString.replace(/^(0x|\\x|:)/, '').replace(/[\s:'"]/g, '').toUpperCase();
 
   if (cleanHex.length < 4) {
     return { protocol: 'UNKNOWN', details: 'Payload too short', risk: 'LOW' };
   }
 
   // --- TLS Handshake (16 03 0X) ---
+  // 16 = Handshake, 03 0X = SSL/TLS Version
   if (cleanHex.startsWith('1603')) {
     const version = cleanHex.substring(4, 6);
     let verLabel = 'Unknown';
@@ -33,8 +34,8 @@ export function parseHexPayload(hexString: string): ParsedHex {
 
     return {
       protocol: 'TLS ClientHello',
-      details: `Emulated Handshake (${verLabel}). High entropy.`,
-      risk: 'MEDIUM' // Can be fingreprinted
+      details: `Emulated Handshake (${verLabel}). High entropy payload.`,
+      risk: 'MEDIUM' // Can be fingreprinted if static
     };
   }
 
@@ -53,8 +54,17 @@ export function parseHexPayload(hexString: string): ParsedHex {
   }
 
   // --- QUIC / UDP ---
-  // QUIC often starts with header form bit (1 or 0) + version. Complex to parse without bitmask.
-  // Heuristic: If user labels it UDP and it looks random.
+  // QUIC Long Header usually starts with 1xxx xxxx (Bit 7 is 1)
+  // This is heuristic, as raw hex implies a TCP payload usually, but valid for UDP --fake arguments
+  const firstByte = parseInt(cleanHex.substring(0, 2), 16);
+  if ((firstByte & 0x80) !== 0 && (firstByte & 0x40) !== 0) {
+      // Possible QUIC Initial
+      return { 
+          protocol: 'QUIC/UDP', 
+          details: 'Potential QUIC Long Header (Initial).', 
+          risk: 'MEDIUM' 
+      };
+  }
   
   // --- Zero Padding ---
   if (/^0+$/.test(cleanHex)) {
@@ -64,7 +74,7 @@ export function parseHexPayload(hexString: string): ParsedHex {
   // --- Random High Entropy ---
   return {
     protocol: 'BINARY / RAW',
-    details: `Custom payload (${cleanHex.length / 2} bytes)`,
+    details: `Custom payload (${cleanHex.length / 2} bytes). High Entropy.`,
     risk: 'MEDIUM'
   };
 }

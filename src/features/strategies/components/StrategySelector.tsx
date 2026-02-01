@@ -62,8 +62,9 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
 
   // Helper to render command anatomy with tooltips AND Hex Parsing
   const renderCommandAnatomy = (cmd: string) => {
-    // Basic regex split, preserving quoted strings
-    const parts = cmd.match(/(?:[^\s']+|'[^']*')+/g) || [];
+    // Advanced split that preserves quoted strings and handles equals signs
+    // This is a simplified regex for display purposes
+    const parts = cmd.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
     
     return (
       <div className="flex flex-wrap gap-2 font-mono text-sm mt-2">
@@ -83,7 +84,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
             description = t('cmd_desc_n'); 
             color = "text-green-400 font-bold";
             icon = <EyeOff size={12} />;
-          } else if (part.includes('.')) { 
+          } else if (part.includes('.') && !part.includes('=')) { 
             description = t('cmd_desc_domain');
             color = "text-green-300 underline decoration-dashed";
           } else if (part.startsWith('-a')) {
@@ -98,12 +99,20 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
              color = "text-cyan-400";
           } else if (part.includes('--fake-data') || part.includes('--fake-from-hex')) {
              // HEX PARSING LOGIC
-             const rawHex = part.split(/['=]/).pop()?.replace(/'/g, '');
+             // Extract hex value. Handle both --arg=val and space separated (though here we process parts)
+             // Simulating check if part itself contains the hex or if it's a key=value
+             const rawHex = part.includes('=') ? part.split('=')[1] : null;
+             
+             // If part is just the flag, look ahead? 
+             // For simplicity in this display logic, we assume --arg=hex format for drivers usually
              if (rawHex) {
-                const analysis = parseHexPayload(rawHex);
+                const analysis = parseHexPayload(rawHex.replace(/['"]/g, ''));
                 description = `${analysis.protocol}: ${analysis.details}`;
                 color = "text-fuchsia-400";
                 icon = <Database size={12} />;
+             } else {
+                description = "Binary Payload";
+                color = "text-fuchsia-400";
              }
           }
 
@@ -225,7 +234,6 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
               )}
               
               <span className="font-bold text-gray-100 truncate w-full">
-                  {/* Handle localized name object vs string from custom driver */}
                   {typeof strategy.name === 'string' ? strategy.name : (strategy.name[language] || strategy.name['en'])}
               </span>
             </div>

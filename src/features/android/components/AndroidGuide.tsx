@@ -1,9 +1,33 @@
+
 import React from 'react';
-import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Bot, Globe } from 'lucide-react';
+import { Download, Terminal, Play, CheckCircle, ListFilter, Package, Shield, Bot, Globe, Route } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
+import { getAllSmartCidrs } from '../../../core/knowledge/smart_routes';
 
 export const AndroidGuide: React.FC = () => {
   const { t } = useLanguage();
+
+  const handleDownloadRoutes = () => {
+    // Generate Sing-box/NekoBox compatible routes.json
+    const cidrs = getAllSmartCidrs();
+    const config = {
+      "rules": [
+        {
+          "ip_cidr": cidrs,
+          "outbound": "proxy",
+          "tag": "bypass_blocked"
+        }
+      ]
+    };
+    
+    const element = document.createElement("a");
+    const file = new Blob([JSON.stringify(config, null, 2)], {type: 'application/json'});
+    element.href = URL.createObjectURL(file);
+    element.download = "routes.json";
+    document.body.appendChild(element); 
+    element.click();
+    document.body.removeChild(element);
+  };
 
   const steps = [
     { 
@@ -51,6 +75,25 @@ export const AndroidGuide: React.FC = () => {
         </div>
         
         <div className="ml-0 md:ml-4 space-y-8 relative">
+          
+          {/* Smart Routes Section */}
+          <div className="bg-gradient-to-r from-green-900/30 to-cyber-900 p-5 rounded-2xl border border-green-500/30">
+             <div className="flex items-center gap-2 mb-2">
+                <Route size={18} className="text-green-400" />
+                <h4 className="text-sm font-bold text-white uppercase tracking-wider">{t('android_smart_routes_title')}</h4>
+             </div>
+             <p className="text-xs text-gray-300 mb-4 leading-relaxed">
+                {t('android_smart_routes_desc')}
+             </p>
+             <button 
+               onClick={handleDownloadRoutes}
+               className="flex items-center gap-2 bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-lg active:scale-95 border border-green-500/50"
+             >
+                <Download size={14} />
+                {t('android_download_routes')}
+             </button>
+          </div>
+
           <div className="bg-cyber-900/40 p-5 rounded-2xl border border-cyber-700/50">
              <p className="text-gray-300 text-sm mb-6 leading-relaxed">
                {t('android_download_desc')}

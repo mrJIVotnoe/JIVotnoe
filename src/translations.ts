@@ -86,6 +86,9 @@ const en = {
     linux_socks_host: "SOCKS5 Host",
     linux_socks_port: "Port",
     linux_binary_run: "Binary Launch",
+    linux_smart_routes_title: "Precision Strike (IPSet)",
+    linux_smart_routes_desc: "Generate a script to tunnel ONLY YouTube/Discord traffic via the bypass, keeping local traffic direct.",
+    linux_download_ipset: "Download .sh script",
 
     // macOS & iOS
     macos_desc: "macOS is a certified UNIX system. ByeDPI runs natively via Terminal.",
@@ -198,6 +201,9 @@ const en = {
     android_instr_5: "Launch",
     android_instr_5_desc: "Press Connect and check speed.",
     universal_compat: "Universal Compatibility",
+    android_smart_routes_title: "Smart Routes (NekoBox)",
+    android_smart_routes_desc: "Download a config file that routes ONLY blocked services (YouTube, Discord, Meta) through the tunnel. Banking apps remain direct.",
+    android_download_routes: "Download routes.json",
 
     // Android TV
     tv_section_title: "Android TV / Smart TV",
@@ -396,6 +402,9 @@ export const translations: Record<string, Record<string, string>> = {
     linux_socks_host: "Хост SOCKS5",
     linux_socks_port: "Порт",
     linux_binary_run: "Бинарный запуск",
+    linux_smart_routes_title: "Умная Маршрутизация (IPSet)",
+    linux_smart_routes_desc: "Создайте скрипт, который направит только трафик YouTube/Discord через обход, оставив локальный трафик прямым.",
+    linux_download_ipset: "Скачать .sh скрипт",
 
     // macOS & iOS
     macos_desc: "macOS — сертифицированная UNIX-система. ByeDPI работает нативно через Terminal.",
@@ -502,6 +511,9 @@ export const translations: Record<string, Record<string, string>> = {
     android_instr_5: "Запуск",
     android_instr_5_desc: "Нажмите Connect и проверьте скорость.",
     universal_compat: "Универсальная совместимость",
+    android_smart_routes_title: "Умные Маршруты (NekoBox)",
+    android_smart_routes_desc: "Скачайте конфиг, который направит только заблокированные сервисы (YouTube, Discord, Meta) через туннель. Банки и Госуслуги останутся прямыми.",
+    android_download_routes: "Скачать routes.json",
 
     tv_section_title: "Android TV / Smart TV",
     tv_problem: "Браузеры на ТВ ограничены.",

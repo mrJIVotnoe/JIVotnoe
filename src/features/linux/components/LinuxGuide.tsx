@@ -1,11 +1,13 @@
+
 import React, { useState } from 'react';
-import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw } from 'lucide-react';
+import { Zap, ShieldAlert, Monitor, TerminalSquare, Settings, Server, Cpu, FileCode, ArrowRight, Globe, RefreshCw, Crosshair, Download } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { StrategySelector } from '../../strategies/components/StrategySelector';
 import { STRATEGIES } from '../../../data';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { SniScanner } from '../../strategies/components/SniScanner';
 import { useStrategiesStore } from '../../../store/strategies.store';
+import { getAllSmartCidrs } from '../../../core/knowledge/smart_routes';
 
 export const LinuxGuide: React.FC = () => {
   const { t, language } = useLanguage();
@@ -43,6 +45,27 @@ WantedBy=multi-user.target`;
   const envExport = `export all_proxy=socks5h://127.0.0.1:${port}
 export http_proxy=http://127.0.0.1:${port}
 export https_proxy=http://127.0.0.1:${port}`;
+
+  const handleDownloadIpset = () => {
+    const cidrs = getAllSmartCidrs();
+    const script = `#!/bin/bash
+# ByeDPI Mate - Precision Strike List
+# Generated for IPSet (Zapret/NFQWS/IPTables)
+
+ipset create byedpi_target hash:net
+${cidrs.map(ip => `ipset add byedpi_target ${ip}`).join('\n')}
+
+echo "IPSet 'byedpi_target' populated with ${cidrs.length} subnets."
+`;
+    
+    const element = document.createElement("a");
+    const file = new Blob([script], {type: 'text/x-sh'});
+    element.href = URL.createObjectURL(file);
+    element.download = "smart_routes.sh";
+    document.body.appendChild(element); 
+    element.click();
+    document.body.removeChild(element);
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -89,6 +112,24 @@ export https_proxy=http://127.0.0.1:${port}`;
          </div>
 
          <StrategySelector showCommandPreview={false} />
+      </div>
+
+      {/* Smart Routes Module (Common for Linux users) */}
+      <div className="bg-gradient-to-r from-indigo-900/30 to-cyber-900 p-5 rounded-2xl border border-indigo-500/30">
+          <div className="flex items-center gap-2 mb-2">
+            <Crosshair size={18} className="text-indigo-400" />
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">{t('linux_smart_routes_title')}</h4>
+          </div>
+          <p className="text-xs text-gray-300 mb-4 leading-relaxed">
+            {t('linux_smart_routes_desc')}
+          </p>
+          <button 
+            onClick={handleDownloadIpset}
+            className="flex items-center gap-2 bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-lg active:scale-95 border border-indigo-500/50"
+          >
+            <Download size={14} />
+            {t('linux_download_ipset')}
+          </button>
       </div>
 
       <div className="space-y-6">
