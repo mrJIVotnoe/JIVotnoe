@@ -1,0 +1,13 @@
+
+# Vercel Ignore
+.git
+.github
+.vscode
+.idea
+docs
+tests
+README.md
+PROJECT_CANON.md
+PHILOSOPHY_KERNEL.md
+*.local
+node_modules

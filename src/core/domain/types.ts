@@ -30,8 +30,9 @@ export interface StrategyDescriptor {
   id: string;
   name: string;
   intent: string;
-  riskLevel: 'safe' | 'moderate' | 'high';
+  riskLevel: 'safe' | 'moderate' | 'high' | 'experimental';
   compatibility: Platform[];
+  source?: 'CORE' | 'COMMUNITY'; // Origin of the strategy
 }
 
 export interface DecisionResult {
@@ -137,4 +138,27 @@ export interface Hypothesis {
   conflictingObservations: number;
   confidenceScore: number;
   status: 'PENDING_REVIEW' | 'REJECTED' | 'ACCEPTED';
+}
+
+// --- COMMUNITY DRIVER PROTOCOL ---
+
+export interface CommunityStrategy {
+  id: string;
+  name: Record<string, string>; // Localized
+  description: Record<string, string>; // Localized
+  command: string;
+  tags: string[];
+  recommended?: boolean;
+  author?: string;
+  version?: string;
+}
+
+export interface CommunityDriverManifest {
+  manifest_version: number;
+  id: string;
+  name: string;
+  author: string;
+  description: string;
+  strategies: CommunityStrategy[];
+  created_at: string;
 }

@@ -3,6 +3,7 @@ import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { STRATEGIES } from '../../strategies/data';
 import { Language } from '../../../types';
 import { ProbeResult } from '../../../core/engine/probe';
+import { useStrategiesStore } from '../../../store/strategies.store'; // Access store for drivers
 
 export interface AiAnalysisResult {
   platform: 'android' | 'pc' | 'ios' | 'linux';
@@ -17,16 +18,33 @@ interface AnalyzeParams {
   useBridge: boolean;
   bridgeUrl: string;
   probeData?: ProbeResult[]; 
-  apiKey?: string; // User-provided RAM-only key
+  apiKey?: string; 
 }
 
 export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, probeData, apiKey }: AnalyzeParams): Promise<AiAnalysisResult> => {
-  // 1. Prepare Context
-  const strategiesContext = STRATEGIES.map(s => ({
+  
+  // 1. Prepare Context (Merge Static + Custom)
+  const { activeDriver } = useStrategiesStore.getState();
+  
+  let strategiesContext = STRATEGIES.map(s => ({
     id: s.id,
     name: s.name[language] || s.name['en'],
     command: s.command
   }));
+
+  // Step B: RAG-Lite - Inject Custom Driver if present
+  let driverContext = "";
+  if (activeDriver) {
+    const customStrategies = activeDriver.strategies.map(s => ({
+        id: s.id,
+        name: s.name,
+        command: s.command,
+        note: "CUSTOM_DRIVER_STRATEGY"
+    }));
+    // Merge into context for AI to see
+    strategiesContext = [...strategiesContext, ...customStrategies as any];
+    driverContext = `ACTIVE DRIVER LOADED: ${activeDriver.name} (v${activeDriver.manifest_version}). Prioritize these strategies if they fit the symptoms.`;
+  }
 
   const langNames: Record<string, string> = {
      'ru': 'Russian', 'en': 'English', 'uk': 'Ukrainian', 
@@ -57,8 +75,6 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     required: ["platform", "explanation", "steps"]
   };
 
-  // Security & Persona Injection
-  // We explicitly tell the AI it is running in a Trusted/Private context (if Key provided)
   const securityContext = apiKey 
     ? "SECURITY_CONTEXT: TRUSTED_PRIVATE_KEY_MOUNTED. You are operating as the user's personal Neural Sentinel. Prioritize privacy and safety."
     : "SECURITY_CONTEXT: PUBLIC_GATEWAY.";
@@ -69,6 +85,7 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     Goal: Analyze user symptoms + diagnostic data to output a Research Result & Strategy.
     Diagnostic Data: ${diagnosticReport}
     Core Strategies: ${JSON.stringify(strategiesContext)}
+    ${driverContext}
     
     Rules: 
     1. Reply ONLY in ${targetLang}. 
@@ -78,9 +95,6 @@ export const analyzeIssue = async ({ input, language, useBridge, bridgeUrl, prob
     `;
 
   // 3. Execute Request
-  
-  // LOGIC: If a custom API key is present, we FORCE direct mode (scenario B) to respect sovereignty,
-  // even if bridge is toggled on in UI settings. 
   
   if (useBridge && bridgeUrl && !apiKey) {
     // PUBLIC BRIDGE MODE

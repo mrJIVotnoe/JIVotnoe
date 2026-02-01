@@ -1,15 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import { STRATEGIES } from '../data';
 import { StrategyType } from '../../../types';
 import { AppTarget } from '../../../core/domain/enums';
-import { Shield, CheckCircle, AlertTriangle, Info, Split, EyeOff, ShieldAlert, Cpu, Activity, Lock, Edit3 } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, Info, Split, EyeOff, ShieldAlert, Cpu, Activity, Lock, Edit3, FlaskConical, Database } from 'lucide-react';
 import { CopyButton } from '../../../shared/ui/CopyButton';
 import { useLanguage } from '../../localization/LanguageContext';
 import { Tooltip } from '../../../shared/ui/Tooltip';
 import { useStrategiesStore } from '../../../store/strategies.store';
 import { Core } from '../../../core';
 import { SniReputationCard } from './SniReputationCard';
+import { TheLab } from './TheLab';
+import { parseHexPayload } from '../../../core/utils/hexParser';
 
 interface StrategySelectorProps {
   showCommandPreview?: boolean;
@@ -21,10 +22,14 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   const { t, language } = useLanguage();
   
   // Use Global Store
-  const { selectedStrategyId, customSni, setStrategyId, setCustomSni, runAnalysis, analysisMode, currentAnalysis } = useStrategiesStore();
+  const { selectedStrategyId, customSni, setStrategyId, setCustomSni, runAnalysis, analysisMode, currentAnalysis, getAllStrategies, activeDriver } = useStrategiesStore();
+  const [showLab, setShowLab] = useState(false);
   
   // Local state for reputation
   const [reputation, setReputation] = useState(Core.checkSni(customSni || ''));
+
+  // Get strategies (Static + Custom)
+  const allStrategies = getAllStrategies();
 
   // Trigger analysis on mount
   useEffect(() => {
@@ -42,7 +47,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
     }
   }, [customSni]);
 
-  const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
+  const currentStrategy = allStrategies.find(s => s.id === selectedStrategyId) || allStrategies[0];
   const effectiveSni = customSni || t('local_sni_example');
   
   const getLocalizedCommand = (command: string) => {
@@ -55,9 +60,10 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   const currentCommand = getLocalizedCommand(currentStrategy.command);
   const ozonSniCommand = `-o1 -r-5+se -n ${effectiveSni}`;
 
-  // Helper to render command anatomy with tooltips
+  // Helper to render command anatomy with tooltips AND Hex Parsing
   const renderCommandAnatomy = (cmd: string) => {
-    const parts = cmd.split(' ');
+    // Basic regex split, preserving quoted strings
+    const parts = cmd.match(/(?:[^\s']+|'[^']*')+/g) || [];
     
     return (
       <div className="flex flex-wrap gap-2 font-mono text-sm mt-2">
@@ -90,6 +96,15 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
           } else if (part.startsWith('-At')) {
              description = t('cmd_desc_At');
              color = "text-cyan-400";
+          } else if (part.includes('--fake-data') || part.includes('--fake-from-hex')) {
+             // HEX PARSING LOGIC
+             const rawHex = part.split(/['=]/).pop()?.replace(/'/g, '');
+             if (rawHex) {
+                const analysis = parseHexPayload(rawHex);
+                description = `${analysis.protocol}: ${analysis.details}`;
+                color = "text-fuchsia-400";
+                icon = <Database size={12} />;
+             }
           }
 
           return (
@@ -108,6 +123,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
   if (analysisMode && currentAnalysis) {
     return (
       <div className="space-y-6">
+        {/* Analysis Mode View (Unchanged) */}
         <div className="bg-amber-900/20 border border-amber-500/30 p-6 rounded-3xl relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <Lock size={64} />
@@ -148,13 +164,23 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
 
   return (
     <div className="space-y-6">
+      {showLab && <TheLab onClose={() => setShowLab(false)} />}
       
       {/* SNI Input & Reputation System */}
       <div className="bg-black/20 p-4 rounded-2xl border border-cyber-700/50">
-         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-            <Edit3 size={12} />
-            Target Domain (SNI)
-         </label>
+         <div className="flex justify-between items-center mb-2">
+            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                <Edit3 size={12} />
+                Target Domain (SNI)
+            </label>
+            <button 
+                onClick={() => setShowLab(true)}
+                className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded transition-colors ${activeDriver ? 'text-amber-400 bg-amber-900/20 border border-amber-500/30' : 'text-gray-500 hover:text-white'}`}
+            >
+                <FlaskConical size={10} />
+                {activeDriver ? "LAB ACTIVE" : "OPEN LAB"}
+            </button>
+         </div>
          <div className="relative">
             <input 
               type="text" 
@@ -168,7 +194,7 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {STRATEGIES.map((strategy) => (
+        {allStrategies.map((strategy) => (
           <button
             key={strategy.id}
             onClick={() => setStrategyId(strategy.id)}
@@ -183,17 +209,31 @@ export const StrategySelector: React.FC<StrategySelectorProps> = ({
                 {t('recommended_badge')}
               </div>
             )}
+            {/* Show LAB Badge for custom strategies */}
+            {strategy.tags.includes('LAB') && (
+              <div className="absolute top-0 right-0 bg-amber-500 text-black text-[10px] font-black uppercase px-2 py-1 rounded-bl-lg">
+                LAB
+              </div>
+            )}
             <div className="flex items-center gap-2 mb-2">
               {strategy.id === StrategyType.TELEGRAM_FIX ? (
                 <AlertTriangle size={20} className="text-yellow-500" />
+              ) : strategy.tags.includes('LAB') ? (
+                <FlaskConical size={20} className="text-amber-500" />
               ) : (
                 <Shield size={20} className={selectedStrategyId === strategy.id ? 'text-cyber-accent' : 'text-gray-400 group-hover:text-gray-300'} />
               )}
-              <span className="font-bold text-gray-100">{strategy.name[language] || strategy.name['en']}</span>
+              
+              <span className="font-bold text-gray-100 truncate w-full">
+                  {/* Handle localized name object vs string from custom driver */}
+                  {typeof strategy.name === 'string' ? strategy.name : (strategy.name[language] || strategy.name['en'])}
+              </span>
             </div>
-            <p className="text-sm text-gray-400 mb-3 leading-snug">{strategy.description[language] || strategy.description['en']}</p>
+            <p className="text-sm text-gray-400 mb-3 leading-snug line-clamp-2">
+                {typeof strategy.description === 'string' ? strategy.description : (strategy.description[language] || strategy.description['en'])}
+            </p>
             <div className="mt-auto flex gap-2 flex-wrap">
-              {strategy.tags.map(tag => (
+              {strategy.tags.map((tag: string) => (
                 <span key={tag} className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyber-700 text-gray-300 border border-cyber-600">
                   {tag}
                 </span>
