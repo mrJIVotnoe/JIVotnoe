@@ -4,7 +4,7 @@ import { Language } from './types';
 // Полная база английских ключей (Source of Truth)
 const en = {
     app_title: "ByeDPI Mate",
-    subtitle: "v1.7.0 • Neural Sentinel • 2025",
+    subtitle: "v1.8.0 • Neural Sentinel • 2025",
     
     // Tabs
     tab_android: "Android / TV",
@@ -131,8 +131,8 @@ const en = {
     win_how_it_works_desc: "The ciadpi.exe program creates a local tunnel for your traffic.",
     win_step_1: "Download",
     win_step_2: "Strategy & SNI",
-    win_step_3: "Automation",
-    win_auto_title: "Auto-config Mode (.cmd)",
+    win_step_3: "Deployment",
+    win_auto_title: "Auto-Config Generator",
     win_emergency: "Network Reset",
     win_which_file: "Which file?",
     win_file_desc: "Standard version for most PCs (64-bit).",
@@ -140,9 +140,13 @@ const en = {
     win_create_file_desc: "Create a text file named 'run.cmd' next to ciadpi.exe and paste this code:",
     win_auto_desc: "This script automatically enables the proxy when started and disables it when closed.",
     win_emergency_desc: "If the internet is gone after closing: Run this command in CMD.",
-    win_keep_open: "KEEP THIS WINDOW OPEN WHILE USING INTERNET",
+    win_keep_open: "DO NOT CLOSE THIS WINDOW (Minimize it)",
     win_download_cmd: "Download run.cmd",
     win_download_cmd_desc: "Save next to ciadpi.exe",
+    win_mode_console: "Console Mode (Standard)",
+    win_mode_stealth: "Ghost Mode (Hidden)",
+    win_admin_req: "Auto-Admin (UAC)",
+    win_stealth_desc: "Runs silently in background. Use Task Manager to kill 'ciadpi.exe'.",
     
     // Tooltips & Helpers
     analyst_tip: "Tip:",
@@ -299,7 +303,7 @@ export const translations: Record<string, Record<string, string>> = {
     
     // --- ПЕРЕВОД РУССКИЙ ---
     app_title: "ByeDPI Mate",
-    subtitle: "v1.7.0 • Neural Sentinel • 2025",
+    subtitle: "v1.8.0 • Neural Sentinel • 2025",
     
     // Вкладки
     tab_android: "Android / TV",
@@ -445,8 +449,8 @@ export const translations: Record<string, Record<string, string>> = {
     win_how_it_works_desc: "Программа ciadpi.exe создает локальный туннель для вашего трафика.",
     win_step_1: "Загрузка",
     win_step_2: "Стратегия и SNI",
-    win_step_3: "Автоматизация",
-    win_auto_title: "Режим авто-настройки (.cmd)",
+    win_step_3: "Развертывание",
+    win_auto_title: "Генератор Конфигурации",
     win_emergency: "Сброс сети",
     win_which_file: "Какой файл?",
     win_file_desc: "Стандартная версия для большинства ПК (64-bit).",
@@ -454,9 +458,13 @@ export const translations: Record<string, Record<string, string>> = {
     win_create_file_desc: "Создайте текстовый файл 'run.cmd' рядом с ciadpi.exe и вставьте этот код:",
     win_auto_desc: "Этот скрипт сам включит прокси при запуске и выключит при закрытии.",
     win_emergency_desc: "Если интернет пропал после закрытия: Выполните эту команду в CMD.",
-    win_keep_open: "НЕ ЗАКРЫВАЙТЕ ЭТО ОКНО ВО ВРЕМЯ РАБОТЫ В ИНТЕРНЕТЕ",
+    win_keep_open: "НЕ ЗАКРЫВАЙТЕ ЭТО ОКНО ВО ВРЕМЯ РАБОТЫ (Или сверните)",
     win_download_cmd: "Скачать run.cmd",
     win_download_cmd_desc: "Сохранить рядом с ciadpi.exe",
+    win_mode_console: "Консоль (Стандарт)",
+    win_mode_stealth: "Призрак (Скрытый)",
+    win_admin_req: "Авто-Админ (UAC)",
+    win_stealth_desc: "Запуск в фоне без окон. Для остановки используйте Диспетчер Задач ('снять задачу ciadpi.exe').",
 
     analyst_tip: "Совет:",
     analyst_tip_text: "Используйте режим фрагментации для обхода глубокого анализа пакетов.",

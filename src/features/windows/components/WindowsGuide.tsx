@@ -1,8 +1,9 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { StrategySelector } from '../../strategies/components/StrategySelector';
 import { STRATEGIES } from '../../../data';
 import { CopyButton } from '../../../shared/ui/CopyButton';
-import { Download, Command, AlertTriangle, RotateCcw, FileDown } from 'lucide-react';
+import { Download, Command, AlertTriangle, RotateCcw, FileDown, Shield, EyeOff, Terminal } from 'lucide-react';
 import { useLanguage } from '../../localization/LanguageContext';
 import { Collapsible } from '../../../shared/ui/Collapsible';
 import { SniScanner } from '../../strategies/components/SniScanner';
@@ -10,9 +11,8 @@ import { useStrategiesStore } from '../../../store/strategies.store';
 
 export const WindowsGuide: React.FC = () => {
   const { t, language } = useLanguage();
-  
-  // Use Store instead of local state
   const { selectedStrategyId, customSni, setCustomSni } = useStrategiesStore();
+  const [mode, setMode] = useState<'console' | 'stealth'>('console');
   
   const currentStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
   const effectiveSni = customSni || t('local_sni_example');
@@ -27,11 +27,39 @@ export const WindowsGuide: React.FC = () => {
 
   const isRu = ['ru', 'uk', 'be', 'kk'].includes(language);
   
-  const batchFileContent = `@echo off
+  // --- SCRIPT GENERATORS ---
+
+  // 1. Console Mode (Standard)
+  const generateConsoleScript = () => {
+    return `@echo off
 chcp 65001 >nul
 title ByeDPI Mate - ${currentStrategy.name[language] || currentStrategy.name['en']}
 cd /d "%~dp0"
 
+:: ---------------------------------------------------------
+:: AUTO-ADMIN ELEVATION (Required for Proxy Settings)
+:: ---------------------------------------------------------
+>nul 2>&1 "%SYSTEMROOT%\\system32\\cacls.exe" "%SYSTEMROOT%\\system32\\config\\system"
+if '%errorlevel%' NEQ '0' (
+    echo [!] Requesting Admin Privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\\getadmin.vbs"
+    "%temp%\\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\\getadmin.vbs" ( del "%temp%\\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+
+:: ---------------------------------------------------------
+:: PROXY CONFIGURATION
+:: ---------------------------------------------------------
+echo.
 echo =======================================================
 echo  [1] ${isRu ? 'Включение системного прокси...' : 'Enabling system proxy...'}
 echo =======================================================
@@ -48,23 +76,62 @@ echo.
 
 ciadpi.exe --ip 127.0.0.1 --port 1080 ${localizedCommand}
 
+:: ---------------------------------------------------------
+:: CLEANUP
+:: ---------------------------------------------------------
 echo.
 echo =======================================================
 echo  [3] ${isRu ? 'Отключение прокси...' : 'Disabling proxy...'}
 echo =======================================================
 reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f >nul
 pause`;
+  };
+
+  // 2. Stealth Mode (VBS Wrapper)
+  const generateStealthScript = () => {
+    // This script creates a VBS launcher + the BAT file
+    return `
+:: ---------------------------------------------------------
+:: STEALTH LAUNCHER GENERATOR
+:: ---------------------------------------------------------
+@echo off
+echo Creating launch_silent.vbs...
+
+(
+echo Set WshShell = CreateObject("WScript.Shell"^) 
+echo WshShell.Run chr(34^) ^& "%~dp0run_hidden.bat" ^& chr(34^), 0
+echo Set WshShell = Nothing
+) > launch_silent.vbs
+
+echo Creating run_hidden.bat...
+(
+echo @echo off
+echo reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f
+echo reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "socks=127.0.0.1:1080" /f
+echo ciadpi.exe --ip 127.0.0.1 --port 1080 ${localizedCommand}
+) > run_hidden.bat
+
+echo.
+echo [DONE] Run 'launch_silent.vbs' to start without a window.
+echo [NOTE] To stop: Task Manager -> End Task 'ciadpi.exe'
+pause
+`;
+  };
+
+  const scriptContent = mode === 'console' ? generateConsoleScript() : generateStealthScript();
+  const scriptName = mode === 'console' ? 'run.cmd' : 'setup_stealth.cmd';
 
   const cleanFileContent = `@echo off
 reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f
-echo Proxy disabled.
+taskkill /f /im ciadpi.exe
+echo Proxy disabled and ByeDPI stopped.
 pause`;
 
   const downloadBatchFile = () => {
     const element = document.createElement("a");
-    const file = new Blob([batchFileContent], {type: 'text/plain'});
+    const file = new Blob([scriptContent], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = "run.cmd";
+    element.download = scriptName;
     document.body.appendChild(element); 
     element.click();
     document.body.removeChild(element);
@@ -72,6 +139,8 @@ pause`;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      
+      {/* Intro / Warning */}
       <div className="bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded-r-lg flex gap-3">
         <AlertTriangle className="text-yellow-500 shrink-0" />
         <div>
@@ -82,6 +151,7 @@ pause`;
         </div>
       </div>
 
+      {/* Step 1: Download */}
       <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700">
         <div className="flex items-center gap-3 mb-4">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">1</div>
@@ -97,49 +167,73 @@ pause`;
             <Download size={20} />
             {t('start_btn')}
           </a>
+          <p className="text-xs text-gray-500 mt-2 ml-1">
+             * Recommended: ciadpi-x86_64.exe
+          </p>
         </div>
       </div>
 
+      {/* Step 2: Strategy */}
       <div className="space-y-4">
          <div className="flex items-center gap-3 mb-2">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">2</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_2')}</h3>
         </div>
-        
-        {/* SNI Scanner Integration */}
         <SniScanner onSelect={setCustomSni} />
-        
         <StrategySelector showCommandPreview={false} />
       </div>
 
+      {/* Step 3: Deployment */}
       <div className="bg-cyber-800 p-6 rounded-xl border border-cyber-700 relative overflow-hidden">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-6">
            <div className="bg-cyber-700 p-2 rounded text-white font-bold h-10 w-10 flex items-center justify-center shrink-0">3</div>
            <h3 className="text-xl font-bold text-white">{t('win_step_3')}</h3>
         </div>
         
         <div className="ml-0 md:ml-14 space-y-6">
-          <div className="bg-green-900/20 border border-green-700/50 p-4 rounded-lg">
-             <p className="text-green-100 text-sm">
-               <span className="font-bold">✨ {t('win_auto_title')}</span>
-             </p>
+          
+          {/* Mode Switcher */}
+          <div className="flex p-1 bg-black/40 rounded-xl border border-cyber-700">
+             <button 
+                onClick={() => setMode('console')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'console' ? 'bg-cyber-600 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+             >
+                <Terminal size={14} /> {t('win_mode_console')}
+             </button>
+             <button 
+                onClick={() => setMode('stealth')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${mode === 'stealth' ? 'bg-indigo-600 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}
+             >
+                <EyeOff size={14} /> {t('win_mode_stealth')}
+             </button>
+          </div>
+
+          <div className="bg-green-900/20 border border-green-700/50 p-4 rounded-lg flex items-start gap-3">
+             <Shield size={18} className="text-green-400 shrink-0 mt-0.5" />
+             <div>
+                <p className="text-green-100 text-sm font-bold mb-1">
+                   {t('win_auto_title')} {mode === 'stealth' && '(Ghost Protocol)'}
+                </p>
+                <p className="text-xs text-green-200/70">
+                   {mode === 'console' ? t('win_admin_req') : t('win_stealth_desc')}
+                </p>
+             </div>
           </div>
 
           <Collapsible title={
             <div className="flex items-center gap-2 text-gray-200">
               <Command size={16} className="text-green-400" />
-              <span>run.cmd (Auto-Config Script)</span>
+              <span>{scriptName} (Auto-Generated)</span>
             </div>
           } defaultOpen={true}>
             <div className="bg-black/80 rounded-lg border border-cyber-700 overflow-hidden relative group shadow-lg">
               <div className="absolute top-2 right-2 z-10">
-                <CopyButton text={batchFileContent} />
+                <CopyButton text={scriptContent} />
               </div>
-              <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar leading-relaxed">
-                {batchFileContent}
+              <pre className="p-4 pt-10 overflow-x-auto text-sm font-mono text-green-400 max-h-[300px] overflow-y-auto custom-scrollbar leading-relaxed whitespace-pre-wrap">
+                {scriptContent}
               </pre>
               
-              {/* Download Button */}
               <div className="bg-cyber-900 border-t border-cyber-700 p-3 flex justify-end">
                 <button 
                   onClick={downloadBatchFile}

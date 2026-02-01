@@ -4,6 +4,7 @@ import { MessageSquare, ShieldCheck, Heart, Copy, Check, Send, Wifi, Globe, Smar
 import { useLanguage } from '../../localization/LanguageContext';
 import { useTelegram } from '../../telegram/TelegramContext';
 import { ObservationResult, VerificationSource } from '../../../core/domain/types';
+import { APP_VERSION } from '../../../config/constants';
 
 export const FeedbackSystem: React.FC = () => {
   const { t } = useLanguage();
@@ -50,7 +51,7 @@ export const FeedbackSystem: React.FC = () => {
             env_flags: {
                 vpn_active: vpnActive,
                 region_match: regionMatch,
-                app_version: "1.7.0"
+                app_version: APP_VERSION
             }
         },
         result: result,

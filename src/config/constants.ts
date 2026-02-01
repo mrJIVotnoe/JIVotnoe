@@ -1,7 +1,7 @@
 
 import { Language } from '../types';
 
-export const APP_VERSION = "1.7.0";
+export const APP_VERSION = "1.8.0";
 
 export const DEFAULT_BRIDGE_URL = "https://silent-base-fce1.newjiv.workers.dev";
 

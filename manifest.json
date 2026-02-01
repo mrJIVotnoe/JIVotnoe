@@ -2,7 +2,7 @@
 {
   "manifest_version": 3,
   "name": "ByeDPI Mate",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Конфигуратор и управление прокси для ByeDPI",
   "action": {
     "default_popup": "index.html",
